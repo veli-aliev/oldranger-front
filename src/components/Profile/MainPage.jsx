@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import axios from 'axios';
+import moment from 'moment';
+import 'moment/locale/ru';
 
 const StyledCard = styled.div`
   position: relative;
@@ -54,9 +56,6 @@ const StyledMainProfile = styled.div`
     width: 75%;
     margin: auto;
   }
-  @media (max-width: 1024px) {
-    padding: 10px;
-  }
   @media (max-width: 768px) {
     .sidebar,
     .meta {
@@ -65,9 +64,12 @@ const StyledMainProfile = styled.div`
   }
 `;
 
-const getProfile = async changeUserState => {
-  const res = await axios.get('http://localhost:8888/api/profile');
+const getProfile = async (changeUserState, changeLoadState) => {
+  const res = await axios.get('http://localhost:8888/api/profile', {
+    withCredentials: true,
+  });
   changeUserState(res.data);
+  changeLoadState(true);
 };
 
 const MainProfile = () => {
@@ -75,11 +77,10 @@ const MainProfile = () => {
   const [user, changeUserState] = useState({});
 
   useEffect(() => {
-    getProfile(changeUserState);
-    return () => changeLoadState(true, isLoaded, user); // isLoaded user from linter
+    getProfile(changeUserState, changeLoadState);
   }, []);
 
-  return (
+  return isLoaded ? (
     <StyledMainProfile>
       <div className="sidebar">
         <img
@@ -100,85 +101,83 @@ const MainProfile = () => {
           <h3 className="title">Общее</h3>
           <div className="field">
             <div className="field-name">Ник:</div>
-            <div className="field-value">23</div>
+            <div className="field-value">{user.nickName}</div>
           </div>
           <div className="field">
             <div className="field-name">Имя:</div>
-            <div className="field-value">23</div>
+            <div className="field-value">{user.firstName}</div>
           </div>
           <div className="field">
             <div className="field-name">Фамилия:</div>
-            <div className="field-value">23</div>
+            <div className="field-value">{user.lastName}</div>
           </div>
           <div className="field">
             <div className="field-name">Дата рождения:</div>
-            <div className="field-value">23</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
             <div className="field-name">Пол:</div>
-            <div className="field-value">23</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
             <div className="field-name">Город:</div>
-            <div className="field-value">23</div>
+            <div className="field-value">-</div>
           </div>
         </StyledCard>
         <StyledCard>
           <h3 className="title">Общее</h3>
           <div className="field">
-            <div className="field-name">Ник:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Email:</div>
+            <div className="field-value">{user.email}</div>
           </div>
           <div className="field">
-            <div className="field-name">Имя:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Моб. телефон:</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
-            <div className="field-name">Фамилия:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">VK:</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
-            <div className="field-name">Дата рождения:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Facebook:</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
-            <div className="field-name">Пол:</div>
-            <div className="field-value">23</div>
-          </div>
-          <div className="field">
-            <div className="field-name">Город:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Twitter:</div>
+            <div className="field-value">-</div>
           </div>
         </StyledCard>
         <StyledCard>
           <h3 className="title">Общее</h3>
           <div className="field">
-            <div className="field-name">Ник:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Зарегестрирован:</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
-            <div className="field-name">Имя:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Сообщений:</div>
+            <div className="field-value">{user.messageCount}</div>
           </div>
           <div className="field">
-            <div className="field-name">Фамилия:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Последнее сообщение:</div>
+            <div className="field-value">-</div>
           </div>
           <div className="field">
-            <div className="field-name">Дата рождения:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Последний логин:</div>
+            <div className="field-value">{moment(user.lastVizit).fromNow()}</div>
           </div>
           <div className="field">
-            <div className="field-name">Пол:</div>
-            <div className="field-value">23</div>
+            <div className="field-name">Начал тем:</div>
+            <div className="field-value">{user.topicStartCount}</div>
           </div>
-          <div className="field">
-            <div className="field-name">Город:</div>
-            <div className="field-value">23</div>
-          </div>
+        </StyledCard>
+        <StyledCard>
+          <h3 className="title">Общее</h3>
+          <div className="field">-</div>
         </StyledCard>
       </div>
     </StyledMainProfile>
+  ) : (
+    <Spin />
   );
 };
 

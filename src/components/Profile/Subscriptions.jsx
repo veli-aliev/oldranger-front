@@ -1,82 +1,50 @@
-import React from 'react';
-import { Table, Divider, Tag } from 'antd';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { List, Avatar, Spin } from 'antd';
+import axios from 'axios';
 
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => text,
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: tags => (
-      <span>
-        {tags.map(tag => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </span>
-    ),
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-      <span>
-        Invite {record.name}
-        <Divider type="vertical" />
-        Delete
-      </span>
-    ),
-  },
-];
+const Subscriptions = ({ subscriptions }) =>
+  subscriptions.length > 0 ? (
+    <List
+      itemLayout="horizontal"
+      dataSource={subscriptions}
+      renderItem={() => (
+        <List.Item>
+          <List.Item.Meta
+            avatar={
+              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+            }
+            title={<a href="https://ant.design">Title</a>}
+            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+          />
+        </List.Item>
+      )}
+    />
+  ) : (
+    <h4>Подписок нет</h4>
+  );
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: [],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-
-const MainProfile = () => {
-  return <Table columns={columns} dataSource={data} />;
+Subscriptions.propTypes = {
+  subscriptions: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default MainProfile;
+const getSubscriptions = async (changeSubscriptionsState, changeLoadState) => {
+  const res = await axios.get('http://localhost:8888/api/subscriptions', {
+    withCredentials: true,
+  });
+  changeSubscriptionsState(res.data);
+  changeLoadState(true);
+};
+
+const SubscriptionsPage = () => {
+  const [isLoaded, changeLoadState] = useState(false);
+  const [subscriptions, changeSubscriptionsState] = useState({});
+
+  useEffect(() => {
+    getSubscriptions(changeSubscriptionsState, changeLoadState);
+  }, []);
+
+  return isLoaded ? <Subscriptions subscriptions={subscriptions} /> : <Spin />;
+};
+
+export default SubscriptionsPage;

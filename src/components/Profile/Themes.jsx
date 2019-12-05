@@ -1,13 +1,13 @@
-import React from 'react';
-import { List, Avatar } from 'antd';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { List, Avatar, Spin } from 'antd';
+import axios from 'axios';
 
-const data = [1, 1, 1, 1, 1, 1, 1];
-
-const Themes = () => {
-  return (
+const Themes = ({ themes }) =>
+  themes.length > 0 ? (
     <List
       itemLayout="horizontal"
-      dataSource={data}
+      dataSource={themes}
       renderItem={() => (
         <List.Item>
           <List.Item.Meta
@@ -20,7 +20,31 @@ const Themes = () => {
         </List.Item>
       )}
     />
+  ) : (
+    <h4>Тем нет</h4>
   );
+
+Themes.propTypes = {
+  themes: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default Themes;
+const getThemes = async (changeThemesState, changeLoadState) => {
+  const res = await axios.get('http://localhost:8888/api/topics', {
+    withCredentials: true,
+  });
+  changeThemesState(res.data);
+  changeLoadState(true);
+};
+
+const ThemesPage = () => {
+  const [isLoaded, changeLoadState] = useState(false);
+  const [themes, changeThemesState] = useState({});
+
+  useEffect(() => {
+    getThemes(changeThemesState, changeLoadState);
+  }, []);
+
+  return isLoaded ? <Themes themes={themes} /> : <Spin />;
+};
+
+export default ThemesPage;

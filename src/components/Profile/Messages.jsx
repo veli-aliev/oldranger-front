@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Comment, Tooltip, Avatar, Spin } from 'antd';
-import axios from 'axios';
 import moment from 'moment';
 import 'moment/locale/ru';
+
+import { withGetData } from '../hoc';
 
 moment.locale('ru');
 
@@ -40,23 +41,13 @@ Messages.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-const getMessages = async (changeMessagesState, changeLoadState) => {
-  const res = await axios.get('http://localhost:8888/api/comments', {
-    withCredentials: true,
-  });
-  changeMessagesState(res.data);
-  changeLoadState(true);
+const MessagesPage = ({ isLoading, data }) => {
+  return isLoading ? <Spin /> : <Messages messages={data} />;
 };
 
-const MessagesPage = () => {
-  const [isLoaded, changeLoadState] = useState(false);
-  const [messages, changeMessagesState] = useState({});
-
-  useEffect(() => {
-    getMessages(changeMessagesState, changeLoadState);
-  }, []);
-
-  return isLoaded ? <Messages messages={messages} /> : <Spin />;
+MessagesPage.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  data: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default MessagesPage;
+export default withGetData(MessagesPage, 'api/comments');

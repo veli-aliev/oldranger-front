@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button, Spin } from 'antd';
-import axios from 'axios';
 import moment from 'moment';
 import 'moment/locale/ru';
+
+import { withGetData } from '../hoc';
 
 const StyledCard = styled.div`
   position: relative;
@@ -64,23 +66,10 @@ const StyledMainProfile = styled.div`
   }
 `;
 
-const getProfile = async (changeUserState, changeLoadState) => {
-  const res = await axios.get('http://localhost:8888/api/profile', {
-    withCredentials: true,
-  });
-  changeUserState(res.data);
-  changeLoadState(true);
-};
-
-const MainProfile = () => {
-  const [isLoaded, changeLoadState] = useState(false);
-  const [user, changeUserState] = useState({});
-
-  useEffect(() => {
-    getProfile(changeUserState, changeLoadState);
-  }, []);
-
-  return isLoaded ? (
+const MainProfile = ({ isLoading, data: user }) => {
+  return isLoading ? (
+    <Spin />
+  ) : (
     <StyledMainProfile>
       <div className="sidebar">
         <img
@@ -125,7 +114,7 @@ const MainProfile = () => {
           </div>
         </StyledCard>
         <StyledCard>
-          <h3 className="title">Общее</h3>
+          <h3 className="title">Контакты</h3>
           <div className="field">
             <div className="field-name">Email:</div>
             <div className="field-value">{user.email}</div>
@@ -148,7 +137,7 @@ const MainProfile = () => {
           </div>
         </StyledCard>
         <StyledCard>
-          <h3 className="title">Общее</h3>
+          <h3 className="title">Статистика</h3>
           <div className="field">
             <div className="field-name">Зарегестрирован:</div>
             <div className="field-value">-</div>
@@ -171,14 +160,17 @@ const MainProfile = () => {
           </div>
         </StyledCard>
         <StyledCard>
-          <h3 className="title">Общее</h3>
+          <h3 className="title">Про меня</h3>
           <div className="field">-</div>
         </StyledCard>
       </div>
     </StyledMainProfile>
-  ) : (
-    <Spin />
   );
 };
 
-export default MainProfile;
+MainProfile.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  data: PropTypes.objectOf(PropTypes.any).isRequired,
+};
+
+export default withGetData(MainProfile, 'api/profile');

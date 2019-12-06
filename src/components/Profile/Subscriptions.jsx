@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { List, Avatar, Spin } from 'antd';
-import axios from 'axios';
+
+import { withGetData } from '../hoc';
 
 const Subscriptions = ({ subscriptions }) =>
   subscriptions.length > 0 ? (
@@ -28,23 +29,13 @@ Subscriptions.propTypes = {
   subscriptions: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-const getSubscriptions = async (changeSubscriptionsState, changeLoadState) => {
-  const res = await axios.get('http://localhost:8888/api/subscriptions', {
-    withCredentials: true,
-  });
-  changeSubscriptionsState(res.data);
-  changeLoadState(true);
+const SubscriptionsPage = ({ isLoading, data: subscriptions }) => {
+  return isLoading ? <Spin /> : <Subscriptions subscriptions={subscriptions} />;
 };
 
-const SubscriptionsPage = () => {
-  const [isLoaded, changeLoadState] = useState(false);
-  const [subscriptions, changeSubscriptionsState] = useState({});
-
-  useEffect(() => {
-    getSubscriptions(changeSubscriptionsState, changeLoadState);
-  }, []);
-
-  return isLoaded ? <Subscriptions subscriptions={subscriptions} /> : <Spin />;
+SubscriptionsPage.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  data: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default SubscriptionsPage;
+export default withGetData(SubscriptionsPage, 'api/subscriptions');

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { List, Avatar, Spin } from 'antd';
-import axios from 'axios';
+
+import { withGetData } from '../hoc';
 
 const Themes = ({ themes }) =>
   themes.length > 0 ? (
@@ -28,23 +29,13 @@ Themes.propTypes = {
   themes: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-const getThemes = async (changeThemesState, changeLoadState) => {
-  const res = await axios.get('http://localhost:8888/api/topics', {
-    withCredentials: true,
-  });
-  changeThemesState(res.data);
-  changeLoadState(true);
+const ThemesPage = ({ isLoading, data: themes }) => {
+  return isLoading ? <Spin /> : <Themes themes={themes} />;
 };
 
-const ThemesPage = () => {
-  const [isLoaded, changeLoadState] = useState(false);
-  const [themes, changeThemesState] = useState({});
-
-  useEffect(() => {
-    getThemes(changeThemesState, changeLoadState);
-  }, []);
-
-  return isLoaded ? <Themes themes={themes} /> : <Spin />;
+ThemesPage.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  data: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default ThemesPage;
+export default withGetData(ThemesPage, 'api/topics');

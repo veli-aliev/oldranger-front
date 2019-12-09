@@ -9,6 +9,7 @@ import Registration from './components/Registration';
 import Profile from './components/Profile';
 
 import Header from './components/layouts/Header';
+import MainPage from './components/Main/MainPage';
 
 class App extends React.Component {
   constructor(props) {
@@ -43,7 +44,7 @@ class App extends React.Component {
             {isLogin ? <Redirect to="/" /> : <Registration />}
           </Route>
           <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
-          <Route path="/" />
+          <Route path="/" component={MainPage} />
         </Switch>
       </Context.Provider>
     );

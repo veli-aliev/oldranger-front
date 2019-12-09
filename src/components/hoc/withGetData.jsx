@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
+import queries from '../../serverQueries';
 
 const getData = async (url, { changeDataState, changeLoadingState }) => {
   changeLoadingState(true);
-  const res = await axios.get(`http://localhost:8888/${url}`, {
-    withCredentials: true,
-  });
-  changeDataState(res.data);
+  const data = await queries.getData(url);
+  changeDataState(data);
   changeLoadingState(false);
 };
 

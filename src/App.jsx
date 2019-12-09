@@ -4,9 +4,9 @@ import axios from 'axios';
 import 'antd/dist/antd.css';
 
 import Context from './components/Context';
+import PrivateRoute from './PrivateRoute';
 import Login from './components/Login';
 import Registration from './components/Registration';
-import Profile from './components/Profile';
 
 import Header from './components/layouts/Header';
 
@@ -24,9 +24,13 @@ class App extends React.Component {
     }));
   };
 
+  changeUserState = data => {
+    this.setState({ ...data });
+  };
+
   logOut = async () => {
     await axios.post('http://localhost:8888/logout');
-    this.changeLoginState();
+    this.setState(() => ({ isLogin: false }));
   };
 
   render() {
@@ -34,16 +38,21 @@ class App extends React.Component {
 
     return (
       <Context.Provider
-        value={{ changeLoginState: this.changeLoginState, logOut: this.logOut, ...this.state }}
+        value={{
+          changeUserState: this.changeUserState,
+          changeLoginState: this.changeLoginState,
+          logOut: this.logOut,
+          ...this.state,
+        }}
       >
         <Header />
         <Switch>
-          <Route path="/profile" component={Profile} />
           <Route path="/registration/:token">
             {isLogin ? <Redirect to="/" /> : <Registration />}
           </Route>
           <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
-          <Route path="/" />
+          <Route exact path="/" />
+          <PrivateRoute isLogin={isLogin} />
         </Switch>
       </Context.Provider>
     );

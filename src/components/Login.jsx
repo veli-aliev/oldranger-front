@@ -41,7 +41,7 @@ const login = (changeLoginState, changeUserState, changeLoadingState) => async v
   formData.append('username', values.username);
   formData.append('password', values.password);
 
-  await queries.login(formData);
+  await queries.logIn(formData);
   const profile = await queries.getProfileData();
 
   changeLoginState();

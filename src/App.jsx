@@ -1,7 +1,7 @@
 import React from 'react';
-import axios from 'axios';
 import 'antd/dist/antd.css';
 
+import queries from './serverQueries';
 import { PrivateRoute, CommonRoute, AuthRoute } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
@@ -26,7 +26,7 @@ class App extends React.Component {
   };
 
   logOut = async () => {
-    await axios.post('http://localhost:8888/logout');
+    queries.logOut();
     this.setState(() => ({ isLogin: false }));
   };
 

@@ -5,6 +5,7 @@ import 'antd/dist/antd.css';
 import { PrivateRoute, CommonRoute, AuthRoute } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
+import Profile from './components/Profile';
 
 class App extends React.Component {
   constructor(props) {
@@ -45,7 +46,7 @@ class App extends React.Component {
         <>
           <CommonRoute />
           <AuthRoute isLogin={isLogin} />
-          <PrivateRoute isLogin={isLogin} />
+          <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
         </>
       </Context.Provider>
     );

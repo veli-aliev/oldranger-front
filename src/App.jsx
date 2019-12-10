@@ -1,13 +1,9 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import 'antd/dist/antd.css';
 
+import { PrivateRoute, CommonRoute, AuthRoute } from './routes';
 import Context from './components/Context';
-import PrivateRoute from './PrivateRoute';
-import Login from './components/Login';
-import Registration from './components/Registration';
-
 import Header from './components/layouts/Header';
 
 class App extends React.Component {
@@ -46,14 +42,11 @@ class App extends React.Component {
         }}
       >
         <Header />
-        <Switch>
-          <Route path="/registration/:token">
-            {isLogin ? <Redirect to="/" /> : <Registration />}
-          </Route>
-          <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
-          <Route exact path="/" />
+        <>
+          <CommonRoute />
+          <AuthRoute isLogin={isLogin} />
           <PrivateRoute isLogin={isLogin} />
-        </Switch>
+        </>
       </Context.Provider>
     );
   }

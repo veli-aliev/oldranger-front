@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button, Spin } from 'antd';
@@ -83,9 +84,11 @@ const MainProfile = ({ isLoading, data: user }) => {
         <Button type="primary" block className="button">
           Загрузить аватар
         </Button>
-        <Button type="primary" block className="button">
-          Редактировать
-        </Button>
+        <Link to="/profile/edit">
+          <Button type="primary" block className="button">
+            Редактировать
+          </Button>
+        </Link>
       </div>
       <div className="meta">
         <StyledCard>

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Form as AntForm, Button } from 'antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
 import styled from 'styled-components';
+
+import queries from '../serverQueries';
 
 import Context from './Context';
 import MyTextInput from './formItems/MyTextInput';
@@ -25,14 +26,7 @@ const formLayoutSchema = {
 
 const tailFormItemLayout = {
   wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 12,
-      offset: 11,
-    },
+    offset: 10,
   },
 };
 
@@ -41,16 +35,17 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const login = (changeLoginState, changeLoadingState) => async values => {
+const login = (changeLoginState, changeUserState, changeLoadingState) => async values => {
   changeLoadingState(true);
   const formData = new FormData();
   formData.append('username', values.username);
   formData.append('password', values.password);
-  await axios.post('http://localhost:8888/login', formData, {
-    headers: { 'content-type': 'multipart/form-data' },
-    withCredentials: true,
-  });
+
+  await queries.logIn(formData);
+  const profile = await queries.getProfileData();
+
   changeLoginState();
+  changeUserState(profile);
   changeLoadingState(false);
 };
 
@@ -60,14 +55,14 @@ const Login = () => {
   return (
     <StyledWrapper>
       <Context.Consumer>
-        {({ changeLoginState }) => (
+        {({ changeLoginState, changeUserState }) => (
           <Formik
             initialValues={{
               username: 'Prospect',
               password: 'prospect',
             }}
             validationSchema={validationSchema}
-            onSubmit={login(changeLoginState, changeLoadingState)}
+            onSubmit={login(changeLoginState, changeUserState, changeLoadingState)}
           >
             {({ handleSubmit, status = {} }) => (
               <>

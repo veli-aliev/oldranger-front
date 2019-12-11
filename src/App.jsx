@@ -1,15 +1,12 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import axios from 'axios';
 import 'antd/dist/antd.css';
 
+import queries from './serverQueries';
+import { PrivateRoute, CommonRoute, AuthRoute } from './routes';
 import Context from './components/Context';
-import Login from './components/Login';
-import Registration from './components/Registration';
-import Profile from './components/Profile';
-
 import Header from './components/layouts/Header';
 import MainPage from './components/Main/MainPage';
+import Profile from './components/Profile';
 
 class App extends React.Component {
   constructor(props) {
@@ -25,9 +22,13 @@ class App extends React.Component {
     }));
   };
 
+  changeUserState = data => {
+    this.setState({ ...data });
+  };
+
   logOut = async () => {
-    await axios.post('http://localhost:8888/logout');
-    this.changeLoginState();
+    queries.logOut();
+    this.setState(() => ({ isLogin: false }));
   };
 
   render() {
@@ -35,17 +36,19 @@ class App extends React.Component {
 
     return (
       <Context.Provider
-        value={{ changeLoginState: this.changeLoginState, logOut: this.logOut, ...this.state }}
+        value={{
+          changeUserState: this.changeUserState,
+          changeLoginState: this.changeLoginState,
+          logOut: this.logOut,
+          ...this.state,
+        }}
       >
         <Header />
-        <Switch>
-          <Route path="/profile" component={Profile} />
-          <Route path="/registration/:token">
-            {isLogin ? <Redirect to="/" /> : <Registration />}
-          </Route>
-          <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
-          <Route path="/" component={MainPage} />
-        </Switch>
+        <>
+          <CommonRoute />
+          <AuthRoute isLogin={isLogin} />
+          <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+        </>
       </Context.Provider>
     );
   }

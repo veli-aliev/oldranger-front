@@ -67,9 +67,11 @@ const StyledMainProfile = styled.div`
 `;
 
 const MainProfile = ({ isLoading, data: user }) => {
-  return isLoading ? (
-    <Spin />
-  ) : (
+  if (isLoading) {
+    return <Spin />;
+  }
+
+  return (
     <StyledMainProfile>
       <div className="sidebar">
         <img

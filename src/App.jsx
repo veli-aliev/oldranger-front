@@ -12,6 +12,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       isLogin: false,
+      user: {},
     };
   }
 
@@ -22,12 +23,12 @@ class App extends React.Component {
   };
 
   changeUserState = data => {
-    this.setState({ ...data });
+    this.setState({ user: { ...data } });
   };
 
   logOut = async () => {
     queries.logOut();
-    this.setState(() => ({ isLogin: false }));
+    this.setState(() => ({ isLogin: false, user: {} }));
   };
 
   render() {

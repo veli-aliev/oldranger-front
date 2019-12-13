@@ -3,13 +3,8 @@ import { Form as AntForm, Button } from 'antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import styled from 'styled-components';
 
 import MyTextInput from './formItems/MyTextInput';
-
-const StyledWrapper = styled.div`
-  padding: 10px;
-`;
 
 const formLayoutSchema = {
   labelCol: {
@@ -64,36 +59,34 @@ const Registration = () => {
   // const { token } = useParams();
 
   return (
-    <StyledWrapper>
-      <Formik
-        initialValues={{
-          username: '',
-          password: '',
-          email: '',
-        }}
-        validationSchema={validationSchema}
-        onSubmit={register(changeLoadingState)}
-      >
-        {({ handleSubmit, status = {} }) => (
-          <>
-            {Object.keys(status).map(item => (
-              <p key={status[item]}>{`${item} : ${status[item]}`}</p>
-            ))}
-            <AntForm onSubmit={handleSubmit} {...formLayoutSchema}>
-              <MyTextInput label="Username" name="username" type="text" maxLength={50} />
-              <MyTextInput label="Password" name="password" type="text" />
-              <MyTextInput label="Email" name="email" type="text" />
+    <Formik
+      initialValues={{
+        username: '',
+        password: '',
+        email: '',
+      }}
+      validationSchema={validationSchema}
+      onSubmit={register(changeLoadingState)}
+    >
+      {({ handleSubmit, status = {} }) => (
+        <>
+          {Object.keys(status).map(item => (
+            <p key={status[item]}>{`${item} : ${status[item]}`}</p>
+          ))}
+          <AntForm onSubmit={handleSubmit} {...formLayoutSchema}>
+            <MyTextInput label="Username" name="username" type="text" maxLength={50} />
+            <MyTextInput label="Password" name="password" type="text" />
+            <MyTextInput label="Email" name="email" type="text" />
 
-              <AntForm.Item {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit" loading={loading}>
-                  Submit
-                </Button>
-              </AntForm.Item>
-            </AntForm>
-          </>
-        )}
-      </Formik>
-    </StyledWrapper>
+            <AntForm.Item {...tailFormItemLayout}>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                Отправить
+              </Button>
+            </AntForm.Item>
+          </AntForm>
+        </>
+      )}
+    </Formik>
   );
 };
 

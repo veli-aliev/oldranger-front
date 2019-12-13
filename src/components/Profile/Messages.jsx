@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Comment, Tooltip, Avatar, Spin } from 'antd';
-import moment from 'moment';
-import 'moment/locale/ru';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 import { withGetData } from '../hoc';
-
-moment.locale('ru');
 
 const Messages = ({ messages }) =>
   messages.length > 0 ? (
@@ -27,8 +25,8 @@ const Messages = ({ messages }) =>
           </p>
         }
         datetime={
-          <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-            <span>{moment().fromNow()}</span>
+          <Tooltip title={formatDistanceToNow(new Date(), { locale: ru, addSuffix: true })}>
+            <span>{formatDistanceToNow(new Date(), { locale: ru, addSuffix: true })}</span>
           </Tooltip>
         }
       />

@@ -13,7 +13,7 @@ class Queries {
   };
 
   logOut = async () => {
-    await axios.post('http://localhost:8888/logout');
+    await axios.post('logout');
   };
 
   getData = async page => {

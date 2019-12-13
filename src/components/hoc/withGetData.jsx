@@ -11,7 +11,7 @@ const getData = async (url, { changeDataState, changeLoadingState }) => {
 
 const withGetData = (WrappedComponent, url) => {
   return props => {
-    const [isLoading, changeLoadingState] = useState(false);
+    const [isLoading, changeLoadingState] = useState(true);
     const [data, changeDataState] = useState({});
 
     useEffect(() => {

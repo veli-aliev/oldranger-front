@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Switch, Route, useHistory, useRouteMatch, useLocation } from 'react-router-dom';
 import { Radio } from 'antd';
 
-import MainPage from './MainPage';
+import MainProfile from './MainProfile';
 import Messages from './Messages';
 import Themes from './Themes';
 import Subscriptions from './Subscriptions';
@@ -31,7 +31,7 @@ const Profile = () => {
         </Radio.Group>
       </div>
       <Switch>
-        <Route exact path={`${path}/`} component={MainPage} />
+        <Route exact path={`${path}/`} component={MainProfile} />
         <Route path={`${path}/messages`} component={Messages} />
         <Route path={`${path}/themes`} component={Themes} />
         <Route path={`${path}/subscriptions`} component={Subscriptions} />

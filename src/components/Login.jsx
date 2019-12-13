@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { Form as AntForm, Button } from 'antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import styled from 'styled-components';
 
 import queries from '../serverQueries';
 
 import Context from './Context';
 import MyTextInput from './formItems/MyTextInput';
+
+const StyledWrapper = styled.div`
+  padding: 5px;
+`;
 
 const formLayoutSchema = {
   labelCol: {
@@ -48,36 +53,38 @@ const Login = () => {
   const [loading, changeLoadingState] = useState(false);
 
   return (
-    <Context.Consumer>
-      {({ changeLoginState, changeUserState }) => (
-        <Formik
-          initialValues={{
-            username: 'Prospect',
-            password: 'prospect',
-          }}
-          validationSchema={validationSchema}
-          onSubmit={login(changeLoginState, changeUserState, changeLoadingState)}
-        >
-          {({ handleSubmit, status = {} }) => (
-            <>
-              {Object.keys(status).map(item => (
-                <p key={status[item]}>{`${item} : ${status[item]}`}</p>
-              ))}
-              <AntForm onSubmit={handleSubmit} {...formLayoutSchema}>
-                <MyTextInput label="User Name" name="username" type="text" />
-                <MyTextInput label="Password" name="password" type="text" />
+    <StyledWrapper>
+      <Context.Consumer>
+        {({ changeLoginState, changeUserState }) => (
+          <Formik
+            initialValues={{
+              username: 'Prospect',
+              password: 'prospect',
+            }}
+            validationSchema={validationSchema}
+            onSubmit={login(changeLoginState, changeUserState, changeLoadingState)}
+          >
+            {({ handleSubmit, status = {} }) => (
+              <>
+                {Object.keys(status).map(item => (
+                  <p key={status[item]}>{`${item} : ${status[item]}`}</p>
+                ))}
+                <AntForm onSubmit={handleSubmit} {...formLayoutSchema}>
+                  <MyTextInput label="User Name" name="username" type="text" />
+                  <MyTextInput label="Password" name="password" type="text" />
 
-                <AntForm.Item {...tailFormItemLayout}>
-                  <Button type="primary" htmlType="submit" loading={loading}>
-                    Отправить
-                  </Button>
-                </AntForm.Item>
-              </AntForm>
-            </>
-          )}
-        </Formik>
-      )}
-    </Context.Consumer>
+                  <AntForm.Item {...tailFormItemLayout}>
+                    <Button type="primary" htmlType="submit" loading={loading}>
+                      Submit
+                    </Button>
+                  </AntForm.Item>
+                </AntForm>
+              </>
+            )}
+          </Formik>
+        )}
+      </Context.Consumer>
+    </StyledWrapper>
   );
 };
 

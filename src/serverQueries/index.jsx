@@ -29,6 +29,20 @@ class Queries {
     });
     return res.data;
   };
+
+  getTopic = async topicId => {
+    const res = await axios.get(`/api/getTopic/${topicId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getTopicComments = async topicId => {
+    const res = await axios.get(`/api/topic/${topicId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

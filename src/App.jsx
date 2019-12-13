@@ -2,7 +2,7 @@ import React from 'react';
 import 'antd/dist/antd.css';
 
 import queries from './serverQueries';
-import { PrivateRoute, CommonRoute, AuthRoute } from './routes';
+import { PrivateRoute, CommonRoute, AuthRoute, TopicRoute } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
 import MainPage from './components/Main/MainPage';
@@ -49,6 +49,7 @@ class App extends React.Component {
           <CommonRoute />
           <AuthRoute isLogin={isLogin} />
           <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+          <TopicRoute />
         </>
       </Context.Provider>
     );

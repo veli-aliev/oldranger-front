@@ -51,9 +51,9 @@ const EditProfile = () => {
 
   return (
     <Context.Consumer>
-      {({ firstName, lastName, email, username }) => (
+      {({ user }) => (
         <Formik
-          initialValues={{ firstName, lastName, email, username }}
+          initialValues={{ ...user }}
           validationSchema={validationSchema}
           onSubmit={submitForm(changeLoadingState)}
         >

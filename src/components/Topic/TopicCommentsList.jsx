@@ -1,8 +1,8 @@
 import React from 'react';
-import { List } from 'antd';
 import PropTypes from 'prop-types';
 import TopicCommentItem from './TopicCommentItem';
 import queries from '../../serverQueries';
+import { CommentList } from './styled';
 
 class TopicCommentsList extends React.Component {
   constructor(props) {
@@ -41,7 +41,7 @@ class TopicCommentsList extends React.Component {
   render() {
     const { comments, topic } = this.state;
     return (
-      <List
+      <CommentList
         itemLayout="vertical"
         size="large"
         bordered="true"

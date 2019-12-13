@@ -1,6 +1,7 @@
 import React from 'react';
 import { Avatar, Icon } from 'antd';
 import PropTypes from 'prop-types';
+import { UserInfoItem } from './styled';
 
 const UserInfoBlock = ({ user }) => {
   return (
@@ -11,16 +12,16 @@ const UserInfoBlock = ({ user }) => {
       <p>
         <strong>{user.nickName}</strong>
       </p>
-      <p className="message--user-info">
-        <span className="message--user-info__item">
+      <p>
+        <UserInfoItem>
           <Icon type="crown" /> {user.roleName}
-        </span>
-        <span className="message--user-info__item">
+        </UserInfoItem>
+        <UserInfoItem>
           <Icon type="message" /> {user.messageCount} сообщений
-        </span>
-        <span className="message--user-info__item">
+        </UserInfoItem>
+        <UserInfoItem>
           <Icon type="clock-circle" /> {user.timeSinceRegistration}
-        </span>
+        </UserInfoItem>
       </p>
     </div>
   );

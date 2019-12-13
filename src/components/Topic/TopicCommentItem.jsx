@@ -1,24 +1,26 @@
 import React from 'react';
-import { Icon, Row } from 'antd';
+import { Row } from 'antd';
+import { formatDistance, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import PropTypes from 'prop-types';
 import UserInfoBlock from './UserInfoBlock';
 import MessageBlock from './MessageBlock';
-import { StyledUserInfoBlock, StyledTopicComment, StyledMessageBlock } from './styled';
+import { StyledCommentItem, UserMessageCol, UserInfoCol, CommentAction } from './styled';
 
 const TopicCommentItem = ({ message }) => {
   return (
-    <StyledTopicComment
+    <StyledCommentItem
       bordered="true"
       key={message.topicId}
       actions={[
         <span>
-          <Icon type="calendar" key="list-vertical-star-o" className="comment--action-icon" />
-          {message.commentDateTime.split('T').join(' ')}
+          <CommentAction type="calendar" key="list-vertical-star-o" />
+          {`${formatDistance(parseISO(message.commentDateTime), new Date(), { locale: ru })} назад`}
         </span>,
       ]}
     >
       <Row>
-        <StyledUserInfoBlock span={6}>
+        <UserInfoCol span={6}>
           <UserInfoBlock
             user={{
               nickName: message.nickName,
@@ -28,12 +30,12 @@ const TopicCommentItem = ({ message }) => {
               messageCount: message.messageCount,
             }}
           />
-        </StyledUserInfoBlock>
-        <StyledMessageBlock span={18}>
+        </UserInfoCol>
+        <UserMessageCol span={18}>
           <MessageBlock messageBody={message.commentText} />
-        </StyledMessageBlock>
+        </UserMessageCol>
       </Row>
-    </StyledTopicComment>
+    </StyledCommentItem>
   );
 };
 

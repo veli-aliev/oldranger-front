@@ -18,7 +18,7 @@
       "printWidth": 100
     }],
     "max-depth": ["warn", 4],
-    "id-length": ["warn", { "exceptions": ["i", "j"], "min": 1 }],
+    "id-length": ["warn", { "exceptions": ["i", "j"], "min": 2 }],
     "no-lonely-if": ["error"],
     "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
     "react/state-in-constructor": ["off"],

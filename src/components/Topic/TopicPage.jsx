@@ -12,7 +12,7 @@ const breadcrumbNameMap = {
 const TopicPage = ({ location }) => {
   // Fix breadcrumb when backend API to be finish.
   const pathSnippets = location.pathname.split('/').filter(i => i);
-  const extraBreadcrumbItems = pathSnippets.map((_, index) => {
+  const extraBreadcrumbItems = pathSnippets.map((el, index) => {
     const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
     return (
       <Breadcrumb.Item key={url}>

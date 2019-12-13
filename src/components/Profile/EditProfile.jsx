@@ -30,7 +30,7 @@ const tailFormItemLayout = {
 };
 
 const validationSchema = Yup.object({
-  username: Yup.string().required('Это поле обязательно'),
+  nickName: Yup.string().required('Это поле обязательно'),
   firstName: Yup.string().required('Это поле обязательно'),
   lastName: Yup.string().required('Это поле обязательно'),
   email: Yup.string()
@@ -60,8 +60,8 @@ const EditProfile = () => {
           {({ handleSubmit }) => (
             <>
               <Form onSubmit={handleSubmit} {...formLayoutSchema}>
-                <FormItem label="Ник" name="username">
-                  <Input name="username" />
+                <FormItem label="Ник" name="nickName">
+                  <Input name="nickName" />
                 </FormItem>
                 <FormItem label="Имя" name="firstName">
                   <Input name="firstName" />

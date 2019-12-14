@@ -43,6 +43,20 @@ class Queries {
     });
     return res.data;
   };
+
+  getAllSections = async () => {
+    const res = await axios.get('/api/allsectionsandsubsections', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getActualTopics = async () => {
+    const res = await axios.get('/api/sectionsandactualtopics', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

@@ -1,11 +1,8 @@
 import React from 'react';
-import axios from 'axios';
 import { Spin } from 'antd';
 import SectionBlock from './SectionBlock';
 import TopicItem from './TopicItem';
-
-axios.defaults.baseURL = 'http://localhost:8888/api/';
-axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+import queries from '../../serverQueries';
 
 class TopicsList extends React.Component {
   constructor(props) {
@@ -19,7 +16,7 @@ class TopicsList extends React.Component {
 
   componentDidMount() {
     this.setState({ isLoading: true });
-    axios.get('/sectionsandactualtopics').then(({ data }) => {
+    queries.getActualTopics().then(data => {
       this.setState({ topics: data[0].topics, section: data[0].section, isLoading: false });
     });
   }

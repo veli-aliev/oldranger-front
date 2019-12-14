@@ -1,13 +1,10 @@
 import React from 'react';
-import axios from 'axios';
 import { Spin } from 'antd';
 import SearchForm from './SearchForm';
 import TopicsList from './TopicsList';
 import SubSectionsList from './SubSectionsList';
 import StyledMainPage from './styled/StyledMainPage';
-
-axios.defaults.baseURL = 'http://localhost:8888/api/';
-axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+import queries from '../../serverQueries';
 
 class MainPage extends React.Component {
   constructor(props) {
@@ -18,8 +15,8 @@ class MainPage extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('allsectionsandsubsections').then(({ data }) => {
-      this.setState({ rootSections: data });
+    queries.getAllSections().then(sections => {
+      this.setState({ rootSections: sections });
     });
   }
 

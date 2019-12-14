@@ -5,7 +5,6 @@ import queries from './serverQueries';
 import { PrivateRoute, CommonRoute, AuthRoute, TopicRoute } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
-import MainPage from './components/Main/MainPage';
 import Profile from './components/Profile';
 
 class App extends React.Component {

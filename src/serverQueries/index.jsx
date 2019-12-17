@@ -30,8 +30,29 @@ class Queries {
     return res.data;
   };
 
-  updateProfile = async formData => {
-    const res = await axios.post(`/api/updateProfile`, formData, {
+  getTopic = async topicId => {
+    const res = await axios.get(`/api/getTopic/${topicId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getTopicComments = async topicId => {
+    const res = await axios.get(`/api/topic/${topicId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getAllSections = async () => {
+    const res = await axios.get('/api/allsectionsandsubsections', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getActualTopics = async () => {
+    const res = await axios.get('/api/sectionsandactualtopics', {
       withCredentials: true,
     });
     return res.data;

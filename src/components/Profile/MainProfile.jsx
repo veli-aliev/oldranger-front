@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button, Spin } from 'antd';
-import moment from 'moment';
-import 'moment/locale/ru';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 import { withGetData } from '../hoc';
 
@@ -157,7 +157,9 @@ const MainProfile = ({ isLoading, data: user }) => {
           </div>
           <div className="field">
             <div className="field-name">Последний логин:</div>
-            <div className="field-value">{moment(user.lastVizit).fromNow()}</div>
+            <div className="field-value">
+              {formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })}
+            </div>
           </div>
           <div className="field">
             <div className="field-name">Начал тем:</div>

@@ -13,7 +13,14 @@ class Queries {
   };
 
   logOut = async () => {
-    await axios.post('logout');
+    await axios.post('/logout');
+  };
+
+  updateProfile = async formData => {
+    const res = await axios.post('/api/updateProfile', formData, {
+      withCredentials: true,
+    });
+    return res.data;
   };
 
   getData = async page => {

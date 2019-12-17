@@ -16,6 +16,13 @@ class Queries {
     await axios.post('/logout');
   };
 
+  updateProfile = async formData => {
+    const res = await axios.post('/api/updateProfile', formData, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   getData = async page => {
     const res = await axios.get(page, {
       withCredentials: true,

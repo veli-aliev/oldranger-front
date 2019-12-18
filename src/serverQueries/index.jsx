@@ -31,7 +31,7 @@ class Queries {
   };
 
   getTopic = async (topicId, page = 0) => {
-    const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=5`, {
+    const res = await axios.get(`/api/topic/${topicId}?page=${page}`, {
       withCredentials: true,
     });
     return res.data;

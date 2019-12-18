@@ -1,60 +1,92 @@
 import React from 'react';
+import { List, Spin } from 'antd';
 import PropTypes from 'prop-types';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import TopicCommentItem from './TopicCommentItem';
 import queries from '../../serverQueries';
-import { CommentList } from './styled';
+import { ReplyFloatButton, StyledTopicMessages, TopicTitle } from './styled';
+import TopicReplyForm from './TopicReplyForm';
 
 class TopicCommentsList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      comments: [],
-      topic: {},
+      name: '',
+      messages: [],
+      hasMore: true,
+      page: 0,
     };
+    this.replyForm = React.createRef();
   }
 
   componentDidMount() {
-    const { topicId } = this.props;
-    queries
-      .getTopic(topicId)
-      .then(topic => {
-        this.setState({ topic: { ...topic, title: topic.name } });
-        return {
-          nickName: topic.topicStarter.nickName,
-          roleName: topic.topicStarter.role.role,
-          smallAvatar: topic.topicStarter.avatar.small,
-          timeSinceRegistration: topic.topicStarter.regDate,
-          messageCount: topic.topicStarter.messageCount,
-          commentDateTime: topic.startTime,
-          topicId: topic.id,
-          commentText: 'Здесь будет сообщение топика',
-          title: topic.name,
-        };
-      })
-      .then(optimizedTopic => {
-        queries
-          .getTopicComments(topicId)
-          .then(usersComments => this.setState({ comments: [optimizedTopic, ...usersComments] }));
-      });
+    this.getTopics().then(data => {
+      const { topic, commentDto } = data;
+      const messageFromTopic = {
+        topicId: topic.subsection.id,
+        author: topic.topicStarter,
+        commentDateTime: topic.startTime,
+        messageCount: topic.messageCount,
+        replyDateTime: null,
+        replyNick: null,
+        replyText: null,
+        commentText: topic.startMessage,
+      };
+      this.setState({ messages: [messageFromTopic, ...commentDto], name: topic.name });
+    });
   }
 
+  getTopics = async () => {
+    const { topicId } = this.props;
+    const { page } = this.state;
+    const resp = await queries.getTopic(topicId, page);
+    this.setState({ page: page + 1 });
+    return resp;
+  };
+
+  replyButtonHandler = () => {
+    this.replyForm.focus();
+  };
+
+  lazyLoadMore = () => {
+    const { messages } = this.state;
+    this.getTopics().then(({ commentDto }) => {
+      if (commentDto.length === 0) {
+        this.setState({ hasMore: false });
+      } else {
+        this.setState({ messages: [...messages, ...commentDto] });
+      }
+    });
+  };
+
   render() {
-    const { comments, topic } = this.state;
-    return (
-      <CommentList
-        itemLayout="vertical"
-        size="large"
-        bordered="true"
-        header={<h3>{topic.title}</h3>}
-        pagination={{
-          onChange: page => {
-            console.log(page);
-          },
-          pageSize: 10,
-        }}
-        dataSource={comments}
-        renderItem={comment => <TopicCommentItem message={comment} />}
-      />
+    const { messages, name, hasMore } = this.state;
+    return messages.length > 0 ? (
+      <StyledTopicMessages>
+        <TopicTitle>{name}</TopicTitle>
+        <InfiniteScroll
+          dataLength={messages.length}
+          next={this.lazyLoadMore}
+          hasMore={hasMore}
+          loader={<Spin />}
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={messages}
+            renderItem={item => <TopicCommentItem comment={item} />}
+          />
+        </InfiniteScroll>
+        <ReplyFloatButton type="primary" icon="message" onClick={this.replyButtonHandler}>
+          Reply
+        </ReplyFloatButton>
+        <TopicReplyForm
+          replyRef={element => {
+            this.replyForm = element;
+          }}
+        />
+      </StyledTopicMessages>
+    ) : (
+      <Spin />
     );
   }
 }

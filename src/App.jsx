@@ -6,6 +6,7 @@ import { PrivateRoute, CommonRoute, AuthRoute, TopicRoute } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
+import SubsectionRoute from './routes/SubsectionRoute';
 
 class App extends React.Component {
   constructor(props) {
@@ -49,6 +50,7 @@ class App extends React.Component {
           <AuthRoute isLogin={isLogin} />
           <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
           <TopicRoute />
+          <SubsectionRoute />
         </>
       </Context.Provider>
     );

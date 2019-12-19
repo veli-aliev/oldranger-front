@@ -64,6 +64,13 @@ class Queries {
     });
     return res.data;
   };
+
+  searchByComments = async searchQuery => {
+    const res = await axios.get(`/api/searchComments?finderTag=${searchQuery}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

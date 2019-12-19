@@ -2,11 +2,18 @@ import React from 'react';
 import 'antd/dist/antd.css';
 
 import queries from './serverQueries';
-import { PrivateRoute, CommonRoute, AuthRoute, TopicRoute } from './routes';
+import {
+  PrivateRoute,
+  CommonRoute,
+  AuthRoute,
+  TopicRoute,
+  SubsectionRoute,
+  SearchRoute,
+} from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
-import SubsectionRoute from './routes/SubsectionRoute';
+import SearchForm from './components/Main/SearchForm';
 
 class App extends React.Component {
   constructor(props) {
@@ -45,13 +52,13 @@ class App extends React.Component {
         }}
       >
         <Header />
-        <>
-          <CommonRoute />
-          <AuthRoute isLogin={isLogin} />
-          <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
-          <TopicRoute />
-          <SubsectionRoute />
-        </>
+        <SearchForm />
+        <CommonRoute />
+        <AuthRoute isLogin={isLogin} />
+        <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+        <TopicRoute />
+        <SubsectionRoute />
+        <SearchRoute />
       </Context.Provider>
     );
   }

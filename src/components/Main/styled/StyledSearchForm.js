@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Input, Select } from 'antd';
+import { Select, Form as AntForm, Input } from 'antd';
 
 export const StyledInput = styled(Input)`
   &&& {
@@ -9,9 +9,11 @@ export const StyledInput = styled(Input)`
 `;
 
 export const StyledSelect = styled(Select)`
-  width: 15%;
+  &&& {
+    width: 15%;
+  }
 `;
 
-export const StyledWrapper = styled.div`
+export const StyledForm = styled(AntForm)`
   text-align: right;
 `;

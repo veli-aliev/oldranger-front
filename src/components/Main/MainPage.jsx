@@ -1,6 +1,5 @@
 import React from 'react';
 import { Spin } from 'antd';
-import SearchForm from './SearchForm';
 import TopicsList from './TopicsList';
 import SubSectionsList from './SubSectionsList';
 import StyledMainPage from './styled/StyledMainPage';
@@ -24,7 +23,6 @@ class MainPage extends React.Component {
     const { rootSections } = this.state;
     return (
       <StyledMainPage>
-        <SearchForm />
         <TopicsList />
         {rootSections.length > 0 ? (
           rootSections.map(section => (

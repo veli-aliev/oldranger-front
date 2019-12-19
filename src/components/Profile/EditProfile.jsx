@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form as AntForm, Button } from 'antd';
+import { Button } from 'antd';
 import { Form, Input, Select, DatePicker } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -105,11 +105,11 @@ const EditProfile = () => {
                   <TextArea name="aboutMe" />
                 </FormItem>
 
-                <AntForm.Item {...tailFormItemLayout}>
+                <FormItem isButtonWrapper {...tailFormItemLayout}>
                   <Button type="primary" htmlType="submit" loading={loading}>
                     Отправить
                   </Button>
-                </AntForm.Item>
+                </FormItem>
               </Form>
             </>
           )}

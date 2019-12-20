@@ -1,66 +1,35 @@
 import React from 'react';
+import { List, Spin } from 'antd';
 import PropTypes from 'prop-types';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import TopicCommentItem from './TopicCommentItem';
-import queries from '../../serverQueries';
-import { CommentList } from './styled';
+import commentProps from './propTypes/commentProps';
 
-class TopicCommentsList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      comments: [],
-      topic: {},
-    };
-  }
-
-  componentDidMount() {
-    const { topicId } = this.props;
-    queries
-      .getTopic(topicId)
-      .then(topic => {
-        this.setState({ topic: { ...topic, title: topic.name } });
-        return {
-          nickName: topic.topicStarter.nickName,
-          roleName: topic.topicStarter.role.role,
-          smallAvatar: topic.topicStarter.avatar.small,
-          timeSinceRegistration: topic.topicStarter.regDate,
-          messageCount: topic.topicStarter.messageCount,
-          commentDateTime: topic.startTime,
-          topicId: topic.id,
-          commentText: 'Здесь будет сообщение топика',
-          title: topic.name,
-        };
-      })
-      .then(optimizedTopic => {
-        queries
-          .getTopicComments(topicId)
-          .then(usersComments => this.setState({ comments: [optimizedTopic, ...usersComments] }));
-      });
-  }
-
-  render() {
-    const { comments, topic } = this.state;
-    return (
-      <CommentList
-        itemLayout="vertical"
-        size="large"
-        bordered="true"
-        header={<h3>{topic.title}</h3>}
-        pagination={{
-          onChange: page => {
-            console.log(page);
-          },
-          pageSize: 10,
-        }}
-        dataSource={comments}
-        renderItem={comment => <TopicCommentItem message={comment} />}
+const TopicCommentsList = ({ messages, loadMore, hasMore }) => {
+  return (
+    <InfiniteScroll
+      dataLength={messages.length}
+      next={loadMore}
+      hasMore={hasMore}
+      loader={<Spin />}
+    >
+      <List
+        itemLayout="horizontal"
+        dataSource={messages}
+        renderItem={item => <TopicCommentItem comment={item} />}
       />
-    );
-  }
-}
+    </InfiniteScroll>
+  );
+};
 
 TopicCommentsList.propTypes = {
-  topicId: PropTypes.string.isRequired,
+  messages: PropTypes.arrayOf(commentProps).isRequired,
+  loadMore: PropTypes.func.isRequired,
+  hasMore: PropTypes.bool,
+};
+
+TopicCommentsList.defaultProps = {
+  hasMore: false,
 };
 
 export default TopicCommentsList;

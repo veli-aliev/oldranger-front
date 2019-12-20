@@ -37,15 +37,8 @@ class Queries {
     return res.data;
   };
 
-  getTopic = async topicId => {
-    const res = await axios.get(`/api/getTopic/${topicId}`, {
-      withCredentials: true,
-    });
-    return res.data;
-  };
-
-  getTopicComments = async topicId => {
-    const res = await axios.get(`/api/topic/${topicId}`, {
+  getTopic = async (topicId, page = 0) => {
+    const res = await axios.get(`/api/topic/${topicId}?page=${page}`, {
       withCredentials: true,
     });
     return res.data;

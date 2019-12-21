@@ -1,26 +1,26 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Spin } from 'antd';
+import { withRouter } from 'react-router-dom';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { ReplyFloatButton, StyledTopicMessages } from './styled';
 import TopicReplyForm from './TopicReplyForm';
+import TopicCommentItem from './TopicCommentItem';
 
 class TopicPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
       messages: [],
+      name: '',
       hasMore: true,
-      page: 0,
+      page: 1,
     };
     this.replyForm = React.createRef();
   }
 
   componentDidMount() {
-    this.getTopics().then(data => {
+    this.getTopics(0).then(data => {
       const { topic, commentDto } = data;
       const messageFromTopic = {
         topicId: topic.subsection.id,
@@ -36,35 +36,37 @@ class TopicPage extends React.Component {
     });
   }
 
-  getTopics = async () => {
+  getTopics = async page => {
     const { match } = this.props;
-    const { page } = this.state;
-    const resp = await queries.getTopic(match.params.topicId, page);
-    this.setState({ page: page + 1 });
-    return resp;
+    return queries.getTopic(match.params.topicId, page);
+  };
+
+  lazyLoadMore = () => {
+    const { messages, page } = this.state;
+    this.getTopics(page).then(({ commentDto }) => {
+      if (commentDto.length === 0) {
+        this.setState({ hasMore: false });
+      } else {
+        this.setState({ messages: [...messages, ...commentDto], page: page + 1 });
+      }
+    });
   };
 
   replyButtonHandler = () => {
     this.replyForm.focus();
   };
 
-  lazyLoadMore = () => {
-    const { messages } = this.state;
-    this.getTopics().then(({ commentDto }) => {
-      if (commentDto.length === 0) {
-        this.setState({ hasMore: false });
-      } else {
-        this.setState({ messages: [...messages, ...commentDto] });
-      }
-    });
-  };
-
   render() {
-    const { messages, name, hasMore } = this.state;
-    return messages.length > 0 ? (
+    const { hasMore, messages, name } = this.state;
+    return (
       <StyledTopicMessages>
         <h1>{name}</h1>
-        <TopicCommentsList messages={messages} loadMore={this.lazyLoadMore} hasMore={hasMore} />
+        <TopicCommentsList
+          fetchMessages={this.lazyLoadMore}
+          hasMore={hasMore}
+          messages={messages}
+          itemComponent={item => <TopicCommentItem comment={item} />}
+        />
         <ReplyFloatButton type="primary" icon="message" onClick={this.replyButtonHandler}>
           Reply
         </ReplyFloatButton>
@@ -74,8 +76,6 @@ class TopicPage extends React.Component {
           }}
         />
       </StyledTopicMessages>
-    ) : (
-      <Spin />
     );
   }
 }

@@ -58,8 +58,8 @@ class Queries {
     return res.data;
   };
 
-  searchByComments = async searchQuery => {
-    const res = await axios.get(`/api/searchComments?finderTag=${searchQuery}`, {
+  searchByComments = async (searchQuery, page) => {
+    const res = await axios.get(`/api/searchComments?finderTag=${searchQuery}&page=${page}`, {
       withCredentials: true,
     });
     return res.data;

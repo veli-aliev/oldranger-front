@@ -2,30 +2,26 @@ import React from 'react';
 import { List, Spin } from 'antd';
 import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import TopicCommentItem from './TopicCommentItem';
 import commentProps from './propTypes/commentProps';
 
-const TopicCommentsList = ({ messages, loadMore, hasMore }) => {
+const TopicCommentsList = ({ messages, hasMore, fetchMessages, itemComponent }) => {
   return (
     <InfiniteScroll
       dataLength={messages.length}
-      next={loadMore}
+      next={fetchMessages}
       hasMore={hasMore}
       loader={<Spin />}
     >
-      <List
-        itemLayout="horizontal"
-        dataSource={messages}
-        renderItem={item => <TopicCommentItem comment={item} />}
-      />
+      <List itemLayout="horizontal" dataSource={messages} renderItem={itemComponent} />
     </InfiniteScroll>
   );
 };
 
 TopicCommentsList.propTypes = {
+  fetchMessages: PropTypes.func.isRequired,
   messages: PropTypes.arrayOf(commentProps).isRequired,
-  loadMore: PropTypes.func.isRequired,
   hasMore: PropTypes.bool,
+  itemComponent: PropTypes.func.isRequired,
 };
 
 TopicCommentsList.defaultProps = {

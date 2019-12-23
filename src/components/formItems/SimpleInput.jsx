@@ -1,6 +1,6 @@
 import React from 'react';
 import { useField } from 'formik';
-import { StyledInput } from '../Main/styled/StyledSearchForm';
+import { StyledInput } from '../Main/styled';
 
 const SimpleInput = ({ ...props }) => {
   const [field] = useField(props);

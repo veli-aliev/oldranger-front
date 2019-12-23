@@ -1,29 +1,49 @@
 import React from 'react';
 import { Spin } from 'antd';
-import TopicsList from './TopicsList';
 import SubSectionsList from './SubSectionsList';
-import StyledMainPage from './styled/StyledMainPage';
 import queries from '../../serverQueries';
+import { StyledMainPage } from './styled';
+import TopicsList from '../Subsection/TopicsList';
+import TopicsListItem from '../Subsection/TopicsListItem';
 
 class MainPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       rootSections: [],
+      actualTopics: [],
     };
   }
 
   componentDidMount() {
-    queries.getAllSections().then(sections => {
-      this.setState({ rootSections: sections });
+    queries.getActualTopics().then(actualTopics => {
+      const badApiAdaptationTopicsFixMePlease = actualTopics[0].topics.map(topic => ({
+        topic,
+        totalMessages: 0,
+        isSubscribed: false,
+        hasNewMessages: false,
+        newMessagesCount: 0,
+      }));
+      this.setState({ actualTopics: badApiAdaptationTopicsFixMePlease });
+      queries.getAllSections().then(sections => {
+        this.setState({ rootSections: sections });
+      });
     });
   }
 
   render() {
-    const { rootSections } = this.state;
+    const { rootSections, actualTopics } = this.state;
     return (
       <StyledMainPage>
-        <TopicsList />
+        {actualTopics.length > 0 ? (
+          <TopicsList
+            itemComponent={item => <TopicsListItem topicData={item} />}
+            items={actualTopics}
+            title="Актуальные темы"
+          />
+        ) : (
+          <Spin />
+        )}
         {rootSections.length > 0 ? (
           rootSections.map(section => (
             <SubSectionsList section={section} key={section.section.id} />

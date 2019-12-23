@@ -1,19 +1,27 @@
 import React from 'react';
-import { List, Spin } from 'antd';
+import { Spin } from 'antd';
 import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import commentProps from './propTypes/commentProps';
+import { StyledList, StyledTitle } from '../Main/styled';
 
-const TopicCommentsList = ({ messages, hasMore, fetchMessages, itemComponent }) => {
-  return (
+const TopicCommentsList = ({ messages, hasMore, fetchMessages, itemComponent, title }) => {
+  return messages.length > 0 ? (
     <InfiniteScroll
       dataLength={messages.length}
       next={fetchMessages}
       hasMore={hasMore}
       loader={<Spin />}
     >
-      <List itemLayout="horizontal" dataSource={messages} renderItem={itemComponent} />
+      <StyledList
+        header={<StyledTitle>{title}</StyledTitle>}
+        itemLayout="horizontal"
+        dataSource={messages}
+        renderItem={itemComponent}
+      />
     </InfiniteScroll>
+  ) : (
+    <Spin />
   );
 };
 
@@ -22,10 +30,12 @@ TopicCommentsList.propTypes = {
   messages: PropTypes.arrayOf(commentProps).isRequired,
   hasMore: PropTypes.bool,
   itemComponent: PropTypes.func.isRequired,
+  title: PropTypes.string,
 };
 
 TopicCommentsList.defaultProps = {
   hasMore: false,
+  title: 'No Title',
 };
 
 export default TopicCommentsList;

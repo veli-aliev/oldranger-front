@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
-import { ReplyFloatButton, StyledTopicMessages } from './styled';
+import { ReplyFloatButton } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
 
@@ -20,7 +20,7 @@ class TopicPage extends React.Component {
   }
 
   componentDidMount() {
-    this.getTopics(0).then(data => {
+    this.getTopic(0).then(data => {
       const { topic, commentDto } = data;
       const messageFromTopic = {
         topicId: topic.subsection.id,
@@ -36,14 +36,14 @@ class TopicPage extends React.Component {
     });
   }
 
-  getTopics = async page => {
+  getTopic = async page => {
     const { match } = this.props;
     return queries.getTopic(match.params.topicId, page);
   };
 
   lazyLoadMore = () => {
     const { messages, page } = this.state;
-    this.getTopics(page).then(({ commentDto }) => {
+    this.getTopic(page).then(({ commentDto }) => {
       if (commentDto.length === 0) {
         this.setState({ hasMore: false });
       } else {
@@ -59,9 +59,9 @@ class TopicPage extends React.Component {
   render() {
     const { hasMore, messages, name } = this.state;
     return (
-      <StyledTopicMessages>
-        <h1>{name}</h1>
+      <div>
         <TopicCommentsList
+          title={name}
           fetchMessages={this.lazyLoadMore}
           hasMore={hasMore}
           messages={messages}
@@ -75,7 +75,7 @@ class TopicPage extends React.Component {
             this.replyForm = element;
           }}
         />
-      </StyledTopicMessages>
+      </div>
     );
   }
 }

@@ -23,6 +23,13 @@ class Queries {
     return res.data;
   };
 
+  updateAvatar = async (values, userId) => {
+    const res = await axios.post(`/api/avatar/${userId}`, values, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   getData = async page => {
     const res = await axios.get(page, {
       withCredentials: true,
@@ -31,10 +38,13 @@ class Queries {
   };
 
   getProfileData = async () => {
-    const res = await axios.get('/api/profile', {
+    const { data: profile } = await axios.get('/api/profile', {
       withCredentials: true,
     });
-    return res.data;
+    const { data: id } = await axios.get('/api/getloggeduserid', {
+      withCredentials: true,
+    });
+    return { ...profile, id };
   };
 
   getTopic = async (topicId, page = 0) => {

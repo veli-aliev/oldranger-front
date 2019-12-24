@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, Upload, Icon } from 'antd';
 import { Form } from 'formik-antd';
 import { Formik } from 'formik';
@@ -38,57 +38,52 @@ const submitForm = async (values, userId, { changeLoadingState, changeUserState 
 
 const EditAvatar = () => {
   const [isLoading, changeLoadingState] = useState(false);
+  const { user, changeUserState } = useContext(Context);
 
   return (
-    <Context.Consumer>
-      {({ user, changeUserState }) => (
-        <Formik
-          initialValues={{ file: null }}
-          validationSchema={validationSchema}
-          onSubmit={values => {
-            if (isLoading) {
-              return;
-            }
+    <Formik
+      initialValues={{ file: null }}
+      validationSchema={validationSchema}
+      onSubmit={values => {
+        changeLoadingState(true);
+        submitForm(values, user.id, { changeLoadingState, changeUserState });
+      }}
+    >
+      {({ handleSubmit, setFieldValue }) => (
+        <Form onSubmit={handleSubmit}>
+          <StyledWrapper>
+            <Upload
+              disabled={isLoading}
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              customRequest={({ file }) => {
+                setFieldValue('file', file);
+                handleSubmit();
+              }}
+            >
+              <img
+                src={`http://localhost:8888/img/${user.avatar}`}
+                alt="avatar"
+                style={{ width: '100%' }}
+              />
+            </Upload>
 
-            changeLoadingState(true);
-            submitForm(values, user.id, { changeLoadingState, changeUserState });
-          }}
-        >
-          {({ handleSubmit, setFieldValue }) => (
-            <Form onSubmit={handleSubmit}>
-              <StyledWrapper>
-                <Upload
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  customRequest={({ file }) => {
-                    setFieldValue('file', file);
-                    handleSubmit();
-                  }}
-                >
-                  <img
-                    src={`http://localhost:8888/img/${user.avatar}`}
-                    alt="avatar"
-                    style={{ width: '100%' }}
-                  />
-                </Upload>
-
-                <Upload
-                  customRequest={({ file }) => {
-                    setFieldValue('file', file);
-                    handleSubmit();
-                  }}
-                >
-                  <Button>
-                    <Icon type="upload" /> Загрузить аватар
-                  </Button>
-                </Upload>
-              </StyledWrapper>
-            </Form>
-          )}
-        </Formik>
+            <Upload
+              disabled={isLoading}
+              customRequest={({ file }) => {
+                setFieldValue('file', file);
+                handleSubmit();
+              }}
+            >
+              <Button>
+                <Icon type="upload" /> Загрузить аватар
+              </Button>
+            </Upload>
+          </StyledWrapper>
+        </Form>
       )}
-    </Context.Consumer>
+    </Formik>
   );
 };
 

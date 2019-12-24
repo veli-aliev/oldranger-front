@@ -73,16 +73,19 @@ class Invite extends React.Component {
           <>
             <StyledWrapper>
               <Row type="flex" justify="center">
-                <h4>Ссылка для регистрации</h4>
+                <h4>Скопируйте ссылку и отправьте другу</h4>
               </Row>
               <Row type="flex" justify="center">
                 <Input value={`http://localhost:3000/registration?token=${token}`} />
               </Row>
             </StyledWrapper>
 
-            <Divider />
+            <Divider>ИЛИ</Divider>
 
             <Form onSubmit={handleSubmit} {...formLayoutSchema}>
+              <Row type="flex" justify="center">
+                <h4>Отправьте приглашение на почту</h4>
+              </Row>
               <FormItem label="Email" name="Email">
                 <Input name="Email" />
               </FormItem>

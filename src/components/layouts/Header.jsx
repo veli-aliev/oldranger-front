@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'antd';
 
@@ -31,12 +31,6 @@ const RightWrapper = styled.div`
 `;
 
 const Header = () => {
-  const history = useHistory();
-
-  const goToProfile = () => {
-    history.push(`/profile`);
-  };
-
   return (
     <Context.Consumer>
       {({ isLogin, logOut }) => (
@@ -49,7 +43,12 @@ const Header = () => {
           <RightWrapper>
             {isLogin ? (
               <>
-                <Button onClick={goToProfile}>Profile</Button>
+                <Button type="link">
+                  <Link to="/invite">Invite</Link>
+                </Button>
+                <Button>
+                  <Link to="/profile">Profile</Link>
+                </Button>
                 <Button type="danger" onClick={logOut}>
                   Exit
                 </Button>

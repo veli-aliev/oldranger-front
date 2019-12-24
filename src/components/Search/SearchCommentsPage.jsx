@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
 import TopicCommentsList from '../Topic/TopicCommentsList';
 import SearchCommentsItem from './SearchCommentsItem';
+import { StyledTitle } from '../Main/styled';
 
 class SearchCommentsPage extends React.Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class SearchCommentsPage extends React.Component {
 
   componentDidMount() {
     this.getTopics(0).then(data => {
-      this.setState({ messages: data });
+      if (data) this.setState({ messages: data });
     });
   }
 
@@ -44,21 +45,29 @@ class SearchCommentsPage extends React.Component {
 
   render() {
     const { hasMore, messages } = this.state;
-    const { match } = this.props;
+    const {
+      match: {
+        params: { searchRequest },
+      },
+    } = this.props;
     const markedMessages = messages.map(message => {
-      const markedComment = this.markWord(message.commentText, match.params.searchRequest);
+      const markedComment = this.markWord(message.commentText, searchRequest);
       return { ...message, commentText: markedComment };
     });
-    return (
+    return messages.length > 0 ? (
       <div>
         <TopicCommentsList
           fetchMessages={this.lazyLoadMore}
           hasMore={hasMore}
           messages={markedMessages}
           itemComponent={item => <SearchCommentsItem item={item} />}
-          title={`Результы поиска в сообщениях по запросу: ${match.params.searchRequest}`}
+          title={`Результы поиска в сообщениях по запросу: ${searchRequest}`}
         />
       </div>
+    ) : (
+      <StyledTitle>
+        Нет результатов по запросу <i>{searchRequest}</i>
+      </StyledTitle>
     );
   }
 }

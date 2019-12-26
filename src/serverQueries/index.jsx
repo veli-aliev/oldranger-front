@@ -23,8 +23,8 @@ class Queries {
     return res.data;
   };
 
-  updateAvatar = async (values, userId) => {
-    const res = await axios.post(`/api/avatar/${userId}`, values, {
+  updateAvatar = async values => {
+    const res = await axios.post('/api/avatar/set', values, {
       withCredentials: true,
     });
     return res.data;

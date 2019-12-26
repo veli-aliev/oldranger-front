@@ -44,6 +44,16 @@ class Queries {
     return res.data;
   };
 
+  getSubsectionTopics = async (subsectionId, page = 0) => {
+    const res = await axios.get(
+      `/api/subsection/${subsectionId}?dateTime=2099-01-01%2000%3A00%3A00&page=${page}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  };
+
   getAllSections = async () => {
     const res = await axios.get('/api/allsectionsandsubsections', {
       withCredentials: true,
@@ -53,6 +63,21 @@ class Queries {
 
   getActualTopics = async () => {
     const res = await axios.get('/api/sectionsandactualtopics', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  searchByComments = async (searchQuery, page) => {
+    const res = await axios.get(`/api/searchComments?finderTag=${searchQuery}&page=${page}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  searchByTopics = async (searchQuery, page) => {
+    const res = await axios.get(`/api/searchTopics?finderTag=${searchQuery}&node=0&nodeValue=0`, {
       withCredentials: true,
     });
     return res.data;

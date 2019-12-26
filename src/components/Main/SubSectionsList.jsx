@@ -1,11 +1,16 @@
 import React from 'react';
-import SectionBlock from './SectionBlock';
+import TopicsList from '../Subsection/TopicsList';
 import SubSectionItem from './SubSectionItem';
 import sectionProps from './propTypes/sectionProps';
 
 const SubSectionsList = ({ section }) => {
-  const subSections = section.subsections.map(subsection => <SubSectionItem item={subsection} />);
-  return <SectionBlock title={section.section.name} items={subSections} />;
+  return (
+    <TopicsList
+      title={section.section.name}
+      items={section.subsections}
+      itemComponent={item => <SubSectionItem item={item} />}
+    />
+  );
 };
 
 SubSectionsList.propTypes = {

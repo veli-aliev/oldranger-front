@@ -81,9 +81,11 @@ const MainProfile = ({ isLoading, data: user }) => {
           className="avatar"
         />
         <h2 className="title">Name</h2>
-        <Button type="primary" block className="button">
-          Загрузить аватар
-        </Button>
+        <Link to="/profile/avatar">
+          <Button type="primary" block className="button">
+            Загрузить аватар
+          </Button>
+        </Link>
         <Link to="/profile/edit">
           <Button type="primary" block className="button">
             Редактировать

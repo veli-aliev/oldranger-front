@@ -3,6 +3,8 @@ import { Switch, Route, useHistory, useRouteMatch, useLocation } from 'react-rou
 import { Radio } from 'antd';
 
 import EditProfile from './EditProfile';
+import EditAvatar from './EditAvatar';
+
 import MainProfile from './MainProfile';
 import Messages from './Messages';
 import Themes from './Themes';
@@ -23,6 +25,7 @@ const Profile = () => {
   return (
     <Switch>
       <Route path={`${path}/edit`} component={EditProfile} />
+      <Route path={`${path}/avatar`} component={EditAvatar} />
       <Route path="*">
         <h2>Профиль пользователя</h2>
         <div>

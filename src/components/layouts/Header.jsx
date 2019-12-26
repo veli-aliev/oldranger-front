@@ -43,9 +43,6 @@ const Header = () => {
           <RightWrapper>
             {isLogin ? (
               <>
-                <Button type="link">
-                  <Link to="/invite">Invite</Link>
-                </Button>
                 <Button>
                   <Link to="/profile">Profile</Link>
                 </Button>

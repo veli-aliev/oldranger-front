@@ -60,7 +60,7 @@ class Queries {
 
   getInviteCode = async () => {
     const res = await axios.post(
-      '/api/invite',
+      '/api/token/invite',
       {},
       {
         withCredentials: true,
@@ -70,7 +70,7 @@ class Queries {
   };
 
   sendInviteCode = async values => {
-    const res = await axios.post('/api/invite/bymail', values, {
+    const res = await axios.post('/api/token/invite/bymail', values, {
       withCredentials: true,
     });
     return res.data;

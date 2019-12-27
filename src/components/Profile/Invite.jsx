@@ -1,6 +1,6 @@
 import React from 'react';
-import { Row, Button, Divider } from 'antd';
-import { Form, Input } from 'formik-antd';
+import { Row, Button, Divider, Input, Typography } from 'antd';
+import { Form, Input as FormikInput } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import styled from 'styled-components';
@@ -8,6 +8,8 @@ import styled from 'styled-components';
 import queries from '../../serverQueries';
 
 import FormItem from '../formItems/FormItem';
+
+const { Title } = Typography;
 
 const StyledWrapper = styled.div`
   margin-bottom: 20px;
@@ -24,12 +26,6 @@ const formLayoutSchema = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 12 },
-  },
-};
-
-const tailFormItemLayout = {
-  wrapperCol: {
-    offset: 10,
   },
 };
 
@@ -53,52 +49,72 @@ class Invite extends React.Component {
     this.setState({ token });
   }
 
-  submitForm = async values => {
+  submitForm = async (values, { setStatus }) => {
     this.setState({ loading: true });
-    await queries.sendInviteCode(values);
+    const status = await queries.sendInviteCode(values);
+
+    switch (status) {
+      case 1:
+        setStatus('Приглашение успешно отправлено.');
+        break;
+
+      default:
+        setStatus('Извините, но сервис отправки приглашений временно не работает.');
+        break;
+    }
+
     this.setState({ loading: false });
   };
 
   render() {
     const { loading, token } = this.state;
     return (
-      <Formik
-        initialValues={{
-          Email: '',
-        }}
-        validationSchema={validationSchema}
-        onSubmit={this.submitForm}
-      >
-        {({ handleSubmit }) => (
-          <>
-            <StyledWrapper>
-              <Row type="flex" justify="center">
-                <h4>Скопируйте ссылку и отправьте другу</h4>
-              </Row>
-              <Row type="flex" justify="center">
-                <Input value={`http://localhost:3000/registration?token=${token}`} />
-              </Row>
-            </StyledWrapper>
+      <>
+        <StyledWrapper>
+          <Row type="flex" justify="center">
+            <h4>Скопируйте ссылку и отправьте другу</h4>
+          </Row>
+          <Row type="flex" justify="center">
+            <Input value={`http://localhost:3000/registration?token=${token}`} />
+          </Row>
+        </StyledWrapper>
 
-            <Divider>ИЛИ</Divider>
+        <Divider>ИЛИ</Divider>
 
+        <Formik
+          initialValues={{
+            Email: '',
+          }}
+          validationSchema={validationSchema}
+          onSubmit={this.submitForm}
+        >
+          {({ handleSubmit, status }) => (
             <Form onSubmit={handleSubmit} {...formLayoutSchema}>
               <Row type="flex" justify="center">
                 <h4>Отправьте приглашение на почту</h4>
               </Row>
+
+              {status && (
+                <Row type="flex" justify="center">
+                  <Title level={4} type="danger">
+                    {status}
+                  </Title>
+                </Row>
+              )}
+
               <FormItem label="Email" name="Email">
-                <Input name="Email" />
+                <FormikInput name="Email" />
               </FormItem>
 
-              <FormItem isButtonWrapper {...tailFormItemLayout}>
+              <Row type="flex" justify="center">
                 <Button type="primary" htmlType="submit" loading={loading}>
                   Отправить
                 </Button>
-              </FormItem>
+              </Row>
             </Form>
-          </>
-        )}
-      </Formik>
+          )}
+        </Formik>
+      </>
     );
   }
 }

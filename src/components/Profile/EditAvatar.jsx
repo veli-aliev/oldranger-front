@@ -24,12 +24,12 @@ const validationSchema = Yup.object().shape({
   file: Yup.mixed().required(),
 });
 
-const submitForm = async (values, userId, { changeLoadingState, changeUserState }) => {
+const submitForm = async (values, { changeLoadingState, changeUserState }) => {
   changeLoadingState(true);
 
   const formData = new FormData();
   formData.append('file', values.file);
-  await queries.updateAvatar(formData, userId);
+  await queries.updateAvatar(formData);
   const profile = await queries.getProfileData();
 
   changeUserState(profile);
@@ -46,7 +46,7 @@ const EditAvatar = () => {
       validationSchema={validationSchema}
       onSubmit={values => {
         changeLoadingState(true);
-        submitForm(values, user.id, { changeLoadingState, changeUserState });
+        submitForm(values, { changeLoadingState, changeUserState });
       }}
     >
       {({ handleSubmit, setFieldValue }) => (

@@ -1,42 +1,88 @@
 import React from 'react';
-import { Breadcrumb } from 'antd';
-import { Link, useParams, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import TopicCommentsList from './TopicCommentsList';
+import queries from '../../serverQueries';
+import { ReplyFloatButton } from './styled';
+import TopicReplyForm from './TopicReplyForm';
+import TopicCommentItem from './TopicCommentItem';
 
-const breadcrumbNameMap = {
-  '/topic': 'Section Name',
-  '/topic/1': 'Topic Name',
-};
+class TopicPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      messages: [],
+      name: '',
+      hasMore: true,
+      page: 1,
+    };
+    this.replyForm = React.createRef();
+  }
 
-const TopicPage = ({ location }) => {
-  // Fix breadcrumb when backend API to be finish.
-  const pathSnippets = location.pathname.split('/').filter(i => i);
-  const extraBreadcrumbItems = pathSnippets.map((el, index) => {
-    const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+  componentDidMount() {
+    this.getTopic(0).then(data => {
+      const { topic, commentDto } = data;
+      const messageFromTopic = {
+        topicId: topic.subsection.id,
+        author: topic.topicStarter,
+        commentDateTime: topic.startTime,
+        messageCount: topic.messageCount,
+        replyDateTime: null,
+        replyNick: null,
+        replyText: null,
+        commentText: topic.startMessage,
+      };
+      this.setState({ messages: [messageFromTopic, ...commentDto], name: topic.name });
+    });
+  }
+
+  getTopic = async page => {
+    const { match } = this.props;
+    return queries.getTopic(match.params.topicId, page);
+  };
+
+  lazyLoadMore = () => {
+    const { messages, page } = this.state;
+    this.getTopic(page).then(({ commentDto }) => {
+      if (commentDto.length === 0) {
+        this.setState({ hasMore: false });
+      } else {
+        this.setState({ messages: [...messages, ...commentDto], page: page + 1 });
+      }
+    });
+  };
+
+  replyButtonHandler = () => {
+    this.replyForm.focus();
+  };
+
+  render() {
+    const { hasMore, messages, name } = this.state;
     return (
-      <Breadcrumb.Item key={url}>
-        <Link to={url}>{breadcrumbNameMap[url]}</Link>
-      </Breadcrumb.Item>
+      <div>
+        <TopicCommentsList
+          title={name}
+          fetchMessages={this.lazyLoadMore}
+          hasMore={hasMore}
+          messages={messages}
+          itemComponent={item => <TopicCommentItem comment={item} />}
+        />
+        <ReplyFloatButton type="primary" icon="message" onClick={this.replyButtonHandler}>
+          Reply
+        </ReplyFloatButton>
+        <TopicReplyForm
+          replyRef={element => {
+            this.replyForm = element;
+          }}
+        />
+      </div>
     );
-  });
-  const breadcrumbItems = [
-    <Breadcrumb.Item key="home">
-      <Link to="/">Home</Link>
-    </Breadcrumb.Item>,
-  ].concat(extraBreadcrumbItems);
-  const { topicId } = useParams();
-  return (
-    <div>
-      <Breadcrumb>{breadcrumbItems}</Breadcrumb>
-      <TopicCommentsList topicId={topicId} />
-    </div>
-  );
-};
+  }
+}
 
 TopicPage.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
+  match: PropTypes.shape({
+    params: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
 };
 

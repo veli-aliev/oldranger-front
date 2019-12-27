@@ -1,16 +1,9 @@
 import styled from 'styled-components';
 import { Button, Col, List, Row } from 'antd';
 
-export const StyledTopicMessages = styled.div`
-  padding: 20px 0;
-`;
-
-export const TopicTitle = styled.h2`
-  text-align: center;
-`;
-
 export const StyledTopicCommentItem = styled(List.Item)`
-  min-height: 150px;
+  margin-top: 12px;
+  min-height: 100px;
   align-items: flex-start;
 `;
 

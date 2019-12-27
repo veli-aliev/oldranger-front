@@ -42,6 +42,7 @@ class App extends React.Component {
   };
 
   logOut = async () => {
+    localStorage.removeItem('user');
     queries.logOut();
     this.setState(() => ({ isLogin: false, user: {} }));
   };

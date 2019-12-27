@@ -24,6 +24,13 @@ class App extends React.Component {
     };
   }
 
+  componentWillMount() {
+    if (localStorage.getItem('user')) {
+      const user = JSON.parse(localStorage.getItem('user') || {});
+      this.setState({ user, isLogin: true });
+    }
+  }
+
   changeLoginState = () => {
     this.setState(({ isLogin }) => ({
       isLogin: !isLogin,
@@ -35,6 +42,7 @@ class App extends React.Component {
   };
 
   logOut = async () => {
+    localStorage.removeItem('user');
     queries.logOut();
     this.setState(() => ({ isLogin: false, user: {} }));
   };

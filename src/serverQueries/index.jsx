@@ -92,6 +92,24 @@ class Queries {
     });
     return res.data;
   };
+
+  getInviteCode = async () => {
+    const res = await axios.post(
+      '/api/token/invite',
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  };
+
+  sendInviteCode = async values => {
+    const res = await axios.post('/api/token/invite/bymail', values, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

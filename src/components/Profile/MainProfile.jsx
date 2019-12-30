@@ -75,15 +75,15 @@ const MainProfile = ({ isLoading, data: user }) => {
   return (
     <StyledMainProfile>
       <div className="sidebar">
-        <img
-          src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-          alt="avatar"
-          className="avatar"
-        />
-        <h2 className="title">Name</h2>
-        <Button type="primary" block className="button">
-          Загрузить аватар
-        </Button>
+        <img src={`http://localhost:8888/img/${user.avatar}`} alt="avatar" className="avatar" />
+        <h2 className="title">
+          {user.firstName} {user.lastName}
+        </h2>
+        <Link to="/profile/avatar">
+          <Button type="primary" block className="button">
+            Загрузить аватар
+          </Button>
+        </Link>
         <Link to="/profile/edit">
           <Button type="primary" block className="button">
             Редактировать

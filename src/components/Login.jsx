@@ -39,6 +39,8 @@ const login = (changeLoginState, changeUserState, changeLoadingState) => async v
   await queries.logIn(formData);
   const profile = await queries.getProfileData();
 
+  localStorage.setItem('user', JSON.stringify(profile));
+
   changeLoginState();
   changeUserState(profile);
   changeLoadingState(false);

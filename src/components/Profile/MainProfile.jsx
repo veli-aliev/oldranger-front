@@ -95,15 +95,15 @@ const MainProfile = ({ isLoading, data: user }) => {
           <h3 className="title">Общее</h3>
           <div className="field">
             <div className="field-name">Ник:</div>
-            <div className="field-value">{user.nickName}</div>
+            <div className="field-value">{user.nickName || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Имя:</div>
-            <div className="field-value">{user.firstName}</div>
+            <div className="field-value">{user.firstName || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Фамилия:</div>
-            <div className="field-value">{user.lastName}</div>
+            <div className="field-value">{user.lastName || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Дата рождения:</div>
@@ -115,55 +115,61 @@ const MainProfile = ({ isLoading, data: user }) => {
           </div>
           <div className="field">
             <div className="field-name">Город:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.city || '-'}</div>
+          </div>
+          <div className="field">
+            <div className="field-name">Страна:</div>
+            <div className="field-value">{user.country || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>
           <h3 className="title">Контакты</h3>
           <div className="field">
             <div className="field-name">Email:</div>
-            <div className="field-value">{user.email}</div>
+            <div className="field-value">{user.email || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Моб. телефон:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.phoneNumber || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">VK:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.socialVk || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Facebook:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.socialFb || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Twitter:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.socialTw || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>
           <h3 className="title">Статистика</h3>
           <div className="field">
-            <div className="field-name">Зарегестрирован:</div>
-            <div className="field-value">-</div>
+            <div className="field-name">Зарегистрирован:</div>
+            <div className="field-value">{user.regDate || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Сообщений:</div>
-            <div className="field-value">{user.messageCount}</div>
+            <div className="field-value">{user.messageCount || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Последнее сообщение:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.lastComment || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Последний логин:</div>
             <div className="field-value">
-              {formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })}
+              {user.lastVizit
+                ? formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })
+                : '-'}
             </div>
           </div>
           <div className="field">
             <div className="field-name">Начал тем:</div>
-            <div className="field-value">{user.topicStartCount}</div>
+            <div className="field-value">{user.topicStartCount || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>

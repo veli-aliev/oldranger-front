@@ -30,7 +30,7 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const login = (changeLoginState, changeUserState, changeLoadingState) => async values => {
+const login = ({ changeLoginState, changeUserState, changeLoadingState }) => async values => {
   changeLoadingState(true);
   const formData = new FormData();
   formData.append('username', values.username);
@@ -58,7 +58,7 @@ const Login = () => {
             password: 'prospect',
           }}
           validationSchema={validationSchema}
-          onSubmit={login(changeLoginState, changeUserState, changeLoadingState)}
+          onSubmit={login({ changeLoginState, changeUserState, changeLoadingState })}
         >
           {({ handleSubmit, status = {} }) => (
             <>

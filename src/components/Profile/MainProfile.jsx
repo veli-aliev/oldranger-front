@@ -106,14 +106,6 @@ const MainProfile = ({ isLoading, data: user }) => {
             <div className="field-value">{user.lastName || '-'}</div>
           </div>
           <div className="field">
-            <div className="field-name">Дата рождения:</div>
-            <div className="field-value">-</div>
-          </div>
-          <div className="field">
-            <div className="field-name">Пол:</div>
-            <div className="field-value">-</div>
-          </div>
-          <div className="field">
             <div className="field-name">Город:</div>
             <div className="field-value">{user.city || '-'}</div>
           </div>

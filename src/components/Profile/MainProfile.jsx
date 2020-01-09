@@ -72,6 +72,8 @@ const MainProfile = ({ isLoading, data: user }) => {
     return <Spin />;
   }
 
+  const gender = user.gender && (user.gender === 'MALE' ? 'муж.' : 'жен.');
+
   return (
     <StyledMainProfile>
       <div className="sidebar">
@@ -112,6 +114,14 @@ const MainProfile = ({ isLoading, data: user }) => {
           <div className="field">
             <div className="field-name">Страна:</div>
             <div className="field-value">{user.country || '-'}</div>
+          </div>
+          <div className="field">
+            <div className="field-name">Дата рождения:</div>
+            <div className="field-value">{user.birthday || '-'}</div>
+          </div>
+          <div className="field">
+            <div className="field-name">Пол:</div>
+            <div className="field-value">{gender || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>

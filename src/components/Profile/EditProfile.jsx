@@ -6,12 +6,16 @@ import { Form, Input, Select, DatePicker } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { parseIncompletePhoneNumber } from 'libphonenumber-js';
+import moment from 'moment';
+import 'moment/locale/ru';
 
 import queries from '../../serverQueries';
 
 import Context from '../Context';
 import FormItem from '../formItems/FormItem';
 import PhoneInput from '../formItems/PhoneInput';
+
+moment.locale('ru');
 
 const { Option } = Select;
 const { TextArea } = Input;

@@ -37,6 +37,27 @@ class Queries {
     return res.data;
   };
 
+  getProfileTopics = async page => {
+    const res = await axios.get(`/api/topics/?page=${page}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getProfileComments = async page => {
+    const res = await axios.get(`/api/comments/?page=${page}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getProfileSubscriptions = async page => {
+    const res = await axios.get(`/api/subscriptions/?page=${page}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   getProfileData = async () => {
     const { data: profile } = await axios.get('/api/profile', {
       withCredentials: true,

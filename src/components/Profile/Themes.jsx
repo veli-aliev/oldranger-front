@@ -1,44 +1,67 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Row, Spin } from 'antd';
+import { Row } from 'antd';
 
-import { withGetData } from '../hoc';
+import queries from '../../serverQueries';
 import TopicsList from '../Subsection/TopicsList';
 import TopicsListItem from '../Subsection/TopicsListItem';
 
-const Themes = ({ isLoading, data: themes }) => {
-  if (isLoading) {
-    return <Spin />;
+class Themes extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      topics: [],
+      hasMore: true,
+      page: 1,
+    };
   }
 
-  if (themes.length === 0) {
+  componentDidMount() {
+    this.loadTopics();
+  }
+
+  loadTopics = async () => {
+    const { page: oldPage } = this.state;
+    const newTopics = await queries.getProfileTopics(oldPage);
+
+    if (newTopics.length === 0) {
+      return this.setState({ hasMore: false });
+    }
+
+    const badApiAdaptationTopicsFixMePlease = newTopics.map(topic => ({
+      topic,
+      totalMessages: 0,
+      isSubscribed: false,
+      hasNewMessages: false,
+      newMessagesCount: 0,
+    }));
+
+    return this.setState(({ topics, page }) => ({
+      topics: [...topics, ...badApiAdaptationTopicsFixMePlease],
+      page: page + 1,
+    }));
+  };
+
+  render() {
+    const { hasMore, topics } = this.state;
+
+    if (topics.length === 0 && !hasMore) {
+      return (
+        <Row type="flex" justify="center">
+          <h4>Тем нет</h4>
+        </Row>
+      );
+    }
+
     return (
-      <Row type="flex" justify="center">
-        <h4>Тем нет</h4>
-      </Row>
+      <TopicsList
+        itemComponent={item => <TopicsListItem topicData={item} />}
+        items={topics}
+        title=""
+        fetchMessages={this.loadTopics}
+        hasMore={hasMore}
+      />
     );
   }
+}
 
-  const badApiAdaptationTopicsFixMePlease = themes.map(topic => ({
-    topic,
-    totalMessages: 0,
-    isSubscribed: false,
-    hasNewMessages: false,
-    newMessagesCount: 0,
-  }));
-
-  return (
-    <TopicsList
-      itemComponent={item => <TopicsListItem topicData={item} />}
-      items={badApiAdaptationTopicsFixMePlease}
-      title=""
-    />
-  );
-};
-
-Themes.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
-
-export default withGetData(Themes, 'api/topics');
+export default Themes;

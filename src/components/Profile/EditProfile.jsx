@@ -93,9 +93,9 @@ const EditProfile = () => {
         validationSchema={validationSchema}
         onSubmit={submitForm(history, { changeLoadingState, changeUserState })}
       >
-        {({ handleSubmit, setFieldValue }) => (
+        {({ setFieldValue }) => (
           <>
-            <Form onSubmit={handleSubmit} {...formLayoutSchema}>
+            <Form {...formLayoutSchema}>
               <FormItem label="Ник" name="nickName">
                 <Input name="nickName" />
               </FormItem>

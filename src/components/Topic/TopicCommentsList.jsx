@@ -14,7 +14,7 @@ const TopicCommentsList = ({ messages, hasMore, fetchMessages, itemComponent, ti
       loader={<Spin />}
     >
       <StyledList
-        header={<StyledTitle>{title}</StyledTitle>}
+        header={title.length > 0 && <StyledTitle>{title}</StyledTitle>}
         itemLayout="horizontal"
         dataSource={messages}
         renderItem={itemComponent}

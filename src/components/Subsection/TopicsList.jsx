@@ -13,7 +13,7 @@ const TopicsList = ({ title, items, itemComponent, fetchMessages, hasMore }) => 
       loader={<Spin />}
     >
       <StyledList
-        header={<StyledTitle>{title}</StyledTitle>}
+        header={title.length > 0 && <StyledTitle>{title}</StyledTitle>}
         dataSource={items}
         renderItem={item => <List.Item>{itemComponent(item)}</List.Item>}
         size="large"

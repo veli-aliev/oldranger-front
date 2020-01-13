@@ -1,41 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { List, Avatar, Spin } from 'antd';
+import { Row, Spin } from 'antd';
 
 import { withGetData } from '../hoc';
+import TopicsList from '../Subsection/TopicsList';
+import TopicsListItem from '../Subsection/TopicsListItem';
 
-const Subscriptions = ({ subscriptions }) =>
-  subscriptions.length > 0 ? (
-    <List
-      itemLayout="horizontal"
-      dataSource={subscriptions}
-      renderItem={() => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={
-              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-            }
-            title={<a href="https://ant.design">Title</a>}
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-          />
-        </List.Item>
-      )}
+const Subscriptions = ({ isLoading, data: subscriptions }) => {
+  if (isLoading) {
+    return <Spin />;
+  }
+
+  if (subscriptions.length === 0) {
+    return (
+      <Row type="flex" justify="center">
+        <h4>Тем нет</h4>
+      </Row>
+    );
+  }
+
+  const badApiAdaptationTopicsFixMePlease = subscriptions.map(item => ({
+    topic: item.topic,
+    totalMessages: 0,
+    isSubscribed: false,
+    hasNewMessages: false,
+    newMessagesCount: 0,
+  }));
+
+  return (
+    <TopicsList
+      itemComponent={item => <TopicsListItem topicData={item} />}
+      items={badApiAdaptationTopicsFixMePlease}
+      title=""
     />
-  ) : (
-    <h4>Подписок нет</h4>
   );
+};
 
 Subscriptions.propTypes = {
-  subscriptions: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
-
-const SubscriptionsPage = ({ isLoading, data: subscriptions }) => {
-  return isLoading ? <Spin /> : <Subscriptions subscriptions={subscriptions} />;
-};
-
-SubscriptionsPage.propTypes = {
   isLoading: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.string).isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default withGetData(SubscriptionsPage, 'api/subscriptions');
+export default withGetData(Subscriptions, 'api/subscriptions');

@@ -1,41 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { List, Avatar, Spin } from 'antd';
+import { Row, Spin } from 'antd';
 
 import { withGetData } from '../hoc';
+import TopicsList from '../Subsection/TopicsList';
+import TopicsListItem from '../Subsection/TopicsListItem';
 
-const Themes = ({ themes }) =>
-  themes.length > 0 ? (
-    <List
-      itemLayout="horizontal"
-      dataSource={themes}
-      renderItem={() => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={
-              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-            }
-            title={<a href="https://ant.design">Title</a>}
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-          />
-        </List.Item>
-      )}
+const Themes = ({ isLoading, data: themes }) => {
+  if (isLoading) {
+    return <Spin />;
+  }
+
+  if (themes.length === 0) {
+    return (
+      <Row type="flex" justify="center">
+        <h4>Тем нет</h4>
+      </Row>
+    );
+  }
+
+  const badApiAdaptationTopicsFixMePlease = themes.map(topic => ({
+    topic,
+    totalMessages: 0,
+    isSubscribed: false,
+    hasNewMessages: false,
+    newMessagesCount: 0,
+  }));
+
+  return (
+    <TopicsList
+      itemComponent={item => <TopicsListItem topicData={item} />}
+      items={badApiAdaptationTopicsFixMePlease}
+      title=""
     />
-  ) : (
-    <h4>Тем нет</h4>
   );
+};
 
 Themes.propTypes = {
-  themes: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
-
-const ThemesPage = ({ isLoading, data: themes }) => {
-  return isLoading ? <Spin /> : <Themes themes={themes} />;
-};
-
-ThemesPage.propTypes = {
   isLoading: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.string).isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default withGetData(ThemesPage, 'api/topics');
+export default withGetData(Themes, 'api/topics');

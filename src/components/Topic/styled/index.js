@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Col, List, Row } from 'antd';
+import { Button, Col, Form, List, Row, Icon } from 'antd';
 
 export const StyledTopicCommentItem = styled(List.Item)`
   margin-top: 12px;
@@ -20,4 +20,17 @@ export const ReplyFloatButton = styled(Button)`
   position: fixed;
   bottom: 50px;
   right: 50px;
+`;
+
+export const StyledTopicReplyForm = styled(Form)`
+  margin-top: 24px;
+`;
+
+export const TopicReplyWarning = styled.h3`
+  margin: 24px 0;
+  text-align: center;
+`;
+
+export const GoldIcon = styled(Icon)`
+  color: #ffc53d;
 `;

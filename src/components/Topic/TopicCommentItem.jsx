@@ -9,7 +9,10 @@ import commentProps from './propTypes/commentProps';
 
 const TopicCommentItem = ({ comment }) => {
   return (
-    <StyledTopicCommentItem id={`comment${comment.topicId}`}>
+    <StyledTopicCommentItem
+      id={`comment${comment.topicId}`}
+      actions={[<span>#{comment.positionInTopic + 1}</span>]}
+    >
       <List.Item.Meta
         avatar={
           <Popover

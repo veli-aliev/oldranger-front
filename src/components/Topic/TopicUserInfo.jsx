@@ -1,7 +1,7 @@
 import React from 'react';
 import { Col, Icon } from 'antd';
 import { Link } from 'react-router-dom';
-import { formatDistance, parseISO } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import { StyledTopicUserInfo, UserInfoLeft } from './styled';
 import userProps from './propTypes/userProps';
@@ -24,7 +24,9 @@ const TopicUserInfo = ({ user }) => {
         </p>
         <p>
           <Icon type="clock-circle" />{' '}
-          {`С нами ${formatDistance(parseISO(user.regDate), Date.now(), { locale: ru })}`}
+          {user.regDate
+            ? `С нами ${formatDistanceToNow(parseISO(user.regDate), { locale: ru })}`
+            : 'Неизвестно'}
         </p>
       </Col>
     </StyledTopicUserInfo>

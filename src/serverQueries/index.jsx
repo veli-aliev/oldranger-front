@@ -37,8 +37,8 @@ class Queries {
     return res.data;
   };
 
-  getTopic = async (topicId, page = 0) => {
-    const res = await axios.get(`/api/topic/${topicId}?page=${page}`, {
+  getTopic = async (topicId, offset, limit) => {
+    const res = await axios.get(`/api/topic/${topicId}?pos=${offset}&limit=${limit}`, {
       withCredentials: true,
     });
     return res.data;
@@ -75,9 +75,16 @@ class Queries {
     return res.data;
   };
 
-  // eslint-disable-next-line no-unused-vars
-  searchByTopics = async (searchQuery, page) => {
+  searchByTopics = async searchQuery => {
     const res = await axios.get(`/api/searchTopics?finderTag=${searchQuery}&node=0&nodeValue=0`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  addComment = async newComment => {
+    const res = await axios.post('/api/comment/add', newComment, {
+      headers: { 'content-type': 'multipart/form-data' },
       withCredentials: true,
     });
     return res.data;

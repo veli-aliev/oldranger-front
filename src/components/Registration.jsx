@@ -50,10 +50,21 @@ const Registration = () => {
   const { key } = useParams();
 
   return (
-    <Formik validationSchema={validationSchema} onSubmit={register(key, { changeLoadingState })}>
+    <Formik
+      initialValues={{
+        nickName: '',
+        firstName: '',
+        lastName: '',
+        password: '',
+        repeatPassword: '',
+        email: '',
+      }}
+      validationSchema={validationSchema}
+      onSubmit={register(key, { changeLoadingState })}
+    >
       <Form {...formLayoutSchema}>
-        <FormItem label="Логин" name="userName">
-          <Input name="userName" />
+        <FormItem label="Логин" name="nickName">
+          <Input name="nickName" />
         </FormItem>
         <FormItem label="Имя" name="firstName">
           <Input name="firstName" />

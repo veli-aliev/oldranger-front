@@ -1,41 +1,67 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { List, Avatar, Spin } from 'antd';
+import { Row } from 'antd';
 
-import { withGetData } from '../hoc';
+import queries from '../../serverQueries';
+import TopicsList from '../Subsection/TopicsList';
+import TopicsListItem from '../Subsection/TopicsListItem';
 
-const Subscriptions = ({ subscriptions }) =>
-  subscriptions.length > 0 ? (
-    <List
-      itemLayout="horizontal"
-      dataSource={subscriptions}
-      renderItem={() => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={
-              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-            }
-            title={<a href="https://ant.design">Title</a>}
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-          />
-        </List.Item>
-      )}
-    />
-  ) : (
-    <h4>Подписок нет</h4>
-  );
+class Subscriptions extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      topics: [],
+      hasMore: true,
+      page: 1,
+    };
+  }
 
-Subscriptions.propTypes = {
-  subscriptions: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
+  componentDidMount() {
+    this.loadTopics();
+  }
 
-const SubscriptionsPage = ({ isLoading, data: subscriptions }) => {
-  return isLoading ? <Spin /> : <Subscriptions subscriptions={subscriptions} />;
-};
+  loadTopics = async () => {
+    const { page: oldPage } = this.state;
+    const newTopics = await queries.getProfileSubscriptions(oldPage);
 
-SubscriptionsPage.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
+    if (newTopics.length === 0) {
+      return this.setState({ hasMore: false });
+    }
 
-export default withGetData(SubscriptionsPage, 'api/subscriptions');
+    const badApiAdaptationTopicsFixMePlease = newTopics.map(item => ({
+      topic: item.topic,
+      totalMessages: 0,
+      isSubscribed: false,
+      hasNewMessages: false,
+      newMessagesCount: 0,
+    }));
+
+    return this.setState(({ topics, page }) => ({
+      topics: [...topics, ...badApiAdaptationTopicsFixMePlease],
+      page: page + 1,
+    }));
+  };
+
+  render() {
+    const { hasMore, topics } = this.state;
+
+    if (topics.length === 0 && !hasMore) {
+      return (
+        <Row type="flex" justify="center">
+          <h4>Тем нет</h4>
+        </Row>
+      );
+    }
+
+    return (
+      <TopicsList
+        itemComponent={item => <TopicsListItem topicData={item} />}
+        items={topics}
+        title=""
+        fetchMessages={this.loadTopics}
+        hasMore={hasMore}
+      />
+    );
+  }
+}
+
+export default Subscriptions;

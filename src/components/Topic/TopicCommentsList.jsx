@@ -11,7 +11,7 @@ const TopicCommentsList = ({ messages, itemComponent, title, changePageHandler, 
   }
   const query = useQuery();
 
-  const [page, setPage] = useState(query.get('page'));
+  const [page, setPage] = useState(parseInt(query.get('page'), 10));
   return messages.length > 0 ? (
     <StyledList
       header={<StyledTitle>{title}</StyledTitle>}
@@ -19,7 +19,7 @@ const TopicCommentsList = ({ messages, itemComponent, title, changePageHandler, 
       dataSource={messages}
       renderItem={itemComponent}
       pagination={{
-        current: parseInt(page, 10),
+        current: page,
         // defaultCurrent: page,
         onChange: currentPage => {
           changePageHandler(currentPage);

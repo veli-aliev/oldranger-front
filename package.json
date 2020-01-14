@@ -9,6 +9,8 @@
     "formik": "^2.0.6",
     "formik-antd": "^1.6.0",
     "gh-pages": "^2.1.1",
+    "libphonenumber-js": "^1.7.30",
+    "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

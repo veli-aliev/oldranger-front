@@ -72,18 +72,20 @@ const MainProfile = ({ isLoading, data: user }) => {
     return <Spin />;
   }
 
+  const gender = user.gender && (user.gender === 'MALE' ? 'муж.' : 'жен.');
+
   return (
     <StyledMainProfile>
       <div className="sidebar">
-        <img
-          src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-          alt="avatar"
-          className="avatar"
-        />
-        <h2 className="title">Name</h2>
-        <Button type="primary" block className="button">
-          Загрузить аватар
-        </Button>
+        <img src={`http://localhost:8888/img/${user.avatar}`} alt="avatar" className="avatar" />
+        <h2 className="title">
+          {user.firstName} {user.lastName}
+        </h2>
+        <Link to="/profile/avatar">
+          <Button type="primary" block className="button">
+            Загрузить аватар
+          </Button>
+        </Link>
         <Link to="/profile/edit">
           <Button type="primary" block className="button">
             Редактировать
@@ -95,75 +97,81 @@ const MainProfile = ({ isLoading, data: user }) => {
           <h3 className="title">Общее</h3>
           <div className="field">
             <div className="field-name">Ник:</div>
-            <div className="field-value">{user.nickName}</div>
+            <div className="field-value">{user.nickName || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Имя:</div>
-            <div className="field-value">{user.firstName}</div>
+            <div className="field-value">{user.firstName || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Фамилия:</div>
-            <div className="field-value">{user.lastName}</div>
-          </div>
-          <div className="field">
-            <div className="field-name">Дата рождения:</div>
-            <div className="field-value">-</div>
-          </div>
-          <div className="field">
-            <div className="field-name">Пол:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.lastName || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Город:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.city || '-'}</div>
+          </div>
+          <div className="field">
+            <div className="field-name">Страна:</div>
+            <div className="field-value">{user.country || '-'}</div>
+          </div>
+          <div className="field">
+            <div className="field-name">Дата рождения:</div>
+            <div className="field-value">{user.birthday || '-'}</div>
+          </div>
+          <div className="field">
+            <div className="field-name">Пол:</div>
+            <div className="field-value">{gender || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>
           <h3 className="title">Контакты</h3>
           <div className="field">
             <div className="field-name">Email:</div>
-            <div className="field-value">{user.email}</div>
+            <div className="field-value">{user.email || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Моб. телефон:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.phoneNumber || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">VK:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.socialVk || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Facebook:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.socialFb || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Twitter:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.socialTw || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>
           <h3 className="title">Статистика</h3>
           <div className="field">
-            <div className="field-name">Зарегестрирован:</div>
-            <div className="field-value">-</div>
+            <div className="field-name">Зарегистрирован:</div>
+            <div className="field-value">{user.regDate || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Сообщений:</div>
-            <div className="field-value">{user.messageCount}</div>
+            <div className="field-value">{user.messageCount || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Последнее сообщение:</div>
-            <div className="field-value">-</div>
+            <div className="field-value">{user.lastComment || '-'}</div>
           </div>
           <div className="field">
             <div className="field-name">Последний логин:</div>
             <div className="field-value">
-              {formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })}
+              {user.lastVizit
+                ? formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })
+                : '-'}
             </div>
           </div>
           <div className="field">
             <div className="field-name">Начал тем:</div>
-            <div className="field-value">{user.topicStartCount}</div>
+            <div className="field-value">{user.topicStartCount || '-'}</div>
           </div>
         </StyledCard>
         <StyledCard>

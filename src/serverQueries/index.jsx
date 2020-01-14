@@ -23,6 +23,13 @@ class Queries {
     return res.data;
   };
 
+  updateAvatar = async values => {
+    const res = await axios.post('/api/avatar/set', values, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   getData = async page => {
     const res = await axios.get(page, {
       withCredentials: true,
@@ -30,8 +37,15 @@ class Queries {
     return res.data;
   };
 
-  getProfileData = async () => {
-    const res = await axios.get('/api/profile', {
+  getProfileTopics = async page => {
+    const res = await axios.get(`/api/topics/?page=${page}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getProfileComments = async page => {
+    const res = await axios.get(`/api/comments/?page=${page}`, {
       withCredentials: true,
     });
     return res.data;
@@ -42,6 +56,23 @@ class Queries {
       withCredentials: true,
     });
     return res.data;
+  };
+
+  getProfileSubscriptions = async page => {
+    const res = await axios.get(`/api/subscriptions/?page=${page}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getProfileData = async () => {
+    const { data: profile } = await axios.get('/api/profile', {
+      withCredentials: true,
+    });
+    const { data: id } = await axios.get('/api/getloggeduserid', {
+      withCredentials: true,
+    });
+    return { ...profile, id };
   };
 
   getSubsectionTopics = async (subsectionId, page = 0) => {
@@ -85,6 +116,24 @@ class Queries {
   addComment = async newComment => {
     const res = await axios.post('/api/comment/add', newComment, {
       headers: { 'content-type': 'multipart/form-data' },
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getInviteCode = async () => {
+    const res = await axios.post(
+      '/api/token/invite',
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  };
+
+  sendInviteCode = async values => {
+    const res = await axios.post('/api/token/invite/bymail', values, {
       withCredentials: true,
     });
     return res.data;

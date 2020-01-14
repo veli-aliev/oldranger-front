@@ -1,41 +1,67 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { List, Avatar, Spin } from 'antd';
+import { Row } from 'antd';
 
-import { withGetData } from '../hoc';
+import queries from '../../serverQueries';
+import TopicsList from '../Subsection/TopicsList';
+import TopicsListItem from '../Subsection/TopicsListItem';
 
-const Themes = ({ themes }) =>
-  themes.length > 0 ? (
-    <List
-      itemLayout="horizontal"
-      dataSource={themes}
-      renderItem={() => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={
-              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-            }
-            title={<a href="https://ant.design">Title</a>}
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-          />
-        </List.Item>
-      )}
-    />
-  ) : (
-    <h4>Тем нет</h4>
-  );
+class Themes extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      topics: [],
+      hasMore: true,
+      page: 1,
+    };
+  }
 
-Themes.propTypes = {
-  themes: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
+  componentDidMount() {
+    this.loadTopics();
+  }
 
-const ThemesPage = ({ isLoading, data: themes }) => {
-  return isLoading ? <Spin /> : <Themes themes={themes} />;
-};
+  loadTopics = async () => {
+    const { page: oldPage } = this.state;
+    const newTopics = await queries.getProfileTopics(oldPage);
 
-ThemesPage.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
+    if (newTopics.length === 0) {
+      return this.setState({ hasMore: false });
+    }
 
-export default withGetData(ThemesPage, 'api/topics');
+    const badApiAdaptationTopicsFixMePlease = newTopics.map(topic => ({
+      topic,
+      totalMessages: 0,
+      isSubscribed: false,
+      hasNewMessages: false,
+      newMessagesCount: 0,
+    }));
+
+    return this.setState(({ topics, page }) => ({
+      topics: [...topics, ...badApiAdaptationTopicsFixMePlease],
+      page: page + 1,
+    }));
+  };
+
+  render() {
+    const { hasMore, topics } = this.state;
+
+    if (topics.length === 0 && !hasMore) {
+      return (
+        <Row type="flex" justify="center">
+          <h4>Тем нет</h4>
+        </Row>
+      );
+    }
+
+    return (
+      <TopicsList
+        itemComponent={item => <TopicsListItem topicData={item} />}
+        items={topics}
+        title=""
+        fetchMessages={this.loadTopics}
+        hasMore={hasMore}
+      />
+    );
+  }
+}
+
+export default Themes;

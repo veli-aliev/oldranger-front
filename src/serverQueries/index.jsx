@@ -137,6 +137,13 @@ class Queries {
     });
     return res.data;
   };
+
+  registrationUser = async values => {
+    const res = await axios.post('/api/token/confirm/bymail', values, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

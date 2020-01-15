@@ -18,17 +18,12 @@ import SearchForm from './components/Main/SearchForm';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isLogin: false,
-      user: {},
-    };
-  }
-
-  componentWillMount() {
+    let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
       const user = JSON.parse(localStorage.getItem('user') || {});
-      this.setState({ user, isLogin: true });
+      initialState = { user, isLogin: true };
     }
+    this.state = { ...initialState };
   }
 
   changeLoginState = () => {

@@ -12,18 +12,19 @@ import Context from '../Context';
 class TopicPage extends React.Component {
   constructor(props) {
     super(props);
+    const { location } = this.props;
+    const query = new URLSearchParams(location.search);
     this.state = {
       topic: null,
       messages: [],
+      page: query.get('page') || 1,
     };
     this.replyForm = React.createRef();
   }
 
   componentDidMount() {
-    const { location } = this.props;
-    const query = new URLSearchParams(location.search);
-    const queryPage = query.get('page') || 1;
-    this.getTopics(parseInt(queryPage, 10));
+    const { page } = this.state;
+    this.getTopics(parseInt(page, 10));
   }
 
   topicToComment = topic => ({
@@ -39,12 +40,12 @@ class TopicPage extends React.Component {
   });
 
   getTopics = page => {
-    const { match, history } = this.props;
-    history.push(`${history.location.pathname}?page=${page}`);
+    const { match } = this.props;
     if (page === 1) {
       queries.getTopic(match.params.topicId, 0, 9).then(({ topic, commentDto }) => {
         this.setState({
           topic,
+          page,
           messages: [this.topicToComment(topic), ...commentDto.content],
         });
       });
@@ -54,10 +55,17 @@ class TopicPage extends React.Component {
         .then(({ topic, commentDto }) => {
           this.setState({
             topic,
+            page,
             messages: commentDto.content,
           });
         });
     }
+  };
+
+  changePageHandler = page => {
+    const { history } = this.props;
+    history.push(`${history.location.pathname}?page=${page}`);
+    this.getTopics(page);
   };
 
   replyButtonHandler = () => {
@@ -67,19 +75,18 @@ class TopicPage extends React.Component {
   handleSubmitComment = (text, answerID = 0, resetForm) => {
     const { topic } = this.state;
     const { user } = this.context;
+    const { history } = this.props;
+    const formData = new FormData();
+    formData.append('text', text);
+    formData.append('idTopic', topic.id);
+    formData.append('idUser', user.userId);
+    formData.append('answerID', answerID);
     return queries
-      .addComment({
-        messageComments: {
-          text,
-          idTopic: topic.id,
-          idUser: user.userId,
-          answerID,
-        },
-        image1: '',
-        image2: '',
-      })
+      .addComment(formData)
       .then(() => {
-        this.changePageHandler(Math.floor(topic.messageCount / 10) + 1);
+        const lastPage = Math.floor(topic.messageCount / 10 + 1);
+        history.push(`${history.location.pathname}?page=${lastPage}`);
+        this.getTopics(lastPage);
         message.success('Ваше сообщение успешно добавлено');
         resetForm();
       })
@@ -97,7 +104,7 @@ class TopicPage extends React.Component {
   };
 
   render() {
-    const { messages, topic } = this.state;
+    const { messages, topic, page } = this.state;
     const { isLogin } = this.context;
     return (
       <div>
@@ -118,11 +125,12 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicCommentsList
-              changePageHandler={this.getTopics}
+              changePageHandler={this.changePageHandler}
               title={topic.name}
               messages={messages}
               itemComponent={item => <TopicCommentItem comment={item} />}
               total={topic.messageCount + 1}
+              page={page}
             />
           </div>
         ) : (

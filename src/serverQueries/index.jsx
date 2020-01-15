@@ -115,7 +115,6 @@ class Queries {
 
   addComment = async newComment => {
     const res = await axios.post('/api/comment/add', newComment, {
-      headers: { 'content-type': 'multipart/form-data' },
       withCredentials: true,
     });
     return res.data;

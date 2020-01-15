@@ -39,7 +39,7 @@ class Messages extends React.Component {
     if (messages.length === 0 && !hasMore) {
       return (
         <Row type="flex" justify="center">
-          <h4>Тем нет</h4>
+          <h4>Сообщений нет</h4>
         </Row>
       );
     }

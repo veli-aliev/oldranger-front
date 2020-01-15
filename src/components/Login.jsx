@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { Form as AntForm, Button } from 'antd';
+import React, { useState, useContext } from 'react';
+import { Button, Row } from 'antd';
+import { Form, Input } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import queries from '../serverQueries';
 
 import Context from './Context';
-import MyTextInput from './formItems/MyTextInput';
+import FormItem from './formItems/FormItem';
 
 const formLayoutSchema = {
   labelCol: {
@@ -16,12 +17,6 @@ const formLayoutSchema = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 12 },
-  },
-};
-
-const tailFormItemLayout = {
-  wrapperCol: {
-    offset: 10,
   },
 };
 
@@ -48,38 +43,32 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
 
 const Login = () => {
   const [loading, changeLoadingState] = useState(false);
+  const { changeLoginState, changeUserState } = useContext(Context);
 
   return (
-    <Context.Consumer>
-      {({ changeLoginState, changeUserState }) => (
-        <Formik
-          initialValues={{
-            username: 'Prospect',
-            password: 'prospect',
-          }}
-          validationSchema={validationSchema}
-          onSubmit={login({ changeLoginState, changeUserState, changeLoadingState })}
-        >
-          {({ handleSubmit, status = {} }) => (
-            <>
-              {Object.keys(status).map(item => (
-                <p key={status[item]}>{`${item} : ${status[item]}`}</p>
-              ))}
-              <AntForm onSubmit={handleSubmit} {...formLayoutSchema}>
-                <MyTextInput label="User Name" name="username" type="text" />
-                <MyTextInput label="Password" name="password" type="text" />
+    <Formik
+      initialValues={{
+        username: 'Admin',
+        password: 'admin',
+      }}
+      validationSchema={validationSchema}
+      onSubmit={login({ changeLoginState, changeUserState, changeLoadingState })}
+    >
+      <Form {...formLayoutSchema}>
+        <FormItem label="Логин" name="username">
+          <Input name="username" />
+        </FormItem>
+        <FormItem label="Пароль" name="password">
+          <Input.Password name="password" />
+        </FormItem>
 
-                <AntForm.Item {...tailFormItemLayout}>
-                  <Button type="primary" htmlType="submit" loading={loading}>
-                    Submit
-                  </Button>
-                </AntForm.Item>
-              </AntForm>
-            </>
-          )}
-        </Formik>
-      )}
-    </Context.Consumer>
+        <Row type="flex" justify="center">
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Войти
+          </Button>
+        </Row>
+      </Form>
+    </Formik>
   );
 };
 

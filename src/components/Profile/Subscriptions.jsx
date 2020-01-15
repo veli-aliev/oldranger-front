@@ -47,7 +47,7 @@ class Subscriptions extends React.Component {
     if (topics.length === 0 && !hasMore) {
       return (
         <Row type="flex" justify="center">
-          <h4>Тем нет</h4>
+          <h4>Подписок нет</h4>
         </Row>
       );
     }

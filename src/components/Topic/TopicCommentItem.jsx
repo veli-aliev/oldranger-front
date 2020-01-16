@@ -1,17 +1,21 @@
 import React from 'react';
-import { Avatar, List, Popover } from 'antd';
+import { Avatar, Icon, List, Popover } from 'antd';
 import { parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { StyledTopicCommentItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import commentProps from './propTypes/commentProps';
 
-const TopicCommentItem = ({ comment }) => {
+const TopicCommentItem = ({ comment, handleQuoteComment }) => {
   return (
     <StyledTopicCommentItem
       id={`comment${comment.topicId}`}
-      actions={[<span>#{comment.positionInTopic + 1}</span>]}
+      actions={[
+        <Icon type="double-right" onClick={handleQuoteComment(comment)} />,
+        <span>#{comment.positionInTopic + 1}</span>,
+      ]}
     >
       <List.Item.Meta
         avatar={
@@ -41,6 +45,7 @@ const TopicCommentItem = ({ comment }) => {
 
 TopicCommentItem.propTypes = {
   comment: commentProps.isRequired,
+  handleQuoteComment: PropTypes.func.isRequired,
 };
 
 export default TopicCommentItem;

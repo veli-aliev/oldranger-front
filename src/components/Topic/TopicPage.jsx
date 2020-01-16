@@ -18,6 +18,7 @@ class TopicPage extends React.Component {
       topic: null,
       messages: [],
       page: query.get('page') || 1,
+      reply: null,
     };
     this.replyForm = React.createRef();
   }
@@ -72,8 +73,22 @@ class TopicPage extends React.Component {
     this.replyForm.focus();
   };
 
+  handleQuoteComment = comment => () => {
+    this.replyForm.focus();
+    this.replyForm.handleChange({
+      target: { value: `>>>${comment.commentText}<<<\n`, name: 'message' },
+    });
+    this.setState({
+      reply: {
+        replyDateTime: comment.commentDateTime,
+        replyNick: comment.author.nickName,
+        replyText: comment.commentText,
+      },
+    });
+  };
+
   handleSubmitComment = (text, answerID = 0, resetForm) => {
-    const { topic } = this.state;
+    const { topic, reply } = this.state;
     const { user } = this.context;
     const { history } = this.props;
     const formData = new FormData();
@@ -81,6 +96,11 @@ class TopicPage extends React.Component {
     formData.append('idTopic', topic.id);
     formData.append('idUser', user.userId);
     formData.append('answerID', answerID);
+    if (reply) {
+      formData.append('replyDateTime', reply.replyDateTime);
+      formData.append('replyNick', reply.replyNick);
+      formData.append('replyText', reply.replyText);
+    }
     return queries
       .addComment(formData)
       .then(() => {
@@ -128,7 +148,9 @@ class TopicPage extends React.Component {
               changePageHandler={this.changePageHandler}
               title={topic.name}
               messages={messages}
-              itemComponent={item => <TopicCommentItem comment={item} />}
+              itemComponent={item => (
+                <TopicCommentItem comment={item} handleQuoteComment={this.handleQuoteComment} />
+              )}
               total={topic.messageCount + 1}
               page={page}
             />

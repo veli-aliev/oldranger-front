@@ -93,7 +93,7 @@ class Queries {
   };
 
   getActualTopics = async () => {
-    const res = await axios.get('/api/sectionsandactualtopics', {
+    const res = await axios.get('/api/actualtopics', {
       withCredentials: true,
     });
     return res.data;

@@ -25,19 +25,29 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const login = ({ changeLoginState, changeUserState, changeLoadingState }) => async values => {
+const login = ({ changeLoginState, changeUserState, changeLoadingState }) => async (
+  values,
+  { setStatus }
+) => {
   changeLoadingState(true);
   const formData = new FormData();
   formData.append('username', values.username);
   formData.append('password', values.password);
 
-  await queries.logIn(formData);
-  const profile = await queries.getProfileData();
+  try {
+    await queries.logIn(formData);
+    const profile = await queries.getProfileData();
 
-  localStorage.setItem('user', JSON.stringify(profile));
+    localStorage.setItem('user', JSON.stringify(profile));
 
-  changeLoginState();
-  changeUserState(profile);
+    setStatus('');
+    changeLoginState();
+    changeUserState(profile);
+  } catch (error) {
+    if (error.response.status === 401) {
+      setStatus('Проверьте правильность ввода логина и пароля');
+    }
+  }
   changeLoadingState(false);
 };
 
@@ -54,20 +64,29 @@ const Login = () => {
       validationSchema={validationSchema}
       onSubmit={login({ changeLoginState, changeUserState, changeLoadingState })}
     >
-      <Form {...formLayoutSchema}>
-        <FormItem label="Логин" name="username">
-          <Input name="username" />
-        </FormItem>
-        <FormItem label="Пароль" name="password">
-          <Input.Password name="password" />
-        </FormItem>
+      {({ status }) => (
+        <>
+          {status && (
+            <Row type="flex" justify="center">
+              <h3>{status}</h3>
+            </Row>
+          )}
+          <Form {...formLayoutSchema}>
+            <FormItem label="Логин" name="username">
+              <Input name="username" />
+            </FormItem>
+            <FormItem label="Пароль" name="password">
+              <Input.Password name="password" />
+            </FormItem>
 
-        <Row type="flex" justify="center">
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Войти
-          </Button>
-        </Row>
-      </Form>
+            <Row type="flex" justify="center">
+              <Button type="primary" htmlType="submit" loading={loading}>
+                Войти
+              </Button>
+            </Row>
+          </Form>
+        </>
+      )}
     </Formik>
   );
 };

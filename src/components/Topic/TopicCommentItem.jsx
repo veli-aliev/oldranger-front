@@ -7,13 +7,14 @@ import TopicUserInfo from './TopicUserInfo';
 import commentProps from './propTypes/commentProps';
 import TopicPhotoList from './TopicPhotoList';
 
-const TopicCommentItem = ({ comment, handleQuoteComment }) => {
+const TopicCommentItem = ({ comment, handleQuoteComment, withActions }) => {
   const convertedImages = comment.imageComment.map(image => ({
     uid: image.id,
     url: image.img,
     name: image.id,
     status: 'done',
   }));
+
   const commentActions = [
     <span key="comment-basic-position">#{comment.positionInTopic + 1}</span>,
     <span
@@ -28,9 +29,9 @@ const TopicCommentItem = ({ comment, handleQuoteComment }) => {
   ];
 
   return (
-    <li>
+    <li id={comment.positionInTopic + 1}>
       <Comment
-        actions={commentActions}
+        actions={withActions ? commentActions : null}
         author={comment.author.nickName}
         avatar={
           <Popover
@@ -65,7 +66,13 @@ const TopicCommentItem = ({ comment, handleQuoteComment }) => {
 
 TopicCommentItem.propTypes = {
   comment: commentProps.isRequired,
-  handleQuoteComment: PropTypes.func.isRequired,
+  handleQuoteComment: PropTypes.func,
+  withActions: PropTypes.bool,
+};
+
+TopicCommentItem.defaultProps = {
+  handleQuoteComment: () => {},
+  withActions: false,
 };
 
 export default TopicCommentItem;

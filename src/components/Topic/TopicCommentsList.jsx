@@ -30,7 +30,7 @@ TopicCommentsList.propTypes = {
   messages: PropTypes.arrayOf(commentProps).isRequired,
   itemComponent: PropTypes.func.isRequired,
   title: PropTypes.string,
-  changePageHandler: PropTypes.func.isRequired,
+  changePageHandler: PropTypes.func,
   total: PropTypes.number,
   page: PropTypes.number,
 };
@@ -39,6 +39,7 @@ TopicCommentsList.defaultProps = {
   title: 'No Title',
   total: 1,
   page: 1,
+  changePageHandler: () => {},
 };
 
 export default TopicCommentsList;

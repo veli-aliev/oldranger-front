@@ -176,7 +176,11 @@ class TopicPage extends React.Component {
               title={topic.name}
               messages={messages}
               itemComponent={item => (
-                <TopicCommentItem comment={item} handleQuoteComment={this.handleQuoteComment} />
+                <TopicCommentItem
+                  comment={item}
+                  handleQuoteComment={this.handleQuoteComment}
+                  withActions
+                />
               )}
               total={topic.messageCount + 1}
               page={page}

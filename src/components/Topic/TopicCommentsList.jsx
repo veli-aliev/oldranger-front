@@ -7,6 +7,7 @@ import { StyledList, StyledTitle } from '../Main/styled';
 const TopicCommentsList = ({ messages, itemComponent, title, changePageHandler, total, page }) => {
   return messages.length > 0 ? (
     <StyledList
+      className="comment-list"
       header={<StyledTitle>{title}</StyledTitle>}
       itemLayout="horizontal"
       dataSource={messages}

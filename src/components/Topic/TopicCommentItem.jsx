@@ -1,23 +1,37 @@
 import React from 'react';
-import { Avatar, Icon, List, Popover } from 'antd';
-import { parseISO, format } from 'date-fns';
+import { Avatar, Comment, Popover, Tooltip } from 'antd';
+import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { StyledTopicCommentItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import commentProps from './propTypes/commentProps';
+import TopicPhotoList from './TopicPhotoList';
 
 const TopicCommentItem = ({ comment, handleQuoteComment }) => {
-  return (
-    <StyledTopicCommentItem
-      id={`comment${comment.topicId}`}
-      actions={[
-        <Icon type="double-right" onClick={handleQuoteComment(comment)} />,
-        <span>#{comment.positionInTopic + 1}</span>,
-      ]}
+  const convertedImages = comment.imageComment.map(image => ({
+    uid: image.id,
+    url: image.img,
+    name: image.id,
+    status: 'done',
+  }));
+  const commentActions = [
+    <span key="comment-basic-position">#{comment.positionInTopic + 1}</span>,
+    <span
+      key="comment-basic-reply-to"
+      onClick={handleQuoteComment(comment)}
+      onKeyPress={handleQuoteComment(comment)}
+      role="button"
+      tabIndex="0"
     >
-      <List.Item.Meta
+      Комментировать
+    </span>,
+  ];
+
+  return (
+    <li>
+      <Comment
+        actions={commentActions}
+        author={comment.author.nickName}
         avatar={
           <Popover
             content={
@@ -25,21 +39,27 @@ const TopicCommentItem = ({ comment, handleQuoteComment }) => {
             }
             placement="right"
           >
-            <Avatar
-              size={64}
-              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-            />
+            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
           </Popover>
         }
-        title={
-          <div>
-            <Link to={`/profile/${comment.author.nickName}`}>{comment.author.nickName}</Link>{' '}
-            {format(parseISO(comment.commentDateTime), "dd MMMM 'в' HH:mm", { locale: ru })}
-          </div>
+        content={comment.commentText}
+        datetime={
+          <Tooltip
+            title={format(parseISO(comment.commentDateTime), "dd MMMM yyyy 'в' HH:mm", {
+              locale: ru,
+            })}
+          >
+            <span>
+              {formatDistanceToNow(parseISO(comment.commentDateTime), {
+                locale: ru,
+                addSuffix: true,
+              })}
+            </span>
+          </Tooltip>
         }
-        description={comment.commentText}
       />
-    </StyledTopicCommentItem>
+      {convertedImages && <TopicPhotoList fileList={convertedImages} />}
+    </li>
   );
 };
 

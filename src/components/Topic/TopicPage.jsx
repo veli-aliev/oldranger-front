@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { Breadcrumb, message, notification, Spin } from 'antd';
+import { Avatar, Breadcrumb, message, notification, Spin, Typography } from 'antd';
+import Comment from 'antd/es/comment';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
-import { GoldIcon, ReplyFloatButton } from './styled';
+import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
 import Context from '../Context';
+
+const { Text } = Typography;
 
 class TopicPage extends React.Component {
   constructor(props) {
@@ -19,6 +22,14 @@ class TopicPage extends React.Component {
       messages: [],
       page: query.get('page') || 1,
       reply: null,
+      files: [
+        {
+          uid: '-1',
+          name: 'image.png',
+          status: 'done',
+          url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        },
+      ],
     };
     this.replyForm = React.createRef();
   }
@@ -38,6 +49,16 @@ class TopicPage extends React.Component {
     replyNick: null,
     replyText: null,
     commentText: topic.startMessage,
+    imageComment: [
+      {
+        id: '-1',
+        img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      },
+      {
+        id: '-2',
+        img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      },
+    ], // no topic images from backend at this moment
   });
 
   getTopics = page => {
@@ -75,9 +96,6 @@ class TopicPage extends React.Component {
 
   handleQuoteComment = comment => () => {
     this.replyForm.focus();
-    this.replyForm.handleChange({
-      target: { value: `>>>${comment.commentText}<<<\n`, name: 'message' },
-    });
     this.setState({
       reply: {
         replyDateTime: comment.commentDateTime,
@@ -92,9 +110,9 @@ class TopicPage extends React.Component {
     const { user } = this.context;
     const { history } = this.props;
     const formData = new FormData();
-    formData.append('text', text);
-    formData.append('idTopic', topic.id);
-    formData.append('idUser', user.userId);
+    formData.append('commentText', text);
+    formData.append('topicId', topic.id);
+    formData.append('userId', user.userId);
     formData.append('answerID', answerID);
     if (reply) {
       formData.append('replyDateTime', reply.replyDateTime);
@@ -108,6 +126,7 @@ class TopicPage extends React.Component {
         history.push(`${history.location.pathname}?page=${lastPage}`);
         this.getTopics(lastPage);
         message.success('Ваше сообщение успешно добавлено');
+        this.setState({ reply: null });
         resetForm();
       })
       .catch(() => {
@@ -123,8 +142,16 @@ class TopicPage extends React.Component {
     });
   };
 
+  handleCancelReply = () => {
+    this.setState({ reply: null });
+  };
+
+  handleAddFile = obj => {
+    this.setState({ files: obj.fileList });
+  };
+
   render() {
-    const { messages, topic, page } = this.state;
+    const { messages, topic, page, reply, files } = this.state;
     const { isLogin } = this.context;
     return (
       <div>
@@ -158,18 +185,43 @@ class TopicPage extends React.Component {
         ) : (
           <Spin />
         )}
-        <TopicReplyForm
-          replyRef={element => {
-            this.replyForm = element;
-          }}
-          handleSubmitComment={this.handleSubmitComment}
+        {reply && (
+          <TopicCommentReplyAlert
+            type="success"
+            closeText="Отменить комментирование"
+            onClose={this.handleCancelReply}
+            message={
+              <span>
+                Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>{' '}
+                <Text code>{reply.replyText}</Text>
+              </span>
+            }
+          />
+        )}
+        <Comment
+          avatar={
+            <Avatar
+              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+              alt="Han Solo"
+            />
+          }
+          content={
+            <TopicReplyForm
+              replyRef={element => {
+                this.replyForm = element;
+              }}
+              handleSubmitComment={this.handleSubmitComment}
+              handleAddFile={this.handleAddFile}
+              files={files}
+            />
+          }
         />
         <ReplyFloatButton
           type="primary"
           icon="message"
           onClick={isLogin ? this.replyButtonHandler : this.openNotification}
         >
-          Reply
+          Ответить
         </ReplyFloatButton>
       </div>
     );

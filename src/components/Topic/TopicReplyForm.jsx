@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
 import { Button, Input, Form as AntForm } from 'antd';
 import PropTypes from 'prop-types';
-import { Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
-import { StyledTopicReplyForm, TopicReplyWarning } from './styled';
+import { TopicReplyWarning } from './styled';
 import Context from '../Context';
+import TopicPhotoList from './TopicPhotoList';
+import fileProps from './propTypes/fileProps';
 
 const validationSchema = Yup.object({
   message: Yup.string()
@@ -13,7 +15,7 @@ const validationSchema = Yup.object({
     .max(500000, 'Слишком длинное сообщение').isRequired,
 });
 
-const TopicReplyForm = ({ replyRef, handleSubmitComment }) => {
+const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files }) => {
   const { isLogin } = useContext(Context);
   return isLogin ? (
     <Formik
@@ -27,7 +29,7 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment }) => {
     >
       {({ handleSubmit, handleChange, errors, touched, values, handleBlur }) => {
         return (
-          <StyledTopicReplyForm onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit}>
             <AntForm.Item
               hasFeedback={!!touched.message && !!errors.message}
               validateStatus={touched.message && errors.message ? 'error' : 'success'}
@@ -42,15 +44,24 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment }) => {
                 rows={4}
                 ref={replyRef}
               />
+            </AntForm.Item>
+            <AntForm.Item>
+              <TopicPhotoList
+                handleChangePicturesState={handleAddFile}
+                fileList={files}
+                canUpload
+              />
+            </AntForm.Item>
+            <AntForm.Item>
               <Button
                 type="primary"
                 htmlType="submit"
                 disabled={!!touched.message && !!errors.message}
               >
-                Ответить
+                Отправить
               </Button>
             </AntForm.Item>
-          </StyledTopicReplyForm>
+          </Form>
         );
       }}
     </Formik>
@@ -64,6 +75,8 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment }) => {
 TopicReplyForm.propTypes = {
   replyRef: PropTypes.func.isRequired,
   handleSubmitComment: PropTypes.func.isRequired,
+  handleAddFile: PropTypes.func.isRequired,
+  files: PropTypes.arrayOf(fileProps).isRequired,
 };
 
 export default TopicReplyForm;

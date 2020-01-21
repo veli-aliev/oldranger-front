@@ -17,17 +17,10 @@ class MainPage extends React.Component {
 
   componentDidMount() {
     queries.getActualTopics().then(actualTopics => {
-      const badApiAdaptationTopicsFixMePlease = actualTopics[0].topics.map(topic => ({
-        topic,
-        totalMessages: 0,
-        isSubscribed: false,
-        hasNewMessages: false,
-        newMessagesCount: 0,
-      }));
-      this.setState({ actualTopics: badApiAdaptationTopicsFixMePlease });
-      queries.getAllSections().then(sections => {
-        this.setState({ rootSections: sections });
-      });
+      this.setState({ actualTopics });
+    });
+    queries.getAllSections().then(sections => {
+      this.setState({ rootSections: sections });
     });
   }
 

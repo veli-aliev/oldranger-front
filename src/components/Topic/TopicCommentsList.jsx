@@ -1,41 +1,45 @@
 import React from 'react';
 import { Spin } from 'antd';
 import PropTypes from 'prop-types';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import commentProps from './propTypes/commentProps';
 import { StyledList, StyledTitle } from '../Main/styled';
 
-const TopicCommentsList = ({ messages, hasMore, fetchMessages, itemComponent, title }) => {
+const TopicCommentsList = ({ messages, itemComponent, title, changePageHandler, total, page }) => {
   return messages.length > 0 ? (
-    <InfiniteScroll
-      dataLength={messages.length}
-      next={fetchMessages}
-      hasMore={hasMore}
-      loader={<Spin />}
-    >
-      <StyledList
-        header={title.length > 0 && <StyledTitle>{title}</StyledTitle>}
-        itemLayout="horizontal"
-        dataSource={messages}
-        renderItem={itemComponent}
-      />
-    </InfiniteScroll>
+    <StyledList
+      className="comment-list"
+      header={<StyledTitle>{title}</StyledTitle>}
+      itemLayout="horizontal"
+      dataSource={messages}
+      renderItem={itemComponent}
+      pagination={{
+        current: page,
+        onChange: currentPage => {
+          changePageHandler(currentPage);
+        },
+        pageSize: 10,
+        total,
+      }}
+    />
   ) : (
     <Spin />
   );
 };
 
 TopicCommentsList.propTypes = {
-  fetchMessages: PropTypes.func.isRequired,
   messages: PropTypes.arrayOf(commentProps).isRequired,
-  hasMore: PropTypes.bool,
   itemComponent: PropTypes.func.isRequired,
   title: PropTypes.string,
+  changePageHandler: PropTypes.func,
+  total: PropTypes.number,
+  page: PropTypes.number,
 };
 
 TopicCommentsList.defaultProps = {
-  hasMore: false,
   title: 'No Title',
+  total: 1,
+  page: 1,
+  changePageHandler: () => {},
 };
 
 export default TopicCommentsList;

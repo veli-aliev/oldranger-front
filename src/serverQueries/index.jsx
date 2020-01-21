@@ -51,6 +51,13 @@ class Queries {
     return res.data;
   };
 
+  getTopic = async (topicId, offset, limit) => {
+    const res = await axios.get(`/api/topic/${topicId}?pos=${offset}&limit=${limit}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   getProfileSubscriptions = async page => {
     const res = await axios.get(`/api/subscriptions/?page=${page}`, {
       withCredentials: true,
@@ -66,13 +73,6 @@ class Queries {
       withCredentials: true,
     });
     return { ...profile, id };
-  };
-
-  getTopic = async (topicId, page = 0) => {
-    const res = await axios.get(`/api/topic/${topicId}?page=${page}`, {
-      withCredentials: true,
-    });
-    return res.data;
   };
 
   getSubsectionTopics = async (subsectionId, page = 0) => {
@@ -106,9 +106,15 @@ class Queries {
     return res.data;
   };
 
-  // eslint-disable-next-line no-unused-vars
-  searchByTopics = async (searchQuery, page) => {
+  searchByTopics = async searchQuery => {
     const res = await axios.get(`/api/searchTopics?finderTag=${searchQuery}&node=0&nodeValue=0`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  addComment = async newComment => {
+    const res = await axios.post('/api/comment/add', newComment, {
       withCredentials: true,
     });
     return res.data;
@@ -137,6 +143,14 @@ class Queries {
       withCredentials: true,
     });
     return res.data;
+  };
+
+  uploadPhoto = async photo => {
+    // пока бекенд не готов, загружаем фото в первый и единственный альбом
+    const res = await axios.post('/api/photos/1', photo, {
+      withCredentials: true,
+    });
+    return res.data.small;
   };
 }
 

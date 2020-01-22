@@ -13,7 +13,7 @@ import {
 import { dateToDateDistance } from '../../utils/index';
 
 const Article = props => {
-  const { articleInfo } = props;;
+  const { articleInfo } = props;
   return (
     <StyledArticle>
       <StyledTitle>{articleInfo.title}</StyledTitle>

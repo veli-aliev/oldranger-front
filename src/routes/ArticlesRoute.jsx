@@ -9,7 +9,7 @@ const ArticlesRoute = () => {
       <Route exact path="/articles">
         <Articles />
       </Route>
-      <Route exact path="/articles/:ArticleTag">
+      <Route exact path="/articles/:articleTag">
         <ArticlesByTag />
       </Route>
     </>

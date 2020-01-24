@@ -9,6 +9,7 @@ import {
   TopicRoute,
   SubsectionRoute,
   SearchRoute,
+  ArticlesRoute,
 } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
@@ -62,6 +63,7 @@ class App extends React.Component {
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />
+        <ArticlesRoute />
       </Context.Provider>
     );
   }

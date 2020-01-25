@@ -17,10 +17,10 @@ class ArticlesByTag extends React.Component {
   componentDidMount() {
     const {
       match: {
-        params: { ArticleTag },
+        params: { articleTag },
       },
     } = this.props;
-    queries.getArticlesByTag(ArticleTag).then(el => {
+    queries.getArticlesByTag(articleTag).then(el => {
       this.setState({ articles: el.content, isEmpty: el.empty });
     });
   }
@@ -32,11 +32,11 @@ class ArticlesByTag extends React.Component {
       <>
         {articles.length === 0 ? LoadOrNotFound : null}
         {articles
-          .filter(el => el.hideToAnon !== true)
+          // .filter(el => el.hideToAnon !== true)
           .reverse()
-          .map(el => (
-            <Article key={el.id} articleInfo={el} />
-          ))}
+          .map(el => {
+            return <Article key={el.id} articleInfo={el} />;
+          })}
       </>
     );
   }

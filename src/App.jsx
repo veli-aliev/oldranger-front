@@ -63,7 +63,7 @@ class App extends React.Component {
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />
-        <ArticlesRoute />
+        <ArticlesRoute isLogin={isLogin} />
       </Context.Provider>
     );
   }

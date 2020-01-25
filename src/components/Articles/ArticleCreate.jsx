@@ -4,8 +4,9 @@ import { Form, Input } from 'formik-antd';
 import { FieldArray, Formik } from 'formik';
 import * as Yup from 'yup';
 
+import { useHistory } from 'react-router-dom';
 import FormItem from '../formItems/FormItem';
-import { StyledInput } from './styled/index';
+import { StyledInput, Row as StyledRow } from './styled/index';
 import queries from '../../serverQueries/index';
 
 const formLayoutSchema = {
@@ -26,26 +27,33 @@ const validationSchema = Yup.object({
 });
 
 const articleCreate = ({ changeLoadingState }) => async (values, { setStatus }) => {
-  const filteredValues = {
-    ...values,
-    tagsId: values.tagsId.filter(tag => tag.trim() !== ''),
-  };
   changeLoadingState(true);
-
-  try {
-    queries.createArticle(filteredValues);
-    setStatus('');
-  } catch (error) {
-    if (error.response.status === 400) {
-      setStatus('Что-то пошло не так');
-    }
+  setStatus('');
+  const res = await queries.createArticle(values);
+  if (res.status === 204) {
+    setStatus('Нет тэга с таким id');
   }
+  if (res.status === 400) {
+    setStatus('Что-то пошло не так');
+  }
+  if (res.status === 200) {
+    changeLoadingState(false);
+    return true;
+  }
+
   changeLoadingState(false);
-  return 'ku';
+  return false;
 };
 
 const ArticleCreate = () => {
   const [loading, changeLoadingState] = useState(false);
+  const history = useHistory();
+  const serverRequest = () => {
+    const res = articleCreate({ changeLoadingState });
+    if (res) {
+      history.push('/articles');
+    }
+  };
 
   return (
     <Formik
@@ -56,9 +64,9 @@ const ArticleCreate = () => {
         isHideToAnon: false,
       }}
       validationSchema={validationSchema}
-      onSubmit={articleCreate({ changeLoadingState })}
+      onSubmit={serverRequest}
     >
-      {({ status, values, handleChange, errors }) => {
+      {({ status, values, handleChange }) => {
         return (
           <>
             {status && (
@@ -80,10 +88,20 @@ const ArticleCreate = () => {
                     <Row type="flex" justify="center">
                       {values.tagsId.map((tag, index) => {
                         const newIndex = index;
-                        console.log(errors);
                         return (
-                          <FormItem key={`tag-${newIndex}`} label="" name={`tagsId.${index}`}>
-                            <StyledInput name={`tagsId.${index}`} />
+                          <FormItem key={`tag-${newIndex}`} name={`tagsId.${index}`}>
+                            <>
+                              <StyledRow>
+                                <StyledInput name={`tagsId.${index}`} />
+                                {values.tagsId.length > 1 ? (
+                                  <Button
+                                    type="button"
+                                    icon="delete"
+                                    onClick={() => arrayHelpers.remove(index)}
+                                  />
+                                ) : null}
+                              </StyledRow>
+                            </>
                           </FormItem>
                         );
                       })}

@@ -139,9 +139,13 @@ class Queries {
   };
 
   sendInviteCode = async values => {
-    const res = await axios.post('/api/token/invite/bymail', values, {
-      withCredentials: true,
-    });
+    const res = await axios.post(
+      `/api/token/invite/bymail?mail=${values.mail}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
     return res.data;
   };
 

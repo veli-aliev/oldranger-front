@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'antd';
 
-import Context from '../Context';
+import Context from '../UserContext';
 
 const StyledHeader = styled.div`
   display: flex;

@@ -11,7 +11,7 @@ import {
   SearchRoute,
   ArticlesRoute,
 } from './routes';
-import Context from './components/Context';
+import UserContext from './components/UserContext';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
@@ -47,7 +47,7 @@ class App extends React.Component {
     const { isLogin } = this.state;
 
     return (
-      <Context.Provider
+      <UserContext.Provider
         value={{
           changeUserState: this.changeUserState,
           changeLoginState: this.changeLoginState,
@@ -64,7 +64,7 @@ class App extends React.Component {
         <SubsectionRoute />
         <SearchRoute />
         <ArticlesRoute isLogin={isLogin} />
-      </Context.Provider>
+      </UserContext.Provider>
     );
   }
 }

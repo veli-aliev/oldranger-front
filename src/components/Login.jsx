@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 
 import queries from '../serverQueries';
 
-import Context from './Context';
+import Context from './UserContext';
 import FormItem from './formItems/FormItem';
 
 const formLayoutSchema = {

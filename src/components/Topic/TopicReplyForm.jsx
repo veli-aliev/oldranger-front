@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { TopicReplyWarning } from './styled';
-import Context from '../Context';
+import Context from '../UserContext';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
 

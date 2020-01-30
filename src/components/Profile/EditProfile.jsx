@@ -11,7 +11,7 @@ import 'moment/locale/ru';
 
 import queries from '../../serverQueries';
 
-import Context from '../Context';
+import Context from '../UserContext';
 import FormItem from '../formItems/FormItem';
 import PhoneInput from '../formItems/PhoneInput';
 

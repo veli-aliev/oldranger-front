@@ -8,7 +8,7 @@ import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
-import Context from '../Context';
+import Context from '../UserContext';
 
 const { Text } = Typography;
 

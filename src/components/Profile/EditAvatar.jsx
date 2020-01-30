@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import queries from '../../serverQueries';
 
-import Context from '../Context';
+import Context from '../UserContext';
 
 const StyledWrapper = styled.div`
   > span {

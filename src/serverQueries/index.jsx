@@ -153,7 +153,8 @@ class Queries {
     const res = await axios.post('/api/token/confirm/bymail', values, {
       withCredentials: true,
     });
-    return res.data;
+    console.log(res);
+    return res;
   };
 
   uploadPhoto = async photo => {

@@ -45,6 +45,7 @@ const Registration = () => {
     changeLoadingState(true);
     setStatus('');
     const res = await queries.registrationUser({ token, ...values });
+    console.log(res);
     if (res === 1) {
       setStatus('Письмо с подтверждением отправлено на ваш email');
     } else {

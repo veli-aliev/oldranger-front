@@ -149,12 +149,22 @@ class Queries {
     return res.data;
   };
 
+  registrationUserAdd = async key => {
+    const res = await axios.post(
+      `/api/registration?key=${key}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  };
+
   registrationUser = async values => {
     const res = await axios.post('/api/token/confirm/bymail', values, {
       withCredentials: true,
     });
-    console.log(res);
-    return res;
+    return res.data;
   };
 
   uploadPhoto = async photo => {

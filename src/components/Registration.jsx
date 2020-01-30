@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Button, Row, Divider } from 'antd';
 import { Form, Input } from 'formik-antd';
 import { Formik } from 'formik';
@@ -39,13 +39,13 @@ const validationSchema = Yup.object({
 
 const Registration = () => {
   const [loading, changeLoadingState] = useState(false);
-  const { key } = useParams();
+  const query = new URLSearchParams(useLocation().search);
+  const key = query.get('key');
 
   const register = token => async (values, { setStatus }) => {
     changeLoadingState(true);
     setStatus('');
-    const res = await queries.registrationUser({ token, ...values });
-    console.log(res);
+    const res = await queries.registrationUser({ key: token, ...values });
     if (res === 1) {
       setStatus('Письмо с подтверждением отправлено на ваш email');
     } else {

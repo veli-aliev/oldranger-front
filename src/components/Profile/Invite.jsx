@@ -75,7 +75,7 @@ class Invite extends React.Component {
             <h4>Скопируйте ссылку и отправьте другу</h4>
           </Row>
           <Row type="flex" justify="center">
-            <Input value={`http://localhost:3000/registration/${token}`} />
+            <Input value={`http://localhost:3000/invite?key=${token}`} />
           </Row>
         </StyledWrapper>
 

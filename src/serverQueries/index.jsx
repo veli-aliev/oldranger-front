@@ -30,6 +30,17 @@ class Queries {
     return res.data;
   };
 
+  createArticle = async ({ title, text, tagsId, isHideToAnon }) => {
+    const tags = tagsId.length > 0 ? `&tagsId=${tagsId.join('&tagsId=')}` : '';
+    const res = await axios.post(
+      `/api/article/add?title=${title}&text=${text}&isHideToAnon=${isHideToAnon.toString()}${tags}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res;
+  };
+
   getArticlesByTag = async tag => {
     const res = await axios.get(`/api/article/tag?tag_id=${tag}`, {
       withCredentials: true,

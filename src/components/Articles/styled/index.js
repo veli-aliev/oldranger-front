@@ -1,4 +1,18 @@
 import styled from 'styled-components';
+import { InputNumber } from 'formik-antd';
+
+export const Row = styled.div`
+  display: flex;
+  justify-content: center;
+  .ant-form-item-children {
+    display: flex;
+  }
+`;
+
+export const StyledInput = styled(InputNumber)`
+  width: 200px;
+  margin: 0 5px 5px 0;
+`;
 
 export const StyledDate = styled.span`
   display: block;

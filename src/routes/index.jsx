@@ -5,6 +5,7 @@ import TopicRoute from './TopicRoute';
 import SearchRoute from './SearchRoute';
 import SubsectionRoute from './SubsectionRoute';
 import ArticlesRoute from './ArticlesRoute';
+import ChatRoute from './ChatRoute';
 
 export {
   PrivateRoute,
@@ -14,4 +15,5 @@ export {
   SearchRoute,
   SubsectionRoute,
   ArticlesRoute,
+  ChatRoute,
 };

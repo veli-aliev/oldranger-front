@@ -39,6 +39,9 @@ const Header = () => {
             <Button type="primary">
               <Link to="/">Home</Link>
             </Button>
+            <Button type="primary">
+              <Link to="/chat">Chat</Link>
+            </Button>
           </LeftWrapper>
           <RightWrapper>
             {isLogin ? (

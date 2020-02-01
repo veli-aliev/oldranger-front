@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import queries from '../../serverQueries';
 
-import Context from '../UserContext';
+import UserContext from '../UserContext';
 
 const StyledWrapper = styled.div`
   > span {
@@ -38,7 +38,7 @@ const submitForm = async (values, { changeLoadingState, changeUserState }) => {
 
 const EditAvatar = () => {
   const [isLoading, changeLoadingState] = useState(false);
-  const { user, changeUserState } = useContext(Context);
+  const { user, changeUserState } = useContext(UserContext);
 
   return (
     <Formik

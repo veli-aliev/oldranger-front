@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'antd';
 
-import Context from '../UserContext';
+import UserContext from '../UserContext';
 
 const StyledHeader = styled.div`
   display: flex;
@@ -32,7 +32,7 @@ const RightWrapper = styled.div`
 
 const Header = () => {
   return (
-    <Context.Consumer>
+    <UserContext.Consumer>
       {({ isLogin, logOut }) => (
         <StyledHeader>
           <LeftWrapper>
@@ -58,7 +58,7 @@ const Header = () => {
           </RightWrapper>
         </StyledHeader>
       )}
-    </Context.Consumer>
+    </UserContext.Consumer>
   );
 };
 

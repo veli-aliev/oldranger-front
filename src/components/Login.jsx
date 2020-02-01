@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 
 import queries from '../serverQueries';
 
-import Context from './UserContext';
+import UserContext from './UserContext';
 import FormItem from './formItems/FormItem';
 
 const formLayoutSchema = {
@@ -53,7 +53,7 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
 
 const Login = () => {
   const [loading, changeLoadingState] = useState(false);
-  const { changeLoginState, changeUserState } = useContext(Context);
+  const { changeLoginState, changeUserState } = useContext(UserContext);
 
   return (
     <Formik

@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { TopicReplyWarning } from './styled';
-import Context from '../UserContext';
+import UserContext from '../UserContext';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
 
@@ -16,7 +16,7 @@ const validationSchema = Yup.object({
 });
 
 const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files }) => {
-  const { isLogin } = useContext(Context);
+  const { isLogin } = useContext(UserContext);
   return isLogin ? (
     <Formik
       initialValues={{

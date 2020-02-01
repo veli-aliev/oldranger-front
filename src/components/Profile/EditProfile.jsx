@@ -11,7 +11,7 @@ import 'moment/locale/ru';
 
 import queries from '../../serverQueries';
 
-import Context from '../UserContext';
+import UserContext from '../UserContext';
 import FormItem from '../formItems/FormItem';
 import PhoneInput from '../formItems/PhoneInput';
 
@@ -80,7 +80,7 @@ const submitForm = (history, { changeLoadingState, changeUserState }) => async v
 
 const EditProfile = () => {
   const [loading, changeLoadingState] = useState(false);
-  const { user, changeUserState } = useContext(Context);
+  const { user, changeUserState } = useContext(UserContext);
   const history = useHistory();
 
   return (

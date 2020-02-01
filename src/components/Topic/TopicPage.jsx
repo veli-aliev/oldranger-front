@@ -8,7 +8,7 @@ import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
-import Context from '../UserContext';
+import UserContext from '../UserContext';
 
 const { Text } = Typography;
 
@@ -247,6 +247,6 @@ TopicPage.propTypes = {
   }).isRequired,
 };
 
-TopicPage.contextType = Context;
+TopicPage.contextType = UserContext;
 
 export default withRouter(TopicPage);

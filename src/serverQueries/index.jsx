@@ -170,6 +170,57 @@ class Queries {
     });
     return res.data.small;
   };
-}
 
+  GetAlboms = async () => {
+    const res = await axios.get('/api/albums', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  CreateNewAlbom = async data => {
+    const res = await axios.post(`/api/albums?albumTitle=${data}`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  DeleteAlbom = async id => {
+    const res = await axios.delete(`/api/albums/${id}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  GetPhotosFromAlbom = async id => {
+    const res = await axios.get(`/api/albums/getPhotos/${id}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  AddPhotosInAlbom = async (albomId, photosArr) => {
+    const res = await axios.post(`/api/photos/${albomId}`, photosArr, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  DeletePhotoFromAlbom = async photoId => {
+    const res = await axios.delete(`/api/photos/${photoId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  testPhotoSmth = async () =>{
+    console.log('haeujha')
+    const res = await axios.get('/api/photos/testPhoto', {
+      withCredentials: true,
+    });
+
+    console.log(res);
+    return res.data;
+  }
+}
 export default new Queries();

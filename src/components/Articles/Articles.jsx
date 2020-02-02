@@ -1,7 +1,15 @@
 import React from 'react';
+import TagsMenu from './TagsMenu/TagsMenu';
+import { Container } from './styled/index';
+import ArticlesByTag from './ArticlesByTag';
 
 const Articles = () => {
-  return <h1>hi</h1>;
+  return (
+    <Container>
+      <TagsMenu />
+      <ArticlesByTag tag="1" />
+    </Container>
+  );
 };
 
 export default Articles;

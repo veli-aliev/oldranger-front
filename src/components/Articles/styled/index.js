@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
 
+export const Container = styled.div`
+  display: flex;
+  border: 1px solid red;
+`;
+
 export const Row = styled.div`
   display: flex;
   justify-content: center;

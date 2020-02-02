@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spin } from 'antd';
+import { Row, Spin } from 'antd';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
@@ -20,7 +20,9 @@ class ArticlesByTag extends React.Component {
         params: { articleTag },
       },
     } = this.props;
+    // const { tag } = this.props;
     queries.getArticlesByTag(articleTag).then(el => {
+      // queries.getArticlesByTag(tag).then(el => {
       this.setState({ articles: el.content, isEmpty: el.empty });
     });
   }
@@ -31,12 +33,14 @@ class ArticlesByTag extends React.Component {
     return (
       <>
         {articles.length === 0 ? LoadOrNotFound : null}
-        {articles
-          // .filter(el => el.hideToAnon !== true)
-          .reverse()
-          .map(el => {
-            return <Article key={el.id} articleInfo={el} />;
-          })}
+        <Row justify="center">
+          {articles
+            // .filter(el => el.hideToAnon !== true)
+            .reverse()
+            .map(el => {
+              return <Article key={el.id} articleInfo={el} />;
+            })}
+        </Row>
       </>
     );
   }

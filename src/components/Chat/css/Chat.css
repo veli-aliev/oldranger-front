@@ -123,11 +123,14 @@ ul li {
 .user {
   border: none;
   padding: 5px;
-  color: #333;
 }
 
 .user:hover {
   color: #128ff2;
+}
+
+.user-link {
+  color: #333;
 }
 
 .form-control {
@@ -153,6 +156,14 @@ ul li {
   border-bottom: 1px solid #f4f4f4;
   padding: 10px 20px 10px 68px;
   color: black;
+}
+
+.event-message {
+  text-align: center;
+}
+
+.toMe {
+  border-bottom: 1px solid#128ff2;
 }
 
 .message:hover {
@@ -182,6 +193,30 @@ ul li {
 .message-image {
   margin: 10px 0;
   max-height: 250px;
+}
+
+.message-text {
+  margin: 0;
+}
+
+.full-messages {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: #fff;
+  border: 1px solid #128ff2;
+  margin: 20px auto;
+  margin-left: calc(50% - 20px);
+  cursor: pointer;
+}
+
+.arrow-up {
+  border: solid #128ff2;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(-135deg);
 }
 
 /* form */

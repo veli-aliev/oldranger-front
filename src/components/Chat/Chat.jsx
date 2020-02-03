@@ -5,16 +5,19 @@ import { Input, Button } from 'antd';
 import './css/Chat.css';
 import axios from 'axios';
 
-const url = 'http://localhost:8888/api';
+const url = 'http://localhost:8888';
 
 class Chat extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { message: '', image: null, replyTo: null };
+    this.state = { message: '', image: null, imagePath: '', replyTo: null, isFull: false };
   }
 
   componentDidUpdate = () => {
+    console.log('updated');
+    const messageArea = document.querySelector('.message-list');
     const lastMessage = document.querySelector('.message-list li:last-child');
+    messageArea.scrollTop = lastMessage.offsetTop;
   };
 
   handleChangeMessage = e => {
@@ -26,7 +29,7 @@ class Chat extends React.Component {
 
     const form = document.querySelector('.message-form');
     const formData = new FormData(form);
-    const { data } = await axios.post(`${url}/chat/image`, formData, {
+    const { data } = await axios.post(`${url}/api/chat/image`, formData, {
       headers: { 'content-type': 'multipart/form-data' },
       withCredentials: true,
     });
@@ -41,26 +44,32 @@ class Chat extends React.Component {
     this.setState({ message: '', image: null, imagePath: '' });
   };
 
+  handleShowFull = e => {
+    e.preventDefault();
+    this.setState({ isFull: true });
+  };
+
   drawMessage = msg => {
+    const { user } = this.props;
     if (msg.type === 'MESSAGE') {
       return (
         <li
-          className="message"
+          className={`message ${user.nickName === msg.replyTo ? 'toMe' : ''}`}
           key={_.uniqueId()}
           onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
         >
-          <img
-            alt="avatar"
-            className="message-avatar"
-            src={`http://localhost:8888/img/${msg.senderAvatar}`}
-          />
+          <img alt="avatar" className="message-avatar" src={`${url}/img/${msg.senderAvatar}`} />
           <div>
             <div className="message-author">{msg.sender}</div>
-            <img
-              alt="picture"
-              className="message-image"
-              src={`http://localhost:8888/img/chat/${msg.thumbnailImg}`}
-            />
+            {msg.originalImg ? (
+              <img
+                alt="picture"
+                className="message-image"
+                src={`${url}/img/chat/${msg.thumbnailImg}`}
+              />
+            ) : (
+              ''
+            )}
             <p className="message-text">{msg.text}</p>
           </div>
           <span className="message-date">{msg.messageDate}</span>
@@ -77,7 +86,7 @@ class Chat extends React.Component {
 
   render() {
     const { handleDisconnect, messages, usersOnline } = this.props;
-    console.log(this.state.replyTo);
+    const { message, imagePath, isFull } = this.state;
     return (
       <section className="chat">
         <div className="chat-container">
@@ -85,23 +94,33 @@ class Chat extends React.Component {
             <h2>Chat</h2>
             <button className="button-close" onClick={handleDisconnect} />
           </header>
-
-          {/* <div className="connecting">Подключаюсь...</div> */}
-
           <div className="chat-main">
             <div className="user-area">
               <span className="indicator-online" />
               <h3 className="user-list-title">Online:</h3>
               <ul className="user-list">
-                {Object.keys(usersOnline).map((user, index) => (
+                {Object.entries(usersOnline).map(user => (
                   <li className="user" key={user}>
-                    <a href={`${url}/profile/${index}`}>{user}</a>
+                    <a className="user-link" href={`/profile/${user[1]}`}>
+                      {user[0]}
+                    </a>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="message-area">
-              <ul className="message-list">{messages.map(msg => this.drawMessage(msg))}</ul>
+              <ul className="message-list">
+                {isFull ? (
+                  messages.map(msg => this.drawMessage(msg))
+                ) : (
+                  <>
+                    <button className="full-messages" onClick={this.handleShowFull}>
+                      <span className="arrow-up" />
+                    </button>
+                    {messages.slice(-19).map(msg => this.drawMessage(msg))}
+                  </>
+                )}
+              </ul>
             </div>
           </div>
 
@@ -110,7 +129,7 @@ class Chat extends React.Component {
               type="text"
               placeholder="Введите сообщение..."
               className="message-input"
-              value={this.state.message}
+              value={message}
               onChange={this.handleChangeMessage}
             />
             <div className="form-buttons">
@@ -119,7 +138,7 @@ class Chat extends React.Component {
                 name="file-input"
                 className="file-input"
                 onChange={this.handleChangeFile}
-                value={this.state.imagePath}
+                value={imagePath}
               />
               <Button type="primary" className="send-button" onClick={this.handleSendMessage}>
                 Отправить

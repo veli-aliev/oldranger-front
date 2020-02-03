@@ -8,7 +8,6 @@ import SockJS from 'sockjs-client';
 
 const url = '//localhost:8888/api/';
 const wsUrl = 'http://localhost:8888/';
-let stompClient = null;
 
 class ChatAuth extends React.Component {
   constructor(props) {
@@ -20,48 +19,50 @@ class ChatAuth extends React.Component {
   componentDidMount = async () => {
     this.getMessages();
     this.getUsersOnline();
+    this.stompClient = null;
+  };
+
+  componentWillUnmount = () => {
+    this.disconnect();
   };
 
   connect = async e => {
     e.preventDefault();
-    console.log('connect');
     const { data } = await axios.get(`${url}chat/isForbidden`, { withCredentials: true });
     if (data) {
       // banned user
     } else {
-      // this.setState({ isJoin: true });
       const { data } = await axios.get(`${url}chat/user`, { withCredentials: true });
-      console.log(data);
       if (data.username) {
         const socket = new SockJS(`http://localhost:8888/ws`, null, {});
-        stompClient = Stomp.over(socket);
-        // stompClient.connect('Prospect', 'prospect', this.onConnected, this.onError);
-        stompClient.connect({}, this.onConnected, this.onError);
+        this.stompClient = Stomp.over(socket);
+        this.stompClient.connect({}, this.onConnected, this.onError);
       }
     }
   };
 
-  disconnect = e => {
-    e.preventDefault();
+  disconnect = () => {
     const { user } = this.state;
-    stompClient.send(
-      `${wsUrl}chat/delUser`,
-      {},
-      JSON.stringify({ sender: user.username, type: 'LEAVE' })
-    );
-    stompClient.unsubcribe(`${wsUrl}channel/public`);
-    stompClient.disconnect();
+    if (this.stompClient) {
+      this.stompClient.send(
+        `chat/delUser`,
+        {},
+        JSON.stringify({ sender: user.nickName, type: 'LEAVE' })
+      );
+      this.stompClient.unsubscribe(`${wsUrl}channel/public`);
+      this.stompClient.disconnect();
+    }
     this.setState({ isJoin: false });
   };
 
   onConnected = () => {
     this.setState({ error: null, isJoin: true });
-    stompClient.subcribe(`${wsUrl}channel/public`, this.onMessageRecieved, {});
+    this.stompClient.subscribe(`/channel/public`, this.onMessageRecieved, {});
     const { user } = this.state;
-    stompClient.send(
-      `${wsUrl}chat/addUser`,
+    this.stompClient.send(
+      `/chat/addUser`,
       {},
-      JSON.stringify({ sender: user.username, type: 'JOIN' })
+      JSON.stringify({ sender: user.nickName, type: 'JOIN' })
     );
     this.getMessages();
   };
@@ -82,32 +83,32 @@ class ChatAuth extends React.Component {
 
   getMessages = async (page = 0) => {
     try {
-      const response = await axios.get(`${url}chat/messages?page=${page}`);
-      this.setState({ messages: response.data.reverse() });
+      const { data } = await axios.get(`${url}chat/messages?page=${page}`);
+      this.setState({ messages: data.slice().reverse() });
     } catch (error) {
       this.setState({ error });
     }
   };
 
   sendMessage = (msg, img, replyTo = null) => {
+    console.log(msg, img);
     if (msg || img) {
       const { user } = this.props;
       const message = {
         sender: user.nickName,
         text: msg,
         senderAvatar: user.avatar,
-        originalImg: img.originalImg,
-        thumbnailImg: img.thumbnailImg,
+        originalImg: img ? img.originalImg : null,
+        thumbnailImg: img ? img.thumbnailImg : null,
         replyTo,
         type: 'MESSAGE',
       };
-      stompClient.send(`${wsUrl}chat/sendMessage`, {}, JSON.stringify(message));
+      this.stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
     }
   };
 
   onMessageRecieved = payload => {
     const message = JSON.parse(payload.body);
-    console.log(message);
     const { messages } = this.state;
     this.setState({ messages: [...messages, message] });
     this.getUsersOnline();
@@ -115,6 +116,7 @@ class ChatAuth extends React.Component {
 
   render() {
     const { isJoin, messages, usersOnline } = this.state;
+    const { user } = this.props;
     return !isJoin ? (
       <Greeting handleConnect={this.connect} />
     ) : (
@@ -123,6 +125,7 @@ class ChatAuth extends React.Component {
         usersOnline={usersOnline}
         messages={messages}
         sendMessage={this.sendMessage}
+        user={user}
       />
     );
   }

@@ -212,15 +212,5 @@ class Queries {
     });
     return res.data;
   };
-
-  testPhotoSmth = async () =>{
-    console.log('haeujha')
-    const res = await axios.get('/api/photos/testPhoto', {
-      withCredentials: true,
-    });
-
-    console.log(res);
-    return res.data;
-  }
 }
 export default new Queries();

@@ -1,20 +1,38 @@
 import React from 'react';
-import { Row, Button, Card } from 'antd';
+import { Row, Button, Icon } from 'antd';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
 
-const StyledButton = styled(Button)`
-  width: 100%;
-  .deleteButton {
-    margin-top: 10px;
+const StyledAlbomCard = styled.div`
+  width: 300px
+  position:relative;
+  height: 150px;
+  margin: 3px;
+  background-size: cover;
+  background-image: ${props => `url(${props.background}) `}; 
+  .StyledAlbomCard-albomTitle{
+    word-break: break-all;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  };
+  .StyledAlbomCard-photoCount{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  };
+  .Alboms-deletePhotoButton{
+    display:none;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
-`;
-
-const StyledAlbomCard = styled(Card)`
-  width: 30%;
-  margin: 1%;
+   &:hover {
+    .Alboms-deletePhotoButton {
+      display: block;
+    }
 `;
 
 const StyledAlbomWrapper = styled.div`
@@ -62,7 +80,8 @@ class Alboms extends React.Component {
     }
   };
 
-  DeleteAlbom = albom => async () => {
+  DeleteAlbom = albom => async event => {
+    event.stopPropagation();
     const { alboms } = this.state;
     try {
       await queries.DeleteAlbom(albom.id);
@@ -115,17 +134,22 @@ class Alboms extends React.Component {
         <StyledAlbomWrapper>
           {alboms.map(albom => (
             <StyledAlbomCard
-              title={albom.title}
+              onClick={this.OpenAlbom(albom)}
               key={albom.id}
-              extra={
-                <StyledButton type="danger" onClick={this.DeleteAlbom(albom)}>
-                  Удалить альбом
-                </StyledButton>
+              background={
+                albom.originalThumbImage ? `${albom.originalThumbImage}` : `/defaultAlbomTheme.jpg`
               }
             >
-              <StyledButton type="primary" onClick={this.OpenAlbom(albom)}>
-                Открыть альбом
-              </StyledButton>
+              <p className="StyledAlbomCard-albomTitle">{albom.title}</p>
+              <p className="StyledAlbomCard-photoCount">{albom.photosCounter}</p>
+              <Button
+                className="Alboms-deletePhotoButton"
+                type="default"
+                title="Удалить альбом"
+                onClick={this.DeleteAlbom(albom)}
+              >
+                <Icon type="close" style={{ color: 'red' }} />
+              </Button>
             </StyledAlbomCard>
           ))}
         </StyledAlbomWrapper>

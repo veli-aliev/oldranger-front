@@ -15,16 +15,10 @@ const DeletePhotoButton = styled(Button)`
 const ImageWrapper = styled.div`
   display: inline-block;
   position: relative;
-  margin-top: 15px;
-  width: 24%;
-  margin: 0.5%;
-  .Albom-photo {
-    width: 100%;
-  }
-  &:hover {
-    .deletePhotoButton {
-      display: block;
-    }
+  width: 239px;
+  margin: 3px;
+  &:hover ${DeletePhotoButton} {
+    display: block;
   }
 `;
 
@@ -33,11 +27,15 @@ const StyledImage = styled.img`
   height: 150px;
 `;
 
-const AlbomWrapper = styled.div`
+const AlbumWrapper = styled.div`
   display: flex;
   flex-direction: columns;
   flex-wrap: wrap;
   margin-bottom: 50px;
+  margin-top: 30px;
+  @media (max-width: 1000px) {
+    justify-content: center;
+  }
 `;
 
 const StyledRow = styled(Row)`
@@ -45,7 +43,7 @@ const StyledRow = styled(Row)`
   margin-top: 50px;
 `;
 
-class Albom extends React.Component {
+class Album extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -59,7 +57,7 @@ class Albom extends React.Component {
   }
 
   componentDidMount() {
-    this.LoadPhotos();
+    this.loadPhotos();
   }
 
   toggleLightbox = selectedIndex => {
@@ -69,24 +67,25 @@ class Albom extends React.Component {
     }));
   };
 
-  LoadPhotos = async () => {
+  loadPhotos = async () => {
     const {
       location: { state },
     } = this.props;
-    const albomId = state.id;
+    const albumId = state.id;
     try {
-      const photos = await queries.GetPhotosFromAlbom(albomId);
+      const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
     } catch (error) {
       /* eslint-disable-next-line no-console */
-      console.log(error);
+      console.error(error.response);
+      message.error('что-то пошло не так');
     }
   };
 
-  DeletePhoto = id => async () => {
+  deletePhoto = id => async () => {
     const { photos } = this.state;
     try {
-      await queries.DeletePhotoFromAlbom(id);
+      await queries.deletePhotoFromAlbum(id);
       const newPhotos = photos.reduce((acc, item) => {
         if (item.id !== id) {
           acc.push(item);
@@ -96,7 +95,8 @@ class Albom extends React.Component {
       this.setState({ photos: newPhotos });
     } catch (error) {
       /* eslint-disable-next-line no-console */
-      console.log(error);
+      console.error(error.response);
+      message.error('что-то пошло не так');
     }
   };
 
@@ -105,7 +105,7 @@ class Albom extends React.Component {
     const {
       location: { state },
     } = this.props;
-    const albomId = state.id;
+    const albumId = state.id;
     const formData = new FormData();
     fileList.forEach(file => {
       formData.append('photos', file);
@@ -115,13 +115,13 @@ class Albom extends React.Component {
     });
 
     try {
-      await queries.AddPhotosInAlbom(albomId, formData);
+      await queries.addPhotosInAlbum(albumId, formData);
       this.setState({
         fileList: [],
         uploading: false,
       });
       message.success('upload successfully.');
-      this.LoadPhotos();
+      this.loadPhotos();
     } catch (error) {
       this.setState({
         uploading: false,
@@ -157,67 +157,44 @@ class Albom extends React.Component {
       fileList,
     };
 
-    if (photos.length === 0) {
-      return (
-        // если альбомов нет - кнопка создать новый альбом.
-        <>
+    return (
+      <>
+        {photos.length > 0 ? (
+          <AlbumWrapper>
+            {photos.map((photo, j) => {
+              return (
+                <ImageWrapper key={photo.id}>
+                  <StyledImage
+                    onClick={() => this.toggleLightbox(j)}
+                    title={photo.title}
+                    alt="userPhoto"
+                    src={`${photoTempUlr}${photo.original}`}
+                  />
+                  <DeletePhotoButton
+                    type="default"
+                    title="Удалить Фотографию"
+                    onClick={this.deletePhoto(photo.id)}
+                  >
+                    <Icon type="close" style={{ color: 'red' }} />
+                  </DeletePhotoButton>
+                </ImageWrapper>
+              );
+            })}
+            <ModalGateway>
+              {lightboxIsOpen ? (
+                <Modal onClose={this.toggleLightbox}>
+                  <Carousel views={images} currentIndex={selectedIndex} />
+                </Modal>
+              ) : null}
+            </ModalGateway>
+          </AlbumWrapper>
+        ) : (
           <StyledRow type="flex" justify="center">
             <h4>Альбом пуст</h4>
           </StyledRow>
-
-          <Row type="flex" justify="center">
-            <Upload {...uploadProps}>
-              <Button>
-                <Icon type="upload" /> Перетащите сюда или выберите фотографии
-              </Button>
-            </Upload>
-          </Row>
-          <Row type="flex" justify="center">
-            <Button
-              type="primary"
-              onClick={this.handleUpload}
-              disabled={fileList.length === 0}
-              loading={uploading}
-              style={{ marginTop: 16 }}
-            >
-              {uploading ? 'Загружаем' : 'Добавить Фотографии в альбом'}
-            </Button>
-          </Row>
-        </>
-      );
-    }
-    return (
-      <>
-        <AlbomWrapper>
-          {photos.map((photo, j) => (
-            <ImageWrapper key={photo.id}>
-              <StyledImage
-                onClick={() => this.toggleLightbox(j)}
-                title={photo.title}
-                alt="userPhoto"
-                src={`${photoTempUlr}${photo.original}`}
-                className="Albom-photo"
-              />
-              <DeletePhotoButton
-                type="default"
-                className="deletePhotoButton"
-                title="Удалить Фотографию"
-                onClick={this.DeletePhoto(photo.id)}
-              >
-                <Icon type="close" style={{ color: 'red' }} />
-              </DeletePhotoButton>
-            </ImageWrapper>
-          ))}
-          <ModalGateway>
-            {lightboxIsOpen ? (
-              <Modal onClose={this.toggleLightbox}>
-                <Carousel views={images} currentIndex={selectedIndex} />
-              </Modal>
-            ) : null}
-          </ModalGateway>
-        </AlbomWrapper>
+        )}
         <Row type="flex" justify="center">
-          <Upload {...uploadProps}>
+          <Upload {...uploadProps} disabled={uploading}>
             <Button>
               <Icon type="upload" /> Перетащите сюда или выберите фотографии
             </Button>
@@ -239,7 +216,7 @@ class Albom extends React.Component {
   }
 }
 
-Albom.propTypes = {
+Album.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -247,4 +224,4 @@ Albom.propTypes = {
   }).isRequired,
 };
 
-export default Albom;
+export default Album;

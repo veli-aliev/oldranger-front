@@ -171,42 +171,42 @@ class Queries {
     return res.data.small;
   };
 
-  GetAlboms = async () => {
+  getAlbums = async () => {
     const res = await axios.get('/api/albums', {
       withCredentials: true,
     });
     return res.data;
   };
 
-  CreateNewAlbom = async data => {
+  createNewAlbum = async data => {
     const res = await axios.post(`/api/albums?albumTitle=${data}`, data, {
       withCredentials: true,
     });
     return res.data;
   };
 
-  DeleteAlbom = async id => {
+  deleteAlbum = async id => {
     const res = await axios.delete(`/api/albums/${id}`, {
       withCredentials: true,
     });
     return res.data;
   };
 
-  GetPhotosFromAlbom = async id => {
+  getPhotosFromAlbum = async id => {
     const res = await axios.get(`/api/albums/getPhotos/${id}`, {
       withCredentials: true,
     });
     return res.data;
   };
 
-  AddPhotosInAlbom = async (albomId, photosArr) => {
-    const res = await axios.post(`/api/photos/${albomId}`, photosArr, {
+  addPhotosInAlbum = async (albumId, photosArr) => {
+    const res = await axios.post(`/api/photos/${albumId}`, photosArr, {
       withCredentials: true,
     });
     return res.data;
   };
 
-  DeletePhotoFromAlbom = async photoId => {
+  deletePhotoFromAlbum = async photoId => {
     const res = await axios.delete(`/api/photos/${photoId}`, {
       withCredentials: true,
     });

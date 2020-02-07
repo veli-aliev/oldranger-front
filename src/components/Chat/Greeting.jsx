@@ -4,7 +4,7 @@ import { Button } from 'antd';
 import './css/Greeting.css';
 
 const Greeting = ({ handleConnect }) => (
-  <div id="greeting">
+  <div className="greeting">
     <div className="greeting-container">
       <h1 className="title">Общий Чат</h1>
       <p>Познакомьтесь с Клубом и общайтесь с другими участниками!</p>

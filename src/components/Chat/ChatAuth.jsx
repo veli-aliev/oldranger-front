@@ -59,12 +59,12 @@ class ChatAuth extends React.Component {
     this.setState({ error: null, isJoin: true });
     this.stompClient.subscribe(`/channel/public`, this.onMessageRecieved, {});
     const { user } = this.state;
+    this.getMessages();
     this.stompClient.send(
       `/chat/addUser`,
       {},
       JSON.stringify({ sender: user.nickName, type: 'JOIN' })
     );
-    this.getMessages();
   };
 
   onError = err => {

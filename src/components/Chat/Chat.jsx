@@ -13,11 +13,17 @@ class Chat extends React.Component {
     this.state = { message: '', image: null, imagePath: '', replyTo: null, isFull: false };
   }
 
-  componentDidUpdate = () => {
-    console.log('updated');
-    const messageArea = document.querySelector('.message-list');
+  componentDidMount = () => {
+    const input = document.querySelector('.message-input');
+    const sendButton = document.querySelector('.send-button');
     const lastMessage = document.querySelector('.message-list li:last-child');
-    messageArea.scrollTop = lastMessage.offsetTop;
+
+    input.addEventListener('keydown', e => {
+      if (e.keyCode === 13) {
+        sendButton.click();
+      }
+    });
+    lastMessage.scrollIntoView();
   };
 
   handleChangeMessage = e => {
@@ -47,6 +53,9 @@ class Chat extends React.Component {
   handleShowFull = e => {
     e.preventDefault();
     this.setState({ isFull: true });
+    const firstMessage = document.querySelector('.message-list li:nth-child(2)');
+    console.log(firstMessage);
+    firstMessage.scrollIntoView();
   };
 
   drawMessage = msg => {
@@ -110,7 +119,7 @@ class Chat extends React.Component {
             </div>
             <div className="message-area">
               <ul className="message-list">
-                {isFull ? (
+                {isFull || messages.length < 20 ? (
                   messages.map(msg => this.drawMessage(msg))
                 ) : (
                   <>
@@ -124,7 +133,7 @@ class Chat extends React.Component {
             </div>
           </div>
 
-          <form className="message-form" name="messageForm">
+          <div className="message-form">
             <Input
               type="text"
               placeholder="Введите сообщение..."
@@ -144,7 +153,7 @@ class Chat extends React.Component {
                 Отправить
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </section>
     );

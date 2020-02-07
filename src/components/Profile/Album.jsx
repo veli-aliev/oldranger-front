@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import { Link } from 'react-router-dom';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 import queries from '../../serverQueries';
 
 const DeletePhotoButton = styled(Button)`
@@ -11,6 +13,11 @@ const DeletePhotoButton = styled(Button)`
   top: 0;
   right: 0;
   display: none;
+  padding: 2px 5px;
+  opacity: 0.8;
+`;
+const FullScreenPhotoButton = styled(DeletePhotoButton)`
+  right: 30px;
 `;
 
 const ImageWrapper = styled.div`
@@ -133,6 +140,13 @@ class Album extends React.Component {
     }
   };
 
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const { photos } = this.state;
+    this.setState({
+      photos: arrayMove(photos, oldIndex, newIndex),
+    });
+  };
+
   render() {
     const { photos, uploading, fileList, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
@@ -165,6 +179,30 @@ class Album extends React.Component {
       fileList,
     };
 
+    const SortableItem = SortableElement(({ value, index }) => (
+      <ImageWrapper>
+        <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.original}`} />
+        <DeletePhotoButton
+          type="default"
+          title="Удалить Фотографию"
+          onClick={this.deletePhoto(value.id)}
+        >
+          <Icon type="close" style={{ color: 'red' }} />
+        </DeletePhotoButton>
+
+        <FullScreenPhotoButton onClick={() => this.toggleLightbox(index)}>
+          <Icon type="fullscreen" />
+        </FullScreenPhotoButton>
+      </ImageWrapper>
+    ));
+
+    const SortableList = SortableContainer(({ items }) => (
+      <AlbumWrapper>
+        {items.map((photo, index) => (
+          <SortableItem key={photo.id} index={index} value={photo} />
+        ))}
+      </AlbumWrapper>
+    ));
     return (
       <>
         <AlbumNavigation>
@@ -172,26 +210,8 @@ class Album extends React.Component {
           <span>{` > ${id}`}</span>
         </AlbumNavigation>
         {photos.length > 0 ? (
-          <AlbumWrapper>
-            {photos.map((photo, j) => {
-              return (
-                <ImageWrapper key={photo.id}>
-                  <StyledImage
-                    onClick={() => this.toggleLightbox(j)}
-                    title={photo.title}
-                    alt="userPhoto"
-                    src={`${photoTempUlr}${photo.original}`}
-                  />
-                  <DeletePhotoButton
-                    type="default"
-                    title="Удалить Фотографию"
-                    onClick={this.deletePhoto(photo.id)}
-                  >
-                    <Icon type="close" style={{ color: 'red' }} />
-                  </DeletePhotoButton>
-                </ImageWrapper>
-              );
-            })}
+          <>
+            <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} />
             <ModalGateway>
               {lightboxIsOpen ? (
                 <Modal onClose={this.toggleLightbox}>
@@ -199,7 +219,7 @@ class Album extends React.Component {
                 </Modal>
               ) : null}
             </ModalGateway>
-          </AlbumWrapper>
+          </>
         ) : (
           <StyledRow type="flex" justify="center">
             <h4>Альбом пуст</h4>

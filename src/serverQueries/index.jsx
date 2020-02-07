@@ -170,6 +170,47 @@ class Queries {
     });
     return res.data.small;
   };
-}
 
+  getAlbums = async () => {
+    const res = await axios.get('/api/albums', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  createNewAlbum = async data => {
+    const res = await axios.post(`/api/albums?albumTitle=${data}`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  deleteAlbum = async id => {
+    const res = await axios.delete(`/api/albums/${id}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  getPhotosFromAlbum = async id => {
+    const res = await axios.get(`/api/albums/getPhotos/${id}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  addPhotosInAlbum = async (albumId, photosArr) => {
+    const res = await axios.post(`/api/photos/${albumId}`, photosArr, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  deletePhotoFromAlbum = async photoId => {
+    const res = await axios.delete(`/api/photos/${photoId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+}
 export default new Queries();

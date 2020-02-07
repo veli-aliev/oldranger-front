@@ -3,6 +3,7 @@ import { Row, Button, Upload, Icon, message } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Carousel, { Modal, ModalGateway } from 'react-images';
+import { Link } from 'react-router-dom';
 import queries from '../../serverQueries';
 
 const DeletePhotoButton = styled(Button)`
@@ -21,7 +22,9 @@ const ImageWrapper = styled.div`
     display: block;
   }
 `;
-
+const AlbumNavigation = styled.div`
+  margin-left: 5px;
+`;
 const StyledImage = styled.img`
   width: 100%;
   height: 150px;
@@ -40,7 +43,7 @@ const AlbumWrapper = styled.div`
 
 const StyledRow = styled(Row)`
   margin-bottom: 50px;
-  margin-top: 50px;
+  margin-top: 30px;
 `;
 
 class Album extends React.Component {
@@ -132,6 +135,11 @@ class Album extends React.Component {
 
   render() {
     const { photos, uploading, fileList, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
+    const {
+      location: {
+        state: { id },
+      },
+    } = this.props;
     const images = photos.reduce((acc, photo) => {
       return [...acc, { src: `${photoTempUlr}${photo.original}` }];
     }, []);
@@ -159,6 +167,10 @@ class Album extends React.Component {
 
     return (
       <>
+        <AlbumNavigation>
+          <Link to="/profile/albums">Альбомы</Link>
+          <span>{` > ${id}`}</span>
+        </AlbumNavigation>
         {photos.length > 0 ? (
           <AlbumWrapper>
             {photos.map((photo, j) => {
@@ -220,6 +232,10 @@ Album.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
       id: PropTypes.number.isRequired,
+      fileList: PropTypes.shape({
+        indexOf: PropTypes.func.isRequired,
+        slice: PropTypes.func.isRequired,
+      }),
     }),
   }).isRequired,
 };

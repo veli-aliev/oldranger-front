@@ -212,5 +212,12 @@ class Queries {
     });
     return res.data;
   };
+
+  getUsersList = async (page, query) => {
+    const res = await axios.get('/api/admin/users', {
+      params: { page: Number(page), query, withCredentials: true },
+    });
+    return res.data;
+  };
 }
 export default new Queries();

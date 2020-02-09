@@ -10,8 +10,8 @@ import Messages from './Messages';
 import Themes from './Themes';
 import Subscriptions from './Subscriptions';
 import Invite from './Invite';
-import Albums from './Albums';
-import Album from './Album';
+import Albums from './Albums/Albums';
+import Album from './Albums/Album';
 
 const Profile = () => {
   const { path } = useRouteMatch();

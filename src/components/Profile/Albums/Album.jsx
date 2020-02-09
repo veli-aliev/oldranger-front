@@ -1,12 +1,13 @@
 import React from 'react';
-import { Row, Button, Upload, Icon, message } from 'antd';
+import { Row, Button, Icon, message } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
-import queries from '../../serverQueries';
+import queries from '../../../serverQueries';
+import UploadPhoto from './UploadPhoto';
 
 const DeletePhotoButton = styled(Button)`
   position: absolute;
@@ -59,8 +60,6 @@ class Album extends React.Component {
     this.state = {
       photoTempUlr: 'http://localhost:8888/img/chat/',
       photos: [],
-      fileList: [],
-      uploading: false,
       selectedIndex: 0,
       lightboxIsOpen: false,
     };
@@ -81,6 +80,7 @@ class Album extends React.Component {
     const {
       location: { state },
     } = this.props;
+
     const albumId = state.id;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
@@ -110,36 +110,6 @@ class Album extends React.Component {
     }
   };
 
-  handleUpload = async () => {
-    const { fileList } = this.state;
-    const {
-      location: { state },
-    } = this.props;
-    const albumId = state.id;
-    const formData = new FormData();
-    fileList.forEach(file => {
-      formData.append('photos', file);
-    });
-    this.setState({
-      uploading: true,
-    });
-
-    try {
-      await queries.addPhotosInAlbum(albumId, formData);
-      this.setState({
-        fileList: [],
-        uploading: false,
-      });
-      message.success('upload successfully.');
-      this.loadPhotos();
-    } catch (error) {
-      this.setState({
-        uploading: false,
-      });
-      message.error('upload failed.');
-    }
-  };
-
   onSortEnd = ({ oldIndex, newIndex }) => {
     const { photos } = this.state;
     this.setState({
@@ -148,7 +118,7 @@ class Album extends React.Component {
   };
 
   render() {
-    const { photos, uploading, fileList, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
+    const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
       location: {
         state: { id },
@@ -157,29 +127,8 @@ class Album extends React.Component {
     const images = photos.reduce((acc, photo) => {
       return [...acc, { src: `${photoTempUlr}${photo.original}` }];
     }, []);
-    const uploadProps = {
-      accept: '.jpg, .jpeg, .png',
-      multiple: true,
-      onRemove: file => {
-        this.setState(state => {
-          const index = state.fileList.indexOf(file);
-          const newFileList = state.fileList.slice();
-          newFileList.splice(index, 1);
-          return {
-            fileList: newFileList,
-          };
-        });
-      },
-      beforeUpload: file => {
-        this.setState(state => ({
-          fileList: [...state.fileList, file],
-        }));
-        return false;
-      },
-      fileList,
-    };
 
-    const SortableItem = SortableElement(({ value, index }) => (
+    const SortableItem = SortableElement(({ value, photoNum }) => (
       <ImageWrapper>
         <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.original}`} />
         <DeletePhotoButton
@@ -190,7 +139,7 @@ class Album extends React.Component {
           <Icon type="close" style={{ color: 'red' }} />
         </DeletePhotoButton>
 
-        <FullScreenPhotoButton onClick={() => this.toggleLightbox(index)}>
+        <FullScreenPhotoButton onClick={() => this.toggleLightbox(photoNum)}>
           <Icon type="fullscreen" />
         </FullScreenPhotoButton>
       </ImageWrapper>
@@ -199,7 +148,7 @@ class Album extends React.Component {
     const SortableList = SortableContainer(({ items }) => (
       <AlbumWrapper>
         {items.map((photo, index) => (
-          <SortableItem key={photo.id} index={index} value={photo} />
+          <SortableItem key={photo.id} index={index} value={photo} photoNum={index} />
         ))}
       </AlbumWrapper>
     ));
@@ -225,24 +174,7 @@ class Album extends React.Component {
             <h4>Альбом пуст</h4>
           </StyledRow>
         )}
-        <Row type="flex" justify="center">
-          <Upload {...uploadProps} disabled={uploading}>
-            <Button>
-              <Icon type="upload" /> Перетащите сюда или выберите фотографии
-            </Button>
-          </Upload>
-        </Row>
-        <Row type="flex" justify="center">
-          <Button
-            type="primary"
-            onClick={this.handleUpload}
-            disabled={fileList.length === 0}
-            loading={uploading}
-            style={{ marginTop: 16 }}
-          >
-            {uploading ? 'Загружаем' : 'Добавить Фотографии в альбом'}
-          </Button>
-        </Row>
+        <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
       </>
     );
   }

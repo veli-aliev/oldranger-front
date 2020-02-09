@@ -3,7 +3,7 @@ import { Row, Button, Icon, message } from 'antd';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import queries from '../../serverQueries';
+import queries from '../../../serverQueries';
 
 const DeletePhotoButton = styled(Button)`
   display: none;
@@ -18,23 +18,35 @@ const StyledAlbumCard = styled.div`
   width: 239px;
   margin: 3px;
   background-size: cover;
-  background-image: ${props => `url(${props.background}) `};
   &:hover ${DeletePhotoButton} {
     display: block;
   }
 `;
-
+const AlbomShadow = styled.div`
+    color: #fff;
+    box-sizing: border-box;
+    position: absolute; 
+    bottom: 0;
+    width: 100%;
+    padding: 35px 12px 9px;
+    background: url(/shadow.png);
+}`;
 const PhotoCounter = styled.span`
   position: absolute;
   bottom: 0;
   right: 0;
+  color: #fff;
 `;
-
+const AlbomBackgroundImage = styled.img`
+  width: 100%;
+  height: 100%;
+`;
 const AlbumTitle = styled.span`
   word-break: break-all;
   position: absolute;
   bottom: 0;
   left: 0;
+  color: #fff;
 `;
 
 const StyledAlbumWrapper = styled.div`
@@ -63,8 +75,8 @@ class Albums extends React.Component {
   loadAlbums = async () => {
     const allAlbums = await queries.getAlbums();
     const albumsToShow = [];
-    allAlbums.map(album => album.allowView && albumsToShow.push(album));
-    this.setState({ albums: albumsToShow });
+    allAlbums.map(album => albumsToShow.push(album));
+    this.setState({ albums: allAlbums });
   };
 
   createNewAlbum = async () => {
@@ -124,17 +136,19 @@ class Albums extends React.Component {
         {albums.length > 0 ? (
           <StyledAlbumWrapper>
             {albums.map(album => (
-              <StyledAlbumCard
-                onClick={this.openAlbum(album)}
-                key={album.id}
-                background={
-                  album.originalThumbImage
-                    ? `${album.originalThumbImage}`
-                    : `/defaultAlbumTheme.jpg`
-                }
-              >
-                <AlbumTitle>{album.title}</AlbumTitle>
-                <PhotoCounter>{album.photosCounter}</PhotoCounter>
+              <StyledAlbumCard onClick={this.openAlbum(album)} key={album.id}>
+                <AlbomBackgroundImage
+                  src={
+                    album.originalThumbImage !== 'photo_album_placeholder'
+                      ? `http://localhost:8888/img/chat/${album.originalThumbImage}`
+                      : `/defaultAlbumTheme.jpg`
+                  }
+                />
+                <AlbomShadow>
+                  <AlbumTitle>{album.title}</AlbumTitle>
+                  <PhotoCounter>{album.photosCounter}</PhotoCounter>
+                </AlbomShadow>
+
                 <DeletePhotoButton
                   type="default"
                   title="Удалить альбом"

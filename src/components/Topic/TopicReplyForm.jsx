@@ -12,10 +12,11 @@ import fileProps from './propTypes/fileProps';
 const validationSchema = Yup.object({
   message: Yup.string()
     .min(1, 'Сообщение не может быть пустым')
-    .max(500000, 'Слишком длинное сообщение').isRequired,
+    .max(500000, 'Слишком длинное сообщение')
+    .required('Поле обязательно для заполнения'),
 });
 
-const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files }) => {
+const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files, uploading }) => {
   const { isLogin } = useContext(Context);
   return isLogin ? (
     <Formik
@@ -24,7 +25,7 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files })
       }}
       validationSchema={validationSchema}
       onSubmit={(values, { resetForm }) => {
-        handleSubmitComment(values.message, 0, resetForm);
+        handleSubmitComment(values.message, resetForm);
       }}
     >
       {({ handleSubmit, handleChange, errors, touched, values, handleBlur }) => {
@@ -40,7 +41,7 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files })
                 value={values.message}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Напишите свое сообщение"
+                placeholder="Cообщение"
                 rows={4}
                 ref={replyRef}
               />
@@ -56,9 +57,10 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files })
               <Button
                 type="primary"
                 htmlType="submit"
-                disabled={!!touched.message && !!errors.message}
+                disabled={!!touched.messgae && !!errors.message}
+                loading={uploading}
               >
-                Отправить
+                {uploading ? 'Отправка' : 'Отправить'}
               </Button>
             </AntForm.Item>
           </Form>
@@ -77,6 +79,7 @@ TopicReplyForm.propTypes = {
   handleSubmitComment: PropTypes.func.isRequired,
   handleAddFile: PropTypes.func.isRequired,
   files: PropTypes.arrayOf(fileProps).isRequired,
+  uploading: PropTypes.bool.isRequired,
 };
 
 export default TopicReplyForm;

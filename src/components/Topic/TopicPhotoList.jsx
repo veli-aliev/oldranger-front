@@ -1,7 +1,6 @@
 import React from 'react';
 import { Upload, Icon, Modal } from 'antd';
 import PropTypes from 'prop-types';
-import queries from '../../serverQueries';
 import { UploadViewOnly } from './styled';
 import fileProps from './propTypes/fileProps';
 
@@ -34,20 +33,18 @@ class TopicPhotoList extends React.Component {
     });
   };
 
+  beforeUpload = () => {
+    return false;
+  };
+
   render() {
     const { previewVisible, previewImage } = this.state;
-    const { canUpload, fileList, handleChangePicturesState } = this.props;
-
-    const handleUploadPhoto = async photo => {
-      const formData = new FormData();
-      formData.append('photo', photo);
-      return queries.uploadPhoto(formData);
-    };
-
+    const { canUpload, fileList, handleChangePicturesState, defaultFileList } = this.props;
     const uploadBasicProps = {
       listType: 'picture-card',
       fileList,
       onPreview: this.handlePreview,
+      defaultFileList,
     };
     const uploadButton = (
       <div>
@@ -62,8 +59,7 @@ class TopicPhotoList extends React.Component {
             {...uploadBasicProps}
             accept=".jpg,.png"
             onChange={handleChangePicturesState}
-            action={handleUploadPhoto}
-            // customRequest={uploadedProtoHandler}
+            beforeUpload={this.beforeUpload}
           >
             {fileList.length >= 2 ? null : uploadButton}
           </Upload>
@@ -82,11 +78,13 @@ TopicPhotoList.propTypes = {
   canUpload: PropTypes.bool,
   fileList: PropTypes.arrayOf(fileProps).isRequired,
   handleChangePicturesState: PropTypes.func,
+  defaultFileList: PropTypes.arrayOf(fileProps),
 };
 
 TopicPhotoList.defaultProps = {
   canUpload: false,
   handleChangePicturesState: () => {},
+  defaultFileList: null,
 };
 
 export default TopicPhotoList;

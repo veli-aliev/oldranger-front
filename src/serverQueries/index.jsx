@@ -121,10 +121,59 @@ class Queries {
   };
 
   addComment = async newComment => {
-    const res = await axios.post('/api/comment/add', newComment, {
+    const formData = new FormData();
+    formData.set('idTopic', newComment.idTopic);
+    formData.set('idUser', newComment.idUser);
+    formData.set('text', newComment.text);
+
+    if (newComment.answerID) {
+      formData.set('answerID', newComment.answerID);
+    }
+
+    if (newComment.image1) {
+      formData.set('image1', newComment.image1.originFileObj, newComment.image1.name);
+    }
+
+    if (newComment.image2) {
+      formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
+    }
+
+    const res = await axios.post('/api/comment/add', formData, {
       withCredentials: true,
     });
+
     return res.data;
+  };
+
+  updateComment = async editingComment => {
+    const { commentId } = editingComment;
+    const url = `/api/comment/update?commentID=${commentId}`;
+    const formData = new FormData();
+    formData.set('idTopic', editingComment.idTopic);
+    formData.set('idUser', editingComment.idUser);
+    formData.set('text', editingComment.text);
+
+    if (editingComment.image1) {
+      formData.set('image1', editingComment.image1.originFileObj, editingComment.image1.name);
+    }
+
+    if (editingComment.image2) {
+      formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
+    }
+
+    const res = await axios.put(url, formData, {
+      withCredentials: true,
+    });
+
+    return res.status;
+  };
+
+  deleteComment = async commentId => {
+    const res = await axios.delete(`/api/comment/delete/${commentId}`, {
+      withCredentials: true,
+    });
+
+    return res.status;
   };
 
   getInviteCode = async () => {

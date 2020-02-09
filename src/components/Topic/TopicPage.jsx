@@ -22,14 +22,9 @@ class TopicPage extends React.Component {
       messages: [],
       page: query.get('page') || 1,
       reply: null,
-      files: [
-        {
-          uid: '-1',
-          name: 'image.png',
-          status: 'done',
-          url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-      ],
+      answerId: null,
+      files: [],
+      uploading: false,
     };
     this.replyForm = React.createRef();
   }
@@ -49,19 +44,11 @@ class TopicPage extends React.Component {
     replyNick: null,
     replyText: null,
     commentText: topic.startMessage,
-    imageComment: [
-      {
-        id: '-1',
-        img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        id: '-2',
-        img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-    ], // no topic images from backend at this moment
+    imageComment: [], // no topic images from backend at this moment
   });
 
   getTopics = page => {
+    // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
     if (page === 1) {
       queries.getTopic(match.params.topicId, 0, 9).then(({ topic, commentDto }) => {
@@ -95,42 +82,66 @@ class TopicPage extends React.Component {
   };
 
   handleQuoteComment = comment => () => {
-    this.replyForm.focus();
-    this.setState({
-      reply: {
-        replyDateTime: comment.commentDateTime,
-        replyNick: comment.author.nickName,
-        replyText: comment.commentText,
-      },
-    });
+    const { isLogin } = this.context;
+    if (isLogin) {
+      this.replyForm.focus();
+      this.setState({
+        reply: {
+          replyDateTime: comment.commentDateTime,
+          replyNick: comment.author.nickName,
+          replyText: comment.commentText,
+        },
+        answerId: comment.commentId,
+      });
+    } else {
+      this.openNotification();
+    }
   };
 
-  handleSubmitComment = (text, answerID = 0, resetForm) => {
-    const { topic, reply } = this.state;
+  handleSubmitComment = (messageText, resetForm) => {
+    this.setState({ uploading: true });
+    const { topic, answerId, files } = this.state;
     const { user } = this.context;
     const { history } = this.props;
-    const formData = new FormData();
-    formData.append('commentText', text);
-    formData.append('topicId', topic.id);
-    formData.append('userId', user.userId);
-    formData.append('answerID', answerID);
-    if (reply) {
-      formData.append('replyDateTime', reply.replyDateTime);
-      formData.append('replyNick', reply.replyNick);
-      formData.append('replyText', reply.replyText);
+    const messageComentsEntity = {
+      idTopic: topic.id,
+      idUser: user.userId,
+      text: messageText,
+    };
+
+    if (answerId) {
+      messageComentsEntity.answerID = answerId;
     }
+
+    [messageComentsEntity.image1, messageComentsEntity.image2] = files;
     return queries
-      .addComment(formData)
+      .addComment(messageComentsEntity)
       .then(() => {
         const lastPage = Math.floor(topic.messageCount / 10 + 1);
         history.push(`${history.location.pathname}?page=${lastPage}`);
         this.getTopics(lastPage);
         message.success('Ваше сообщение успешно добавлено');
-        this.setState({ reply: null });
+        this.setState({ reply: null, answerId: null, files: [], uploading: false });
         resetForm();
       })
       .catch(() => {
         message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
+        this.setState({ uploading: false });
+      });
+  };
+
+  handleDeleteComment = commentId => {
+    const { history } = this.props;
+    queries
+      .deleteComment(commentId)
+      .then(() => {
+        const { page } = this.state;
+        history.push(`${history.location.pathname}?page=${page}`);
+        this.getTopics(page);
+        message.success('Сообщение удалено');
+      })
+      .catch(() => {
+        message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
       });
   };
 
@@ -143,15 +154,18 @@ class TopicPage extends React.Component {
   };
 
   handleCancelReply = () => {
-    this.setState({ reply: null });
+    this.setState({ reply: null, answerId: null });
   };
 
-  handleAddFile = obj => {
-    this.setState({ files: obj.fileList });
+  handleAddFile = info => {
+    this.setState({ files: info.fileList });
+    if (info.file.status !== 'removed') {
+      message.success(`Файл ${info.file.name} успешно добавлен`);
+    }
   };
 
   render() {
-    const { messages, topic, page, reply, files } = this.state;
+    const { messages, topic, page, reply, files, uploading } = this.state;
     const { isLogin } = this.context;
     return (
       <div>
@@ -179,7 +193,9 @@ class TopicPage extends React.Component {
                 <TopicCommentItem
                   comment={item}
                   handleQuoteComment={this.handleQuoteComment}
-                  withActions
+                  deleteComment={this.handleDeleteComment}
+                  getTopics={this.getTopics}
+                  page={page}
                 />
               )}
               total={topic.messageCount + 1}
@@ -217,6 +233,7 @@ class TopicPage extends React.Component {
               handleSubmitComment={this.handleSubmitComment}
               handleAddFile={this.handleAddFile}
               files={files}
+              uploading={uploading}
             />
           }
         />

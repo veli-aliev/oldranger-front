@@ -1,9 +1,31 @@
 import React from 'react';
-import _ from 'lodash';
-
+import lodash from 'lodash';
+import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
-import './css/Chat.css';
-import axios from 'axios';
+import { getImage } from './axios';
+import {
+  ChatContainer,
+  Header,
+  CloseButton,
+  Main,
+  UserListTitle,
+  OnlineLED,
+  UserList,
+  User,
+  UserLink,
+  MessageList,
+  Message,
+  EventMessage,
+  Avatar,
+  Author,
+  Image,
+  Date,
+  Text,
+  ShowFullButton,
+  Arrow,
+  Form,
+  Footer,
+} from './styled';
 
 const url = 'http://localhost:8888';
 
@@ -13,127 +35,106 @@ class Chat extends React.Component {
     this.state = { message: '', image: null, imagePath: '', replyTo: null, isFull: false };
   }
 
-  componentDidMount = () => {
-    const input = document.querySelector('.message-input');
-    const sendButton = document.querySelector('.send-button');
-    const lastMessage = document.querySelector('.message-list li:last-child');
-
-    input.addEventListener('keydown', e => {
-      if (e.keyCode === 13) {
-        sendButton.click();
-      }
-    });
-    lastMessage.scrollIntoView();
+  handleChangeMessage = event => {
+    this.setState({ message: event.target.value });
   };
 
-  handleChangeMessage = e => {
-    this.setState({ message: e.target.value });
-  };
-
-  handleChangeFile = async e => {
-    this.setState({ imagePath: e.target.value });
+  handleChangeFile = async event => {
+    this.setState({ imagePath: event.target.value });
 
     const form = document.querySelector('.message-form');
     const formData = new FormData(form);
-    const { data } = await axios.post(`${url}/api/chat/image`, formData, {
-      headers: { 'content-type': 'multipart/form-data' },
-      withCredentials: true,
-    });
+    const { data } = await getImage(formData);
     this.setState({ image: data });
   };
 
-  handleSendMessage = e => {
-    e.preventDefault();
+  handleSubmit = event => {
+    event.preventDefault();
     const { sendMessage } = this.props;
     const { message, image, replyTo } = this.state;
     sendMessage(message, image, replyTo);
     this.setState({ message: '', image: null, imagePath: '' });
   };
 
-  handleShowFull = e => {
-    e.preventDefault();
+  handleShowFull = () => {
+    const { getMessages } = this.props;
+    getMessages(true);
     this.setState({ isFull: true });
-    const firstMessage = document.querySelector('.message-list li:nth-child(2)');
-    console.log(firstMessage);
-    firstMessage.scrollIntoView();
   };
 
   drawMessage = msg => {
     const { user } = this.props;
     if (msg.type === 'MESSAGE') {
       return (
-        <li
-          className={`message ${user.nickName === msg.replyTo ? 'toMe' : ''}`}
-          key={_.uniqueId()}
+        <Message
+          toMe={user.nickName === msg.replyTo}
+          key={`${msg.id}`}
           onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
         >
-          <img alt="avatar" className="message-avatar" src={`${url}/img/${msg.senderAvatar}`} />
+          <Avatar alt="avatar" src={`${url}/img/${msg.senderAvatar}`} />
           <div>
-            <div className="message-author">{msg.sender}</div>
+            <Author>{msg.sender}</Author>
             {msg.originalImg ? (
-              <img
-                alt="picture"
-                className="message-image"
-                src={`${url}/img/chat/${msg.thumbnailImg}`}
-              />
+              <a href={`${url}/img/chat/${msg.originalImg}`}>
+                <Image
+                  alt="picture"
+                  className="message-image"
+                  src={`${url}/img/chat/${msg.thumbnailImg}`}
+                />
+              </a>
             ) : (
               ''
             )}
-            <p className="message-text">{msg.text}</p>
+            <Text className="message-text">{msg.text}</Text>
           </div>
-          <span className="message-date">{msg.messageDate}</span>
-        </li>
-      );
-    } else {
-      return (
-        <li className="event-message" key={_.uniqueId()}>
-          {`${msg.sender} ${msg.type === 'LEAVE' ? 'покинул чат' : 'присоединился'}`}
-        </li>
+          <Date className="message-date">{msg.messageDate}</Date>
+        </Message>
       );
     }
+    return (
+      <EventMessage className="event-message" key={lodash.uniqueId()}>
+        {`${msg.sender} ${msg.type === 'LEAVE' ? 'покинул чат' : 'присоединился'}`}
+      </EventMessage>
+    );
   };
 
   render() {
     const { handleDisconnect, messages, usersOnline } = this.props;
     const { message, imagePath, isFull } = this.state;
     return (
-      <section className="chat">
-        <div className="chat-container">
-          <header className="chat-header">
+      <section>
+        <ChatContainer>
+          <Header>
             <h2>Chat</h2>
-            <button className="button-close" onClick={handleDisconnect} />
-          </header>
-          <div className="chat-main">
-            <div className="user-area">
-              <span className="indicator-online" />
-              <h3 className="user-list-title">Online:</h3>
-              <ul className="user-list">
+            <CloseButton onClick={handleDisconnect} />
+          </Header>
+          <Main>
+            <div style={{ width: '20%' }}>
+              <OnlineLED />
+              <UserListTitle>Online:</UserListTitle>
+              <UserList>
                 {Object.entries(usersOnline).map(user => (
-                  <li className="user" key={user}>
-                    <a className="user-link" href={`/profile/${user[1]}`}>
-                      {user[0]}
-                    </a>
-                  </li>
+                  <User key={user}>
+                    <UserLink href={`/profile/${user[1]}`}>{user[0]}</UserLink>
+                  </User>
                 ))}
-              </ul>
+              </UserList>
             </div>
-            <div className="message-area">
-              <ul className="message-list">
-                {isFull || messages.length < 20 ? (
-                  messages.map(msg => this.drawMessage(msg))
+            <div style={{ width: '100%' }}>
+              <MessageList className="message-list">
+                {isFull ? (
+                  ''
                 ) : (
-                  <>
-                    <button className="full-messages" onClick={this.handleShowFull}>
-                      <span className="arrow-up" />
-                    </button>
-                    {messages.slice(-19).map(msg => this.drawMessage(msg))}
-                  </>
+                  <ShowFullButton onClick={this.handleShowFull}>
+                    <Arrow />
+                  </ShowFullButton>
                 )}
-              </ul>
+                {messages.map(msg => this.drawMessage(msg))}
+              </MessageList>
             </div>
-          </div>
+          </Main>
 
-          <div className="message-form">
+          <Form className="message-form" onSubmit={this.handleSubmit}>
             <Input
               type="text"
               placeholder="Введите сообщение..."
@@ -141,23 +142,34 @@ class Chat extends React.Component {
               value={message}
               onChange={this.handleChangeMessage}
             />
-            <div className="form-buttons">
-              <input
-                type="file"
-                name="file-input"
-                className="file-input"
-                onChange={this.handleChangeFile}
-                value={imagePath}
-              />
-              <Button type="primary" className="send-button" onClick={this.handleSendMessage}>
+            <Footer>
+              <input type="file" onChange={this.handleChangeFile} value={imagePath} />
+              <Button type="primary" className="send-button" htmlType="submit">
                 Отправить
               </Button>
-            </div>
-          </div>
-        </div>
+            </Footer>
+          </Form>
+        </ChatContainer>
       </section>
     );
   }
 }
 
 export default Chat;
+
+Chat.propTypes = {
+  sendMessage: PropTypes.func.isRequired,
+  getMessages: PropTypes.func.isRequired,
+  handleDisconnect: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    nickName: PropTypes.string,
+  }),
+  usersOnline: PropTypes.shape({}),
+  messages: PropTypes.arrayOf(PropTypes.object),
+};
+
+Chat.defaultProps = {
+  user: null,
+  usersOnline: {},
+  messages: [],
+};

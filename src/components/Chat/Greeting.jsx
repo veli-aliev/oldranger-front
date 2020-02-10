@@ -1,11 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button } from 'antd';
-
-import './css/Greeting.css';
+import { GreetingContainer } from './styled';
 
 const Greeting = ({ handleConnect }) => (
   <div className="greeting">
-    <div className="greeting-container">
+    <GreetingContainer>
       <h1 className="title">Общий Чат</h1>
       <p>Познакомьтесь с Клубом и общайтесь с другими участниками!</p>
       <div className="form-group">
@@ -18,8 +18,12 @@ const Greeting = ({ handleConnect }) => (
           Присоединиться
         </Button>
       </div>
-    </div>
+    </GreetingContainer>
   </div>
 );
 
 export default Greeting;
+
+Greeting.propTypes = {
+  handleConnect: PropTypes.func.isRequired,
+};

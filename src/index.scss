@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+#root {
+  max-width: 1000px;
+  margin: auto;
+  padding: 0 10px;
+}
+
+.ant-spin.ant-spin-spinning {
+  display: block;
+  margin: 0 auto;
+}

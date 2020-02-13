@@ -37,7 +37,7 @@ const UploadPhoto = props => {
     fileList,
   };
 
-  const handleUpload = async () => {
+  const handleUpload =  async () => {
     const formData = new FormData();
     fileList.forEach(file => {
       formData.append('photos', file);

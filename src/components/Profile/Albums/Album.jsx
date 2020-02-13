@@ -111,7 +111,8 @@ class Album extends React.Component {
     }
   };
 
-  deletePhoto = id => async () => {
+  deletePhoto = id => async (event) => {
+    event.stopPropagation();
     const { photos } = this.state;
     try {
       await queries.deletePhotoFromAlbum(id);
@@ -155,8 +156,8 @@ class Album extends React.Component {
           </CloseModalButton>
           <DeletePhotoModalButton
             title="delete"
-            onClick={() => {
-              this.deletePhoto(photos[currentIndex].id)();
+            onClick={(event) => {
+              this.deletePhoto(photos[currentIndex].id)(event);
               onClose();
             }}
           >

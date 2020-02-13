@@ -9,6 +9,25 @@ import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
 import UploadPhoto from './UploadPhoto';
 
+const CloseModalButton = styled(Button)`
+position:absolute;
+top:20px;
+padding:5px
+right:20px;
+width:44px;
+opacity: 0.7;
+z-index: 1;
+`;
+const DeletePhotoModalButton = styled(Button)`
+position:absolute;
+top:20px;
+right:64px;
+padding:5px
+width:44px;
+opacity: 0.7;
+z-index: 1;
+`;
+
 const DeletePhotoButton = styled(Button)`
   position: absolute;
   top: 0;
@@ -16,9 +35,6 @@ const DeletePhotoButton = styled(Button)`
   display: none;
   padding: 2px 5px;
   opacity: 0.8;
-`;
-const FullScreenPhotoButton = styled(DeletePhotoButton)`
-  right: 30px;
 `;
 
 const ImageWrapper = styled.div`
@@ -34,6 +50,9 @@ const AlbumNavigation = styled.div`
   margin-left: 5px;
 `;
 const StyledImage = styled.img`
+  object-fit: cover;
+  object-position: top center;
+  width: 239px;
   width: 100%;
   height: 150px;
 `;
@@ -121,27 +140,90 @@ class Album extends React.Component {
     const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
       location: {
-        state: { id },
+        state: { id, title },
       },
     } = this.props;
     const images = photos.reduce((acc, photo) => {
       return [...acc, { src: `${photoTempUlr}${photo.original}` }];
     }, []);
 
+    const CustomHeader = ({ currentIndex, isModal, modalProps: { onClose } }) =>
+      isModal ? (
+        <div>
+          <CloseModalButton onClick={onClose} title="close">
+            <Icon type="close" />
+          </CloseModalButton>
+          <DeletePhotoModalButton
+            title="delete"
+            onClick={() => {
+              this.deletePhoto(photos[currentIndex].id)();
+              onClose();
+            }}
+          >
+            <Icon type="delete" title="delete" />
+          </DeletePhotoModalButton>
+        </div>
+      ) : null;
+
+    if (window.matchMedia('(max-width: 479px)').matches) {
+      return (
+        <>
+          <AlbumNavigation>
+            <Link to="/profile/albums">Альбомы</Link>
+            <span>{` > ${title}`}</span>
+          </AlbumNavigation>
+          <AlbumWrapper>
+            {photos.length > 0 ? (
+              <>
+                {photos.map((photo, index) => (
+                  <ImageWrapper onClick={() => this.toggleLightbox(index)}>
+                    <StyledImage
+                      title={photo.title}
+                      alt="userPhoto"
+                      src={`${photoTempUlr}${photo.original}`}
+                    />
+                    <DeletePhotoButton
+                      type="default"
+                      title="Удалить Фотографию"
+                      onClick={this.deletePhoto(photo.id)}
+                    >
+                      <Icon type="delete" style={{ color: 'red' }} />
+                    </DeletePhotoButton>
+                  </ImageWrapper>
+                ))}
+                <ModalGateway>
+                  {lightboxIsOpen ? (
+                    <Modal onClose={this.toggleLightbox}>
+                      <Carousel
+                        views={images}
+                        currentIndex={selectedIndex}
+                        components={{ Header: CustomHeader }}
+                      />
+                    </Modal>
+                  ) : null}
+                </ModalGateway>
+              </>
+            ) : (
+              <StyledRow type="flex" justify="center">
+                <h4>Альбом пуст</h4>
+              </StyledRow>
+            )}
+          </AlbumWrapper>
+          <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+        </>
+      );
+    }
+
     const SortableItem = SortableElement(({ value, photoNum }) => (
-      <ImageWrapper>
+      <ImageWrapper onClick={() => this.toggleLightbox(photoNum)}>
         <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.original}`} />
         <DeletePhotoButton
           type="default"
           title="Удалить Фотографию"
           onClick={this.deletePhoto(value.id)}
         >
-          <Icon type="close" style={{ color: 'red' }} />
+          <Icon type="delete" style={{ color: 'red' }} />
         </DeletePhotoButton>
-
-        <FullScreenPhotoButton onClick={() => this.toggleLightbox(photoNum)}>
-          <Icon type="fullscreen" />
-        </FullScreenPhotoButton>
       </ImageWrapper>
     ));
 
@@ -156,15 +238,19 @@ class Album extends React.Component {
       <>
         <AlbumNavigation>
           <Link to="/profile/albums">Альбомы</Link>
-          <span>{` > ${id}`}</span>
+          <span>{` > ${title}`}</span>
         </AlbumNavigation>
         {photos.length > 0 ? (
           <>
-            <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} />
+            <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} distance={1} />
             <ModalGateway>
               {lightboxIsOpen ? (
                 <Modal onClose={this.toggleLightbox}>
-                  <Carousel views={images} currentIndex={selectedIndex} />
+                  <Carousel
+                    views={images}
+                    currentIndex={selectedIndex}
+                    components={{ Header: CustomHeader }}
+                  />
                 </Modal>
               ) : null}
             </ModalGateway>
@@ -184,6 +270,7 @@ Album.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
       id: PropTypes.number.isRequired,
+      title: PropTypes.string.isRequired,
       fileList: PropTypes.shape({
         indexOf: PropTypes.func.isRequired,
         slice: PropTypes.func.isRequired,

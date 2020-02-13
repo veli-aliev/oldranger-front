@@ -1,7 +1,21 @@
 import { Button, Icon, message, Row, Upload } from 'antd';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import queries from '../../../serverQueries';
+
+const UploadButton = styled(Button)`
+  @media (max-width: 479px) {
+    padding: 5px;
+    height: 100%;
+  }
+`;
+
+const StyledSpan = styled.span`
+  @media (max-width: 479px) {
+    display: block !important;
+  }
+`;
 
 const UploadPhoto = props => {
   const { albumId, loadPhotos } = props;
@@ -46,9 +60,10 @@ const UploadPhoto = props => {
     <>
       <Row type="flex" justify="center">
         <Upload {...uploadProps} disabled={uploading}>
-          <Button>
-            <Icon type="upload" /> Перетащите сюда или выберите фотографии
-          </Button>
+          <UploadButton>
+            <Icon type="upload" />
+            <StyledSpan>Перетащите сюда или выберите фотографии</StyledSpan>
+          </UploadButton>
         </Upload>
       </Row>
       <Row type="flex" justify="center">
@@ -57,7 +72,7 @@ const UploadPhoto = props => {
           onClick={handleUpload}
           disabled={fileList.length === 0}
           loading={uploading}
-          style={{ marginTop: 16 }}
+          style={{ margin: 16 }}
         >
           {uploading ? 'Загружаем' : 'Добавить Фотографии в альбом'}
         </Button>

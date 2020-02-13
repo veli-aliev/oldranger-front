@@ -8,8 +8,14 @@ import queries from '../../../serverQueries';
 const DeletePhotoButton = styled(Button)`
   display: none;
   position: absolute;
+  padding: 2px 5px;
   top: 0;
   right: 0;
+  opacity: 0.8;
+`;
+
+const EditPhotoButton = styled(DeletePhotoButton)`
+  right: 30px;
 `;
 
 const StyledAlbumCard = styled.div`
@@ -35,6 +41,7 @@ const PhotoCounter = styled.span`
   position: absolute;
   bottom: 0;
   right: 0;
+  padding: 10px;
   color: #fff;
 `;
 const AlbomBackgroundImage = styled.img`
@@ -45,6 +52,7 @@ const AlbumTitle = styled.span`
   word-break: break-all;
   position: absolute;
   bottom: 0;
+  padding: 10px;
   left: 0;
   color: #fff;
 `;
@@ -117,6 +125,19 @@ class Albums extends React.Component {
     }
   };
 
+  editPhotoAlbum = album => async event => {
+    event.stopPropagation();
+    const {
+      history,
+      location: { pathname },
+    } = this.props;
+    const url = `${pathname}/editAlbum/${album.id}`;
+    history.push({
+      pathname: url,
+      state: album,
+    });
+  };
+
   openAlbum = album => () => {
     const {
       history,
@@ -156,6 +177,13 @@ class Albums extends React.Component {
                 >
                   <Icon type="close" style={{ color: 'red' }} />
                 </DeletePhotoButton>
+                <EditPhotoButton
+                  type="default"
+                  title="Редактировать албом"
+                  onClick={this.editPhotoAlbum(album)}
+                >
+                  <Icon type="edit" />
+                </EditPhotoButton>
               </StyledAlbumCard>
             ))}
           </StyledAlbumWrapper>

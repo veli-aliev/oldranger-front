@@ -15,6 +15,7 @@ import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
+import AdminPanel from './components/AdminPanel';
 
 class App extends React.Component {
   constructor(props) {
@@ -44,7 +45,10 @@ class App extends React.Component {
   };
 
   render() {
-    const { isLogin } = this.state;
+    const {
+      isLogin,
+      user: { userId },
+    } = this.state;
 
     return (
       <Context.Provider
@@ -60,6 +64,11 @@ class App extends React.Component {
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+        <PrivateRoute
+          isLogin={isLogin && userId === 1}
+          path="/admin-panel"
+          component={AdminPanel}
+        />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />

@@ -111,7 +111,7 @@ class Album extends React.Component {
     }
   };
 
-  deletePhoto = id => async (event) => {
+  deletePhoto = id => async event => {
     event.stopPropagation();
     const { photos } = this.state;
     try {
@@ -156,7 +156,7 @@ class Album extends React.Component {
           </CloseModalButton>
           <DeletePhotoModalButton
             title="delete"
-            onClick={(event) => {
+            onClick={event => {
               this.deletePhoto(photos[currentIndex].id)(event);
               onClose();
             }}
@@ -177,7 +177,7 @@ class Album extends React.Component {
             {photos.length > 0 ? (
               <>
                 {photos.map((photo, index) => (
-                  <ImageWrapper onClick={() => this.toggleLightbox(index)}>
+                  <ImageWrapper onClick={() => this.toggleLightbox(index)} key={photo.id}>
                     <StyledImage
                       title={photo.title}
                       alt="userPhoto"

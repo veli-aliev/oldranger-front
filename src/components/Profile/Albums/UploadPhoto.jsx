@@ -1,5 +1,5 @@
 import { Button, Icon, message, Row, Upload } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import queries from '../../../serverQueries';
@@ -16,70 +16,88 @@ const StyledSpan = styled.span`
     display: block !important;
   }
 `;
+class UploadPhoto extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fileList: [],
+      uploading: false,
+    };
+  }
 
-const UploadPhoto = props => {
-  const { albumId, loadPhotos } = props;
-  const [fileList, setFileList] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const uploadProps = {
-    accept: '.jpg, .jpeg, .png',
-    multiple: true,
-    onRemove: file => {
-      const index = fileList.indexOf(file);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
-      setFileList(newFileList);
-    },
-    beforeUpload: file => {
-      setFileList([...fileList, file]);
-      return false;
-    },
-    fileList,
-  };
-
-  const handleUpload =  async () => {
+  handleUpload = async () => {
+    const { fileList} = this.state;
+    const { albumId, loadPhotos } = this.props;
     const formData = new FormData();
     fileList.forEach(file => {
       formData.append('photos', file);
     });
-    setUploading(true);
+    this.setState({
+      uploading: true,
+    });
 
     try {
       await queries.addPhotosInAlbum(albumId, formData);
-      setFileList([]);
-      setUploading(false);
+      this.setState({
+        fileList: [],
+        uploading: false,
+      });
       message.success('upload successfully.');
       loadPhotos();
     } catch (error) {
-      setUploading(false);
+      this.setState({
+        uploading: true,
+      });
       message.error('upload failed.');
     }
   };
 
-  return (
-    <>
-      <Row type="flex" justify="center">
-        <Upload {...uploadProps} disabled={uploading}>
-          <UploadButton>
-            <Icon type="upload" />
-            <StyledSpan>Перетащите сюда или выберите фотографии</StyledSpan>
-          </UploadButton>
-        </Upload>
-      </Row>
-      <Row type="flex" justify="center">
-        <Button
-          type="primary"
-          onClick={handleUpload}
-          disabled={fileList.length === 0}
-          loading={uploading}
-          style={{ margin: 16 }}
-        >
-          {uploading ? 'Загружаем' : 'Добавить Фотографии в альбом'}
-        </Button>
-      </Row>
-    </>
-  );
-};
+  render() {
+    const { fileList, uploading } = this.state;
+    const uploadProps = {
+      accept: '.jpg, .jpeg, .png',
+      multiple: true,
+      onRemove: file => {
+        const index = fileList.indexOf(file);
+        const newFileList = fileList.slice();
+        newFileList.splice(index, 1);
+        this.setState({
+          fileList: newFileList,
+        });
+      },
+      beforeUpload: file => {
+        this.setState(state => ({
+          fileList: [...state.fileList, file],
+        }));
+        return false;
+      },
+      fileList,
+    };
+    return (
+      <>
+        <Row type="flex" justify="center">
+          <Upload {...uploadProps} disabled={uploading}>
+            <UploadButton>
+              <Icon type="upload" />
+              <StyledSpan>Перетащите сюда или выберите фотографии</StyledSpan>
+            </UploadButton>
+          </Upload>
+        </Row>
+        <Row type="flex" justify="center">
+          <Button
+            type="primary"
+            onClick={this.handleUpload}
+            disabled={fileList.length === 0}
+            loading={uploading}
+            style={{ margin: 16 }}
+          >
+            {uploading ? 'Загружаем' : 'Добавить Фотографии в альбом'}
+          </Button>
+        </Row>
+      </>
+    );
+  }
+}
 
 UploadPhoto.propTypes = {
   loadPhotos: PropTypes.func.isRequired,

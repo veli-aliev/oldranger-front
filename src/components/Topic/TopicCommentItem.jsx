@@ -38,10 +38,19 @@ class TopicCommentItem extends React.Component {
     this.setState({ toggleEdeting: false, withActions: true });
   };
 
+  showFieldOrNot() {
+    const { userByRole } = this.context;
+    const { comment } = this.props;
+    return (
+      (userByRole.id === comment.author.id && comment.updatable === true) ||
+      userByRole.role === userRoles.admin ||
+      userByRole.role === userRoles.moderator
+    );
+  }
+
   render() {
     const { comment, handleQuoteComment, deleteComment, getTopics, page } = this.props;
     const { withActions, toggleEdeting } = this.state;
-    const { userByRole } = this.context;
     const convertedImages = comment.photos.map(photo => {
       return {
         uid: `-${String(photo.id)}`,
@@ -61,10 +70,10 @@ class TopicCommentItem extends React.Component {
       >
         Ответить на сообщение {comment.author.nickName}
       </span>,
-      userRoles.checkMatchesByRoleAndUserId(userByRole, comment) ? (
+      this.showFieldOrNot() ? (
         <IconText type="edit" onHandleClick={this.handleClickEditBtn} title="Редактировать" />
       ) : null,
-      userRoles.checkMatchesByRoleAndUserId(userByRole, comment) ? (
+      this.showFieldOrNot() ? (
         <IconText
           type="delete"
           onHandleClick={() => {

@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
-import { Avatar, Comment, Popover, Tooltip, Icon } from 'antd';
-import { parseISO, format, formatDistanceToNow } from 'date-fns';
+import { Popover, Tooltip, Icon } from 'antd';
+import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
-import { ReplyTag, ListItem } from './styled';
+import { ReplyTag } from './styled';
 import TopicEditingForm from './TopicEditingForm';
-import TopicUserInfo from './TopicUserInfo';
 import commentProps from './propTypes/commentProps';
-import TopicPhotoList from './TopicPhotoList';
+import TopicCommentListItem from './TopicCommentListItem';
 import Context from '../Context';
+import userRoles from '../UserRoles';
 
 const IconText = ({ type, onHandleClick, title }) => (
   <Tooltip placement="topRight" title={title}>
@@ -41,13 +41,15 @@ class TopicCommentItem extends React.Component {
   render() {
     const { comment, handleQuoteComment, deleteComment, getTopics, page } = this.props;
     const { withActions, toggleEdeting } = this.state;
-    const { user } = this.context;
-    const convertedImages = comment.imageComment.map(image => ({
-      uid: `-${String(image.id)}`,
-      url: `http://localhost:8888/img/imageComment/${image.img}`,
-      name: String(image.id),
-      status: 'done',
-    }));
+    const { userByRole } = this.context;
+    const convertedImages = comment.photos.map(photo => {
+      return {
+        uid: `-${String(photo.id)}`,
+        url: `http://localhost:8888/api/securedPhoto/photoFromAlbum/${photo.id}?type=small`,
+        name: `Photo_name_${photo.description}`,
+        status: 'done',
+      };
+    });
     const commentActions = [
       <span key="comment-basic-position">#{comment.positionInTopic + 1}</span>,
       <span
@@ -59,10 +61,14 @@ class TopicCommentItem extends React.Component {
       >
         Ответить на сообщение {comment.author.nickName}
       </span>,
-      user.nickName === 'Admin' || user.nickName === 'Moderator' ? (
+      (userByRole.id === comment.author.id && comment.updatable === true) ||
+      userByRole.role === userRoles.admin ||
+      userByRole.role === userRoles.moderator ? (
         <IconText type="edit" onHandleClick={this.handleClickEditBtn} title="Редактировать" />
       ) : null,
-      user.nickName === 'Admin' || user.nickName === 'Moderator' ? (
+      (userByRole.id === comment.author.id && comment.updatable === true) ||
+      userByRole.role === userRoles.admin ||
+      userByRole.role === userRoles.moderator ? (
         <IconText
           type="delete"
           onHandleClick={() => {
@@ -100,48 +106,34 @@ class TopicCommentItem extends React.Component {
             })}`}
             placement="topLeft"
           >
-            <ReplyTag color="magenta">{comment.replyNick}</ReplyTag>
+            <ReplyTag color="green">
+              (Ответ на комментарий <strong>{comment.replyNick}</strong>)
+            </ReplyTag>
           </Popover>
           {comment.commentText}
         </p>
       );
+    } else if (comment.rootDeleted) {
+      contentCommentText = (
+        <p>
+          <ReplyTag color="magenta">(Ответ на удаленный комментарий)</ReplyTag>
+          {comment.commentText}
+        </p>
+      );
     } else {
-      contentCommentText = comment.commentText;
+      contentCommentText = <p>{comment.commentText}</p>;
     }
 
     return (
-      <ListItem id={comment.positionInTopic + 1}>
-        <Comment
-          actions={withActions ? commentActions : null}
-          author={comment.author.nickName}
-          avatar={
-            <Popover
-              content={
-                <TopicUserInfo user={{ ...comment.author, messageCount: comment.messageCount }} />
-              }
-              placement="right"
-            >
-              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-            </Popover>
-          }
-          content={toggleEdeting ? contentEditingForm : contentCommentText}
-          datetime={
-            <Tooltip
-              title={format(parseISO(comment.commentDateTime), "dd MMMM yyyy 'в' HH:mm", {
-                locale: ru,
-              })}
-            >
-              <span>
-                {formatDistanceToNow(parseISO(comment.commentDateTime), {
-                  locale: ru,
-                  addSuffix: true,
-                })}
-              </span>
-            </Tooltip>
-          }
-        />
-        {convertedImages && !toggleEdeting && <TopicPhotoList fileList={convertedImages} />}
-      </ListItem>
+      <TopicCommentListItem
+        comment={comment}
+        withActions={withActions}
+        toggleEdeting={toggleEdeting}
+        convertedImages={convertedImages}
+        commentActions={commentActions}
+        contentCommentText={contentCommentText}
+        contentEditingForm={contentEditingForm}
+      />
     );
   }
 }

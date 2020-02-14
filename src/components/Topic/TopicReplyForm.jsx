@@ -12,8 +12,7 @@ import fileProps from './propTypes/fileProps';
 const validationSchema = Yup.object({
   message: Yup.string()
     .min(1, 'Сообщение не может быть пустым')
-    .max(500000, 'Слишком длинное сообщение')
-    .required('Поле обязательно для заполнения'),
+    .max(500000, 'Слишком длинное сообщение').isRequired,
 });
 
 const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files, uploading }) => {

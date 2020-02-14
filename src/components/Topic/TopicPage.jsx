@@ -44,7 +44,7 @@ class TopicPage extends React.Component {
     replyNick: null,
     replyText: null,
     commentText: topic.startMessage,
-    imageComment: [], // no topic images from backend at this moment
+    photos: [], // no topic images from backend at this moment
   });
 
   getTopics = page => {
@@ -55,7 +55,7 @@ class TopicPage extends React.Component {
         this.setState({
           topic,
           page,
-          messages: [this.topicToComment(topic), ...commentDto.content],
+          messages: commentDto ? [this.topicToComment(topic), ...commentDto.content] : null,
         });
       });
     } else {
@@ -65,7 +65,7 @@ class TopicPage extends React.Component {
           this.setState({
             topic,
             page,
-            messages: commentDto.content,
+            messages: commentDto ? commentDto.content : null,
           });
         });
     }
@@ -98,7 +98,16 @@ class TopicPage extends React.Component {
     }
   };
 
-  handleSubmitComment = (messageText, resetForm) => {
+  handleSubmitComment = async (messageText, resetForm) => {
+    if (messageText === '') {
+      notification.open({
+        message: 'Сообщение не может быть пустым',
+        description: 'Максимальное количество символов 500000',
+        icon: <GoldIcon type="warning" />,
+      });
+      return;
+    }
+
     this.setState({ uploading: true });
     const { topic, answerId, files } = this.state;
     const { user } = this.context;
@@ -106,7 +115,7 @@ class TopicPage extends React.Component {
     const messageComentsEntity = {
       idTopic: topic.id,
       idUser: user.userId,
-      text: messageText,
+      text: messageText.trim(),
     };
 
     if (answerId) {
@@ -114,29 +123,25 @@ class TopicPage extends React.Component {
     }
 
     [messageComentsEntity.image1, messageComentsEntity.image2] = files;
-    return queries
-      .addComment(messageComentsEntity)
-      .then(() => {
-        const lastPage = Math.floor(topic.messageCount / 10 + 1);
-        history.push(`${history.location.pathname}?page=${lastPage}`);
-        this.getTopics(lastPage);
-        message.success('Ваше сообщение успешно добавлено');
-        this.setState({ reply: null, answerId: null, files: [], uploading: false });
-        resetForm();
-      })
-      .catch(() => {
-        message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
-        this.setState({ uploading: false });
-      });
+    try {
+      await queries.addComment(messageComentsEntity);
+      const lastPage = Math.floor(topic.messageCount / 10 + 1);
+      history.push(`${history.location.pathname}?page=${lastPage}`);
+      this.getTopics(lastPage);
+      message.success('Ваше сообщение успешно добавлено');
+      this.setState({ reply: null, answerId: null, files: [], uploading: false });
+      resetForm();
+    } catch {
+      message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
+      this.setState({ uploading: false });
+    }
   };
 
   handleDeleteComment = commentId => {
-    const { history } = this.props;
     queries
       .deleteComment(commentId)
       .then(() => {
         const { page } = this.state;
-        history.push(`${history.location.pathname}?page=${page}`);
         this.getTopics(page);
         message.success('Сообщение удалено');
       })

@@ -19,10 +19,14 @@ import SearchForm from './components/Main/SearchForm';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    let initialState = { user: {}, isLogin: false };
+    let initialState = { user: {}, isLogin: false, userByRole: {} };
     if (localStorage.getItem('user')) {
-      const user = JSON.parse(localStorage.getItem('user') || {});
-      initialState = { user, isLogin: true };
+      const userData = JSON.parse(localStorage.getItem('user') || {});
+      initialState = {
+        user: { ...userData.userProfile },
+        isLogin: true,
+        userByRole: { ...userData.userByRole },
+      };
     }
     this.state = { ...initialState };
   }
@@ -34,13 +38,13 @@ class App extends React.Component {
   };
 
   changeUserState = data => {
-    this.setState({ user: { ...data } });
+    this.setState({ user: { ...data.userProfile }, userByRole: { ...data.userByRole } });
   };
 
   logOut = async () => {
     localStorage.removeItem('user');
     queries.logOut();
-    this.setState(() => ({ isLogin: false, user: {} }));
+    this.setState(() => ({ isLogin: false, user: {}, userByRole: {} }));
   };
 
   render() {

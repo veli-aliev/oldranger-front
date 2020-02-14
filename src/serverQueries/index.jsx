@@ -76,10 +76,10 @@ class Queries {
     const { data: profile } = await axios.get('/api/profile', {
       withCredentials: true,
     });
-    const { data: id } = await axios.get('/api/getloggeduserid', {
+    const { data: userRole } = await axios.get('/api/currentUser', {
       withCredentials: true,
     });
-    return { ...profile, id };
+    return { userProfile: { ...profile }, userByRole: { ...userRole } };
   };
 
   getSubsectionTopics = async (subsectionId, page = 0) => {
@@ -172,7 +172,6 @@ class Queries {
     const res = await axios.delete(`/api/comment/delete/${commentId}`, {
       withCredentials: true,
     });
-
     return res.status;
   };
 

@@ -61,14 +61,10 @@ class TopicCommentItem extends React.Component {
       >
         Ответить на сообщение {comment.author.nickName}
       </span>,
-      (userByRole.id === comment.author.id && comment.updatable === true) ||
-      userByRole.role === userRoles.admin ||
-      userByRole.role === userRoles.moderator ? (
+      userRoles.checkMatchesByRoleAndUserId(userByRole, comment) ? (
         <IconText type="edit" onHandleClick={this.handleClickEditBtn} title="Редактировать" />
       ) : null,
-      (userByRole.id === comment.author.id && comment.updatable === true) ||
-      userByRole.role === userRoles.admin ||
-      userByRole.role === userRoles.moderator ? (
+      userRoles.checkMatchesByRoleAndUserId(userByRole, comment) ? (
         <IconText
           type="delete"
           onHandleClick={() => {

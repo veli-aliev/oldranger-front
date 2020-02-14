@@ -138,9 +138,7 @@ class Queries {
       formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
     }
 
-    const res = await axios.post('/api/comment/add', formData, {
-      withCredentials: true,
-    });
+    const res = await axios.post('/api/comment/add', formData);
 
     return res.data;
   };
@@ -161,17 +159,13 @@ class Queries {
       formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
     }
 
-    const res = await axios.put(url, formData, {
-      withCredentials: true,
-    });
+    const res = await axios.put(url, formData);
 
     return res.status;
   };
 
   deleteComment = async commentId => {
-    const res = await axios.delete(`/api/comment/delete/${commentId}`, {
-      withCredentials: true,
-    });
+    const res = await axios.delete(`/api/comment/delete/${commentId}`);
     return res.status;
   };
 

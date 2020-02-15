@@ -6,7 +6,7 @@ import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
 import Chat from './Chat';
 import Greeting from './Greeting';
-import { isForbidden, getCurrentUser, getAllUsers, getAllMessages } from './axios';
+import { isForbidden, getCurrentUser, getAllUsers, getAllMessages } from './requests';
 
 const url = 'http://localhost:8888';
 
@@ -82,7 +82,7 @@ class ChatAuth extends React.Component {
       this.setState({ messages: messages.slice().reverse() });
     } else {
       const { data } = await getAllMessages(0);
-      this.setState({ messages: data.slice().reverse() });
+      this.setState({ messages: data ? data.slice().reverse() : [] });
     }
   };
 
@@ -104,8 +104,9 @@ class ChatAuth extends React.Component {
 
   onMessageRecieved = payload => {
     const message = JSON.parse(payload.body);
-    const { messages } = this.state;
-    this.setState({ messages: [...messages, message] });
+    // const { messages } = this.state;
+    this.setState(state => ({ messages: [...state.messages, message] }));
+    // this.setState({ messages: [...messages, message] });
     this.getUsersOnline();
     setTimeout(() => {
       const lastMessage = document.querySelector('.message-list li:last-of-type');

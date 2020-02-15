@@ -151,7 +151,7 @@ export const EventMessage = styled(Li)`
   text-align: center;
 `;
 
-export const Avatar = styled.img`
+export const MessageAvatar = styled.img`
   position: absolute;
   width: 42px;
   height: 42px;
@@ -161,22 +161,22 @@ export const Avatar = styled.img`
   border-radius: 50%;
 `;
 
-export const Author = styled.div`
+export const MessageAuthor = styled.div`
   font-weight: 700;
   font-size: 1rem;
 `;
 
-export const Image = styled.img`
+export const MessageImage = styled.img`
   margin: 10px 0;
   max-height: 250px;
 `;
 
-export const Date = styled.span`
+export const MessageDate = styled.span`
   color: #888888;
   font-size: 10px;
 `;
 
-export const Text = styled.p`
+export const MessageText = styled.p`
   margin: 0;
 `;
 

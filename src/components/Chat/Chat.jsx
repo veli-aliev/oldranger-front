@@ -2,7 +2,7 @@ import React from 'react';
 import lodash from 'lodash';
 import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
-import { getImage } from './axios';
+import { getImage } from './requests';
 import {
   ChatContainer,
   Header,
@@ -16,11 +16,11 @@ import {
   MessageList,
   Message,
   EventMessage,
-  Avatar,
-  Author,
-  Image,
-  Date,
-  Text,
+  MessageAvatar,
+  MessageAuthor,
+  MessageImage,
+  MessageDate,
+  MessageText,
   ShowFullButton,
   Arrow,
   Form,
@@ -71,12 +71,12 @@ class Chat extends React.Component {
           key={`${msg.id}`}
           onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
         >
-          <Avatar alt="avatar" src={`${url}/img/${msg.senderAvatar}`} />
+          <MessageAvatar alt="avatar" src={`${url}/img/${msg.senderAvatar}`} />
           <div>
-            <Author>{msg.sender}</Author>
+            <MessageAuthor>{msg.sender}</MessageAuthor>
             {msg.originalImg ? (
               <a href={`${url}/img/chat/${msg.originalImg}`}>
-                <Image
+                <MessageImage
                   alt="picture"
                   className="message-image"
                   src={`${url}/img/chat/${msg.thumbnailImg}`}
@@ -85,9 +85,9 @@ class Chat extends React.Component {
             ) : (
               ''
             )}
-            <Text className="message-text">{msg.text}</Text>
+            <MessageText className="message-text">{msg.text}</MessageText>
           </div>
-          <Date className="message-date">{msg.messageDate}</Date>
+          <MessageDate className="message-date">{msg.messageDate}</MessageDate>
         </Message>
       );
     }
@@ -120,7 +120,7 @@ class Chat extends React.Component {
                 ))}
               </UserList>
             </div>
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '80%' }}>
               <MessageList className="message-list">
                 {isFull ? (
                   ''

@@ -37,7 +37,7 @@ const DeletePhotoButton = styled(Button)`
   opacity: 0.8;
 `;
 
-const ImageWrapper = styled.div`
+export const ImageWrapper = styled.div`
   display: inline-block;
   position: relative;
   width: 239px;
@@ -49,11 +49,10 @@ const ImageWrapper = styled.div`
 const AlbumNavigation = styled.div`
   margin-left: 5px;
 `;
-const StyledImage = styled.img`
+export const StyledImage = styled.img`
   object-fit: cover;
   object-position: top center;
   width: 239px;
-  width: 100%;
   height: 150px;
 `;
 

@@ -152,6 +152,7 @@ class Albums extends React.Component {
 
   render() {
     const { albums } = this.state;
+    console.log(albums);
     return (
       <>
         {albums.length > 0 ? (

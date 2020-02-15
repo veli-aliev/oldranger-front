@@ -26,7 +26,7 @@ class UploadPhoto extends React.Component {
   }
 
   handleUpload = async () => {
-    const { fileList} = this.state;
+    const { fileList } = this.state;
     const { albumId, loadPhotos } = this.props;
     const formData = new FormData();
     fileList.forEach(file => {

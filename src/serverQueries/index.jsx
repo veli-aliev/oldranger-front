@@ -58,10 +58,11 @@ class Queries {
     return res.data;
   };
 
-  getTopic = async (topicId, offset, limit) => {
-    const res = await axios.get(`/api/topic/${topicId}?pos=${offset}&limit=${limit}`, {
+  getTopic = async (topicId, page, limit) => {
+    const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=${limit}`, {
       withCredentials: true,
     });
+    console.log('TopicAndCommentsDTO: ', res.data);
     return res.data;
   };
 
@@ -138,7 +139,9 @@ class Queries {
       formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
     }
 
-    const res = await axios.post('/api/comment/add', formData);
+    const res = await axios.post('/api/comment/add', formData, {
+      withCredentials: true,
+    });
 
     return res.data;
   };
@@ -159,13 +162,17 @@ class Queries {
       formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
     }
 
-    const res = await axios.put(url, formData);
+    const res = await axios.put(url, formData, {
+      withCredentials: true,
+    });
 
     return res.status;
   };
 
   deleteComment = async commentId => {
-    const res = await axios.delete(`/api/comment/delete/${commentId}`);
+    const res = await axios.delete(`/api/comment/delete/${commentId}`, {
+      withCredentials: true,
+    });
     return res.status;
   };
 

@@ -60,7 +60,7 @@ class TopicCommentItem extends React.Component {
       };
     });
     const commentActions = [
-      <span key="comment-basic-position">#{comment.positionInTopic + 1}</span>,
+      <span key="comment-basic-position">#{comment.positionInTopic}</span>,
       <span
         key="comment-basic-reply-to"
         onClick={handleQuoteComment(comment)}

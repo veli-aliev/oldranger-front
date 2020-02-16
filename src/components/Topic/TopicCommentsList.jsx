@@ -1,24 +1,30 @@
-import React from 'react';
-import { Spin } from 'antd';
+import React, { useContext } from 'react';
+import { Result, Icon, Button } from 'antd';
 import PropTypes from 'prop-types';
 import commentProps from './propTypes/commentProps';
 import { StyledList, StyledTitle } from '../Main/styled';
-import { TopicCommentReplyAlert } from './styled';
+import Context from '../Context';
 
-const TopicCommentsList = ({ messages, itemComponent, title, changePageHandler, total, page }) => {
+const TopicCommentsList = ({
+  messages,
+  itemComponent,
+  changePageHandler,
+  total,
+  page,
+  replyButtonHandler,
+  openNotification,
+}) => {
+  const { isLogin } = useContext(Context);
   if (!messages) {
     return (
-      <TopicCommentReplyAlert
-        type="error"
-        message={<span>Что-то пошло не так, ну удалось получить сообщения</span>}
-      />
+      <Result status="500" title="500" subTitle="Извините на сервере возникла неожиданная ошибка" />
     );
   }
   if (messages.length > 0) {
     return (
       <StyledList
         className="comment-list"
-        header={<StyledTitle>{title}</StyledTitle>}
+        header={<StyledTitle>Комментарии ({total})</StyledTitle>}
         itemLayout="horizontal"
         dataSource={messages}
         renderItem={itemComponent}
@@ -33,20 +39,30 @@ const TopicCommentsList = ({ messages, itemComponent, title, changePageHandler, 
       />
     );
   }
-  return <Spin />;
+  return (
+    <Result
+      icon={<Icon type="smile" theme="twoTone" />}
+      title="Комментариев нет!"
+      extra={
+        <Button onClick={isLogin ? replyButtonHandler : openNotification} type="primary">
+          Добавить комментарий
+        </Button>
+      }
+    />
+  );
 };
 
 TopicCommentsList.propTypes = {
   messages: PropTypes.arrayOf(commentProps).isRequired,
   itemComponent: PropTypes.func.isRequired,
-  title: PropTypes.string,
   changePageHandler: PropTypes.func,
   total: PropTypes.number,
   page: PropTypes.number,
+  replyButtonHandler: PropTypes.func.isRequired,
+  openNotification: PropTypes.func.isRequired,
 };
 
 TopicCommentsList.defaultProps = {
-  title: 'No Title',
   total: 1,
   page: 1,
   changePageHandler: () => {},

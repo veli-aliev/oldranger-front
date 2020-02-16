@@ -8,6 +8,7 @@ import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
+import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 
 const { Text } = Typography;
@@ -51,23 +52,21 @@ class TopicPage extends React.Component {
     // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
     if (page === 1) {
-      queries.getTopic(match.params.topicId, 0, 9).then(({ topic, commentDto }) => {
+      queries.getTopic(match.params.topicId, 0, 10).then(({ topic, commentDto }) => {
         this.setState({
           topic,
           page,
-          messages: commentDto ? [this.topicToComment(topic), ...commentDto.content] : null,
+          messages: commentDto ? commentDto.content : null,
         });
       });
     } else {
-      queries
-        .getTopic(match.params.topicId, (page - 1) * 10 - 1, 10)
-        .then(({ topic, commentDto }) => {
-          this.setState({
-            topic,
-            page,
-            messages: commentDto ? commentDto.content : null,
-          });
+      queries.getTopic(match.params.topicId, page - 1, 10).then(({ topic, commentDto }) => {
+        this.setState({
+          topic,
+          page,
+          messages: commentDto ? commentDto.content : null,
         });
+      });
     }
   };
 
@@ -138,10 +137,42 @@ class TopicPage extends React.Component {
   };
 
   handleDeleteComment = commentId => {
+    const { page, messages } = this.state;
+    const { history } = this.props;
+
+    if (messages.length === 1 && page === 1) {
+      history.push(`${history.location.pathname}?page=${page}`);
+      queries
+        .deleteComment(commentId)
+        .then(() => {
+          history.push(`${history.location.pathname}?page=${page}`);
+          this.getTopics(page);
+          message.success('Сообщение удалено');
+        })
+        .catch(() => {
+          message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
+        });
+      return;
+    }
+
+    if (messages.length === 1 && page > 1) {
+      queries
+        .deleteComment(commentId)
+        .then(() => {
+          history.push(`${history.location.pathname}?page=${page - 1}`);
+          this.getTopics(page - 1);
+          message.success('Сообщение удалено');
+        })
+        .catch(() => {
+          message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
+        });
+      return;
+    }
+
     queries
       .deleteComment(commentId)
       .then(() => {
-        const { page } = this.state;
+        history.push(`${history.location.pathname}?page=${page}`);
         this.getTopics(page);
         message.success('Сообщение удалено');
       })
@@ -190,9 +221,9 @@ class TopicPage extends React.Component {
                 <Link to={`/topic/${topic.id}`}>{topic.name}</Link>
               </Breadcrumb.Item>
             </Breadcrumb>
+            <TopicStartMessage topic={topic} />
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
-              title={topic.name}
               messages={messages}
               itemComponent={item => (
                 <TopicCommentItem
@@ -203,8 +234,10 @@ class TopicPage extends React.Component {
                   page={page}
                 />
               )}
-              total={topic.messageCount + 1}
+              total={topic.messageCount}
               page={page}
+              replyButtonHandler={this.replyButtonHandler}
+              openNotification={this.openNotification}
             />
           </div>
         ) : (

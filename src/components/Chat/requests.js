@@ -3,24 +3,29 @@ import axios from 'axios';
 const url = 'http://localhost:8888/api/chat';
 
 export const getImage = async formData => {
-  await axios.post(`${url}/image`, formData, {
+  const response = await axios.post(`${url}/image`, formData, {
     headers: { 'content-type': 'multipart/form-data' },
     withCredentials: true,
   });
+  return response;
 };
 
 export const isForbidden = async () => {
-  await axios.get(`${url}/isForbidden`, { withCredentials: true });
+  const response = await axios.get(`${url}/isForbidden`, { withCredentials: true });
+  return response;
 };
 
 export const getCurrentUser = async () => {
-  await axios.get(`${url}/user`, { withCredentials: true });
+  const response = await axios.get(`${url}/user`, { withCredentials: true });
+  return response;
 };
 
 export const getAllUsers = async () => {
-  await axios.get(`${url}/users`);
+  const response = await axios.get(`${url}/users`);
+  return response;
 };
 
 export const getAllMessages = async page => {
-  await axios.get(`${url}/messages?page=${page}`);
+  const response = await axios.get(`${url}/messages?page=${page}`);
+  return response;
 };

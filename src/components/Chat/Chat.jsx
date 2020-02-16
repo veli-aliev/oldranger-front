@@ -2,7 +2,7 @@ import React from 'react';
 import lodash from 'lodash';
 import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
-import { getImage } from './requests';
+import queries from '../../serverQueries';
 import {
   ChatContainer,
   Header,
@@ -27,7 +27,7 @@ import {
   Footer,
 } from './styled';
 
-const url = 'http://localhost:8888';
+const url = process.env.BASE_URL || 'http://localhost:8888/';
 
 class Chat extends React.Component {
   constructor(props) {
@@ -44,8 +44,8 @@ class Chat extends React.Component {
 
     const form = document.querySelector('.message-form');
     const formData = new FormData(form);
-    const { data } = await getImage(formData);
-    this.setState({ image: data });
+    const image = await queries.getImage(formData);
+    this.setState({ image });
   };
 
   handleSubmit = event => {
@@ -71,15 +71,15 @@ class Chat extends React.Component {
           key={`${msg.id}`}
           onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
         >
-          <MessageAvatar alt="avatar" src={`${url}/img/${msg.senderAvatar}`} />
+          <MessageAvatar alt="avatar" src={`${url}img/${msg.senderAvatar}`} />
           <div>
             <MessageAuthor>{msg.sender}</MessageAuthor>
             {msg.originalImg ? (
-              <a href={`${url}/img/chat/${msg.originalImg}`}>
+              <a href={`${url}img/chat/${msg.originalImg}`}>
                 <MessageImage
                   alt="picture"
                   className="message-image"
-                  src={`${url}/img/chat/${msg.thumbnailImg}`}
+                  src={`${url}img/chat/${msg.thumbnailImg}`}
                 />
               </a>
             ) : (

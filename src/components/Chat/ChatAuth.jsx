@@ -6,9 +6,9 @@ import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
 import Chat from './Chat';
 import Greeting from './Greeting';
-import { isForbidden, getCurrentUser, getAllUsers, getAllMessages } from './requests';
+import queries from '../../serverQueries';
 
-const url = 'http://localhost:8888';
+const url = process.env.BASE_URL || 'http://localhost:8888/';
 
 class ChatAuth extends React.Component {
   constructor(props) {
@@ -23,13 +23,13 @@ class ChatAuth extends React.Component {
 
   connect = async event => {
     event.preventDefault();
-    const { data } = await isForbidden();
-    if (data) {
+    const isForb = await queries.isForbidden();
+    if (isForb) {
       // banned user
     } else {
-      const response = await getCurrentUser();
-      if (response.data.username) {
-        const socket = new SockJS(`${url}/ws`, null, {});
+      const currentUser = await queries.getCurrentUser();
+      if (currentUser.username) {
+        const socket = new SockJS(`${url}ws`, null, {});
         this.stompClient = Stomp.over(socket);
         this.stompClient.connect({}, this.onConnected, () => {});
       }
@@ -63,9 +63,9 @@ class ChatAuth extends React.Component {
   };
 
   getUsersOnline = async () => {
-    this.setState({ usersOnline: {} });
-    const { data } = await getAllUsers();
-    this.setState({ usersOnline: data });
+    // this.setState({ usersOnline: {} });
+    const usersOnline = await queries.getAllUsers();
+    this.setState({ usersOnline });
   };
 
   getMessages = async (isFull = false) => {
@@ -74,14 +74,14 @@ class ChatAuth extends React.Component {
       let page = 0;
       let messages = [];
       while (status === 200) {
-        const response = await getAllMessages(page);
+        const response = await queries.getAllMessages(page);
         status = response.status;
         page += 1;
         messages = [...messages, ...response.data];
       }
       this.setState({ messages: messages.slice().reverse() });
     } else {
-      const { data } = await getAllMessages(0);
+      const { data } = await queries.getAllMessages(0);
       this.setState({ messages: data ? data.slice().reverse() : [] });
     }
   };
@@ -104,9 +104,7 @@ class ChatAuth extends React.Component {
 
   onMessageRecieved = payload => {
     const message = JSON.parse(payload.body);
-    // const { messages } = this.state;
     this.setState(state => ({ messages: [...state.messages, message] }));
-    // this.setState({ messages: [...messages, message] });
     this.getUsersOnline();
     setTimeout(() => {
       const lastMessage = document.querySelector('.message-list li:last-of-type');

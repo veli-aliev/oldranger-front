@@ -33,7 +33,7 @@ const RightWrapper = styled.div`
 const Header = () => {
   return (
     <Context.Consumer>
-      {({ isLogin, logOut }) => (
+      {({ isLogin, logOut, user }) => (
         <StyledHeader>
           <LeftWrapper>
             <Button type="primary">
@@ -44,6 +44,11 @@ const Header = () => {
             </Button>
           </LeftWrapper>
           <RightWrapper>
+            {isLogin && user.userId === 1 && (
+              <Button>
+                <Link to="/admin-panel">Admin panel</Link>
+              </Button>
+            )}
             {isLogin ? (
               <>
                 <Button>

@@ -159,11 +159,14 @@ class Queries {
     return res.data;
   };
 
-  uploadPhoto = async photo => {
-    // пока бекенд не готов, загружаем фото в первый и единственный альбом
-    const res = await axios.post('/api/photos/1', photo);
-    return res.data.small;
-  };
+  // uploadPhoto = async photo => {
+  //   // пока бекенд не готов, загружаем фото в первый и единственный альбом
+  //   const res = await axios.post('/api/photos/1', photo, {
+  //     withCredentials: true,
+  //   });
+  //   const res = await axios.post('/api/photos/1', photo);
+  //   return res.data.small;
+  // };
 
   getAlbums = async () => {
     const res = await axios.get('/api/albums');

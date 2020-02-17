@@ -48,9 +48,11 @@ class App extends React.Component {
   };
 
   render() {
-    const { isLogin } = this.state;
-    const { id } = this.state.user;
-    
+    const {
+      isLogin,
+      user: { id },
+    } = this.state;
+
     return (
       <Context.Provider
         value={{
@@ -65,11 +67,7 @@ class App extends React.Component {
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
-        <PrivateRoute
-          isLogin={isLogin && id === 1}
-          path="/admin-panel"
-          component={AdminPanel}
-        />
+        <PrivateRoute isLogin={isLogin && id === 1} path="/admin-panel" component={AdminPanel} />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />

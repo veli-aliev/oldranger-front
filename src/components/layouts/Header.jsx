@@ -41,7 +41,7 @@ const Header = () => {
             </Button>
           </LeftWrapper>
           <RightWrapper>
-            {isLogin && user.userId === 1 && (
+            {isLogin && user.id === 1 && (
               <Button>
                 <Link to="/admin-panel">Admin panel</Link>
               </Button>

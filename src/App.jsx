@@ -23,7 +23,10 @@ class App extends React.Component {
     let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
       const user = JSON.parse(localStorage.getItem('user') || {});
-      initialState = { user, isLogin: true };
+      initialState = {
+        user,
+        isLogin: true,
+      };
     }
     this.state = { ...initialState };
   }
@@ -41,15 +44,13 @@ class App extends React.Component {
   logOut = async () => {
     localStorage.removeItem('user');
     queries.logOut();
-    this.setState(() => ({ isLogin: false, user: {} }));
+    this.setState({ isLogin: false, user: {} });
   };
 
   render() {
-    const {
-      isLogin,
-      user: { userId },
-    } = this.state;
-
+    const { isLogin } = this.state;
+    const { id } = this.state.user;
+    
     return (
       <Context.Provider
         value={{
@@ -65,7 +66,7 @@ class App extends React.Component {
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
-          isLogin={isLogin && userId === 1}
+          isLogin={isLogin && id === 1}
           path="/admin-panel"
           component={AdminPanel}
         />

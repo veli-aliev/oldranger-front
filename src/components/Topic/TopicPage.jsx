@@ -8,6 +8,7 @@ import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
+import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 
 const { Text } = Typography;
@@ -22,14 +23,9 @@ class TopicPage extends React.Component {
       messages: [],
       page: query.get('page') || 1,
       reply: null,
-      files: [
-        {
-          uid: '-1',
-          name: 'image.png',
-          status: 'done',
-          url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-      ],
+      answerId: null,
+      files: [],
+      uploading: false,
     };
     this.replyForm = React.createRef();
   }
@@ -49,38 +45,28 @@ class TopicPage extends React.Component {
     replyNick: null,
     replyText: null,
     commentText: topic.startMessage,
-    imageComment: [
-      {
-        id: '-1',
-        img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        id: '-2',
-        img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-    ], // no topic images from backend at this moment
+    photos: [], // no topic images from backend at this moment
   });
 
   getTopics = page => {
+    // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
     if (page === 1) {
-      queries.getTopic(match.params.topicId, 0, 9).then(({ topic, commentDto }) => {
+      queries.getTopic(match.params.topicId, 0, 10).then(({ topic, commentDto }) => {
         this.setState({
           topic,
           page,
-          messages: [this.topicToComment(topic), ...commentDto.content],
+          messages: commentDto ? commentDto.content : null,
         });
       });
     } else {
-      queries
-        .getTopic(match.params.topicId, (page - 1) * 10 - 1, 10)
-        .then(({ topic, commentDto }) => {
-          this.setState({
-            topic,
-            page,
-            messages: commentDto.content,
-          });
+      queries.getTopic(match.params.topicId, page - 1, 10).then(({ topic, commentDto }) => {
+        this.setState({
+          topic,
+          page,
+          messages: commentDto ? commentDto.content : null,
         });
+      });
     }
   };
 
@@ -95,42 +81,103 @@ class TopicPage extends React.Component {
   };
 
   handleQuoteComment = comment => () => {
-    this.replyForm.focus();
-    this.setState({
-      reply: {
-        replyDateTime: comment.commentDateTime,
-        replyNick: comment.author.nickName,
-        replyText: comment.commentText,
-      },
-    });
+    const { isLogin } = this.context;
+    if (isLogin) {
+      this.replyForm.focus();
+      this.setState({
+        reply: {
+          replyDateTime: comment.commentDateTime,
+          replyNick: comment.author.nickName,
+          replyText: comment.commentText,
+        },
+        answerId: comment.commentId,
+      });
+    } else {
+      this.openNotification();
+    }
   };
 
-  handleSubmitComment = (text, answerID = 0, resetForm) => {
-    const { topic, reply } = this.state;
+  handleSubmitComment = async (messageText, resetForm) => {
+    if (messageText === '') {
+      notification.open({
+        message: 'Сообщение не может быть пустым',
+        description: 'Максимальное количество символов 500000',
+        icon: <GoldIcon type="warning" />,
+      });
+      return;
+    }
+
+    this.setState({ uploading: true });
+    const { topic, answerId, files } = this.state;
     const { user } = this.context;
     const { history } = this.props;
-    const formData = new FormData();
-    formData.append('commentText', text);
-    formData.append('topicId', topic.id);
-    formData.append('userId', user.userId);
-    formData.append('answerID', answerID);
-    if (reply) {
-      formData.append('replyDateTime', reply.replyDateTime);
-      formData.append('replyNick', reply.replyNick);
-      formData.append('replyText', reply.replyText);
+    const messageComentsEntity = {
+      idTopic: topic.id,
+      idUser: user.userId,
+      text: messageText.trim(),
+    };
+
+    if (answerId) {
+      messageComentsEntity.answerID = answerId;
     }
-    return queries
-      .addComment(formData)
+
+    [messageComentsEntity.image1, messageComentsEntity.image2] = files;
+    try {
+      await queries.addComment(messageComentsEntity);
+      const lastPage = Math.floor(topic.messageCount / 10 + 1);
+      history.push(`${history.location.pathname}?page=${lastPage}`);
+      this.getTopics(lastPage);
+      message.success('Ваше сообщение успешно добавлено');
+      this.setState({ reply: null, answerId: null, files: [], uploading: false });
+      resetForm();
+    } catch {
+      message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
+      this.setState({ uploading: false });
+    }
+  };
+
+  handleDeleteComment = commentId => {
+    const { page, messages } = this.state;
+    const { history } = this.props;
+
+    if (messages.length === 1 && page === 1) {
+      history.push(`${history.location.pathname}?page=${page}`);
+      queries
+        .deleteComment(commentId)
+        .then(() => {
+          history.push(`${history.location.pathname}?page=${page}`);
+          this.getTopics(page);
+          message.success('Сообщение удалено');
+        })
+        .catch(() => {
+          message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
+        });
+      return;
+    }
+
+    if (messages.length === 1 && page > 1) {
+      queries
+        .deleteComment(commentId)
+        .then(() => {
+          history.push(`${history.location.pathname}?page=${page - 1}`);
+          this.getTopics(page - 1);
+          message.success('Сообщение удалено');
+        })
+        .catch(() => {
+          message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
+        });
+      return;
+    }
+
+    queries
+      .deleteComment(commentId)
       .then(() => {
-        const lastPage = Math.floor(topic.messageCount / 10 + 1);
-        history.push(`${history.location.pathname}?page=${lastPage}`);
-        this.getTopics(lastPage);
-        message.success('Ваше сообщение успешно добавлено');
-        this.setState({ reply: null });
-        resetForm();
+        history.push(`${history.location.pathname}?page=${page}`);
+        this.getTopics(page);
+        message.success('Сообщение удалено');
       })
       .catch(() => {
-        message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
+        message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
       });
   };
 
@@ -143,15 +190,18 @@ class TopicPage extends React.Component {
   };
 
   handleCancelReply = () => {
-    this.setState({ reply: null });
+    this.setState({ reply: null, answerId: null });
   };
 
-  handleAddFile = obj => {
-    this.setState({ files: obj.fileList });
+  handleAddFile = info => {
+    this.setState({ files: info.fileList });
+    if (info.file.status !== 'removed') {
+      message.success(`Файл ${info.file.name} успешно добавлен`);
+    }
   };
 
   render() {
-    const { messages, topic, page, reply, files } = this.state;
+    const { messages, topic, page, reply, files, uploading } = this.state;
     const { isLogin } = this.context;
     return (
       <div>
@@ -171,19 +221,23 @@ class TopicPage extends React.Component {
                 <Link to={`/topic/${topic.id}`}>{topic.name}</Link>
               </Breadcrumb.Item>
             </Breadcrumb>
+            <TopicStartMessage topic={topic} />
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
-              title={topic.name}
               messages={messages}
               itemComponent={item => (
                 <TopicCommentItem
                   comment={item}
                   handleQuoteComment={this.handleQuoteComment}
-                  withActions
+                  deleteComment={this.handleDeleteComment}
+                  getTopics={this.getTopics}
+                  page={page}
                 />
               )}
-              total={topic.messageCount + 1}
+              total={topic.messageCount}
               page={page}
+              replyButtonHandler={this.replyButtonHandler}
+              openNotification={this.openNotification}
             />
           </div>
         ) : (
@@ -217,6 +271,7 @@ class TopicPage extends React.Component {
               handleSubmitComment={this.handleSubmitComment}
               handleAddFile={this.handleAddFile}
               files={files}
+              uploading={uploading}
             />
           }
         />

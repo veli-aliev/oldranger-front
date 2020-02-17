@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Col, Row, Icon, Alert, Upload } from 'antd';
+import { Button, Col, Row, Icon, Alert, Upload, Tag } from 'antd';
 
 export const StyledTopicUserInfo = styled(Row)`
   min-height: 120px;
@@ -29,8 +29,17 @@ export const TopicCommentReplyAlert = styled(Alert)`
   margin-top: 20px;
 `;
 
+export const ReplyTag = styled(Tag)`
+  display: inline-block;
+`;
+
 export const UploadViewOnly = styled(Upload)`
   i.anticon.anticon-delete {
     display: none;
   }
+`;
+
+export const ListItem = styled.li`
+  padding: 5px 0;
+  border-bottom: 1px solid #e8e8e8;
 `;

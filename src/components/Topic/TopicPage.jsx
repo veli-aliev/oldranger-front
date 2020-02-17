@@ -113,7 +113,7 @@ class TopicPage extends React.Component {
     const { history } = this.props;
     const messageComentsEntity = {
       idTopic: topic.id,
-      idUser: user.userId,
+      idUser: user.id,
       text: messageText.trim(),
     };
 

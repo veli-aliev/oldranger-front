@@ -56,7 +56,6 @@ class Queries {
 
   getTopic = async (topicId, page, limit) => {
     const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=${limit}`);
-    console.log('TopicAndCommentsDTO: ', res.data);
     return res.data;
   };
 
@@ -66,9 +65,8 @@ class Queries {
   };
 
   getProfileData = async () => {
-    const { data: user } = await axios.get('/api/currentUser');
-    const { data: userId } = await axios.get('/api/getloggeduserid');
-    return { ...user, userId };
+    const { data } = await axios.get('/api/currentUser');
+    return data;
   };
 
   getSubsectionTopics = async (subsectionId, page = 0) => {

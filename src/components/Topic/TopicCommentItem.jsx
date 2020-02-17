@@ -39,12 +39,12 @@ class TopicCommentItem extends React.Component {
   };
 
   showFieldOrNot() {
-    const { userByRole } = this.context;
+    const { user } = this.context;
     const { comment } = this.props;
     return (
-      (userByRole.id === comment.author.id && comment.updatable === true) ||
-      userByRole.role === userRoles.admin ||
-      userByRole.role === userRoles.moderator
+      (user.id === comment.author.id && comment.updatable === true) ||
+      user.role === userRoles.admin ||
+      user.role === userRoles.moderator
     );
   }
 

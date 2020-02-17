@@ -19,13 +19,12 @@ import SearchForm from './components/Main/SearchForm';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    let initialState = { user: {}, isLogin: false, userByRole: {} };
+    let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
-      const userData = JSON.parse(localStorage.getItem('user') || {});
+      const user = JSON.parse(localStorage.getItem('user') || {});
       initialState = {
-        user: { ...userData.userProfile },
+        user,
         isLogin: true,
-        userByRole: { ...userData.userByRole },
       };
     }
     this.state = { ...initialState };
@@ -38,18 +37,20 @@ class App extends React.Component {
   };
 
   changeUserState = data => {
-    this.setState({ user: { ...data.userProfile }, userByRole: { ...data.userByRole } });
+    this.setState({ user: { ...data } });
   };
 
   logOut = async () => {
     localStorage.removeItem('user');
     queries.logOut();
-    this.setState(() => ({ isLogin: false, user: {}, userByRole: {} }));
+    this.setState({ isLogin: false, user: {} });
   };
 
   render() {
-    const { isLogin } = this.state;
-
+    const {
+      isLogin,
+      user: { userId },
+    } = this.state;
     return (
       <Context.Provider
         value={{
@@ -64,10 +65,11 @@ class App extends React.Component {
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+        <PrivateRoute isLogin={isLogin && userId === 1} path="/admin-panel" />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />
-        <ArticlesRoute />
+        <ArticlesRoute isLogin={isLogin} />
       </Context.Provider>
     );
   }

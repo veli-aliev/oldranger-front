@@ -3,7 +3,7 @@ import { Row, Button, Icon, message } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
@@ -18,6 +18,7 @@ width:44px;
 opacity: 0.7;
 z-index: 1;
 `;
+
 const DeletePhotoModalButton = styled(Button)`
 position:absolute;
 top:20px;
@@ -76,7 +77,7 @@ class Album extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      photoTempUlr: 'http://localhost:8888/img/chat/',
+      photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
       photos: [],
       selectedIndex: 0,
       lightboxIsOpen: false,
@@ -144,7 +145,7 @@ class Album extends React.Component {
       },
     } = this.props;
     const images = photos.reduce((acc, photo) => {
-      return [...acc, { src: `${photoTempUlr}${photo.original}` }];
+      return [...acc, { src: `${photoTempUlr}${photo.id}?type=original` }];
     }, []);
 
     const CustomHeader = ({ currentIndex, isModal, modalProps: { onClose } }) =>
@@ -216,7 +217,11 @@ class Album extends React.Component {
 
     const SortableItem = SortableElement(({ value, photoNum }) => (
       <ImageWrapper onClick={() => this.toggleLightbox(photoNum)}>
-        <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.original}`} />
+        <StyledImage
+          title={value.title}
+          alt="userPhoto"
+          src={`http://localhost:8888/api/securedPhoto/photoFromAlbum/${value.id}`}
+        />
         <DeletePhotoButton
           type="default"
           title="Удалить Фотографию"
@@ -279,4 +284,4 @@ Album.propTypes = {
   }).isRequired,
 };
 
-export default Album;
+export default withRouter(Album);

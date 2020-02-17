@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Button, Icon, message } from 'antd';
+import { Row, Button, Icon, message, Modal } from 'antd';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -26,6 +26,11 @@ const StyledAlbumCard = styled.div`
   background-size: cover;
   &:hover ${DeletePhotoButton} {
     display: block;
+  }
+  @media (max-width: 479px) {
+    ${DeletePhotoButton} {
+      display: block;
+    }
   }
 `;
 const AlbomShadow = styled.div`
@@ -67,6 +72,7 @@ const StyledAlbumWrapper = styled.div`
     justify-content: center;
   }
 `;
+const { confirm } = Modal;
 
 class Albums extends React.Component {
   constructor(props) {
@@ -107,22 +113,38 @@ class Albums extends React.Component {
   };
 
   deleteAlbum = album => async event => {
+    const doDeleteAlbum = async () => {
+      const { albums } = this.state;
+      try {
+        await queries.deleteAlbum(album.id);
+        const newAlbums = albums.reduce((acc, item) => {
+          if (item.id !== album.id) {
+            acc.push(item);
+          }
+          return [...acc];
+        }, []);
+        this.setState({ albums: newAlbums });
+      } catch (error) {
+        /* eslint-disable-next-line no-console */
+        console.error(error.response);
+        message.error('что-то пошло не так');
+      }
+    };
     event.stopPropagation();
-    const { albums } = this.state;
-    try {
-      await queries.deleteAlbum(album.id);
-      const newAlbums = albums.reduce((acc, item) => {
-        if (item.id !== album.id) {
-          acc.push(item);
-        }
-        return [...acc];
-      }, []);
-      this.setState({ albums: newAlbums });
-    } catch (error) {
-      /* eslint-disable-next-line no-console */
-      console.error(error.response);
-      message.error('что-то пошло не так');
+    function showDeleteConfirm() {
+      confirm({
+        title: 'Подтвердите удаление альбома',
+        content: 'Вы уверены, что хотите удалить альбом?',
+        okText: 'Да',
+        okType: 'danger',
+        cancelText: 'Нет',
+        onOk() {
+          doDeleteAlbum();
+        },
+        onCancel() {},
+      });
     }
+    showDeleteConfirm();
   };
 
   editPhotoAlbum = album => async event => {
@@ -152,7 +174,6 @@ class Albums extends React.Component {
 
   render() {
     const { albums } = this.state;
-    console.log(albums);
     return (
       <>
         {albums.length > 0 ? (
@@ -161,9 +182,9 @@ class Albums extends React.Component {
               <StyledAlbumCard onClick={this.openAlbum(album)} key={album.id}>
                 <AlbomBackgroundImage
                   src={
-                    album.originalThumbImage !== 'photo_album_placeholder'
-                      ? `http://localhost:8888/img/chat/${album.originalThumbImage}`
-                      : `/defaultAlbumTheme.jpg`
+                    album.originalThumbImage === 'thumb_image_placeholder'
+                      ? `/defaultAlbumTheme.jpg`
+                      : `http://localhost:8888/img/chat/${album.originalThumbImage}`
                   }
                 />
                 <AlbomShadow>
@@ -176,7 +197,7 @@ class Albums extends React.Component {
                   title="Удалить альбом"
                   onClick={this.deleteAlbum(album)}
                 >
-                  <Icon type="close" style={{ color: 'red' }} />
+                  <Icon type="delete" style={{ color: 'red' }} />
                 </DeletePhotoButton>
                 <EditPhotoButton
                   type="default"

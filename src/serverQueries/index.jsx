@@ -29,7 +29,7 @@ class Queries {
   createArticle = async ({ title, text, tagsId, isHideToAnon }) => {
     const tags = tagsId.length > 0 ? `&tagsId=${tagsId.join('&tagsId=')}` : '';
     const res = await axios.post(
-        `/api/article/add?title=${title}&text=${text}&isHideToAnon=${isHideToAnon.toString()}${tags}`
+      `/api/article/add?title=${title}&text=${text}&isHideToAnon=${isHideToAnon.toString()}${tags}`
     );
     return res.data;
   };
@@ -72,7 +72,7 @@ class Queries {
 
   getSubsectionTopics = async (subsectionId, page = 0) => {
     const res = await axios.get(
-        `/api/subsection/${subsectionId}?dateTime=2099-01-01%2000%3A00%3A00&page=${page}`
+      `/api/subsection/${subsectionId}?dateTime=2099-01-01%2000%3A00%3A00&page=${page}`
     );
     return res.data;
   };
@@ -117,18 +117,14 @@ class Queries {
     return res.data;
   };
 
-  uploadPhoto = async photo => {
-    // пока бекенд не готов, загружаем фото в первый и единственный альбом
-<<<<<<< HEAD
-
-    const res = await axios.post('/api/photos/1', photo, {
-      withCredentials: true,
-    });
-=======
-    const res = await axios.post('/api/photos/1', photo);
->>>>>>> 0b4d07c4f167e21f24edd759e9bc2e8bc7b65b69
-    return res.data.small;
-  };
+  // uploadPhoto = async photo => {
+  //   // пока бекенд не готов, загружаем фото в первый и единственный альбом
+  //   const res = await axios.post('/api/photos/1', photo, {
+  //     withCredentials: true,
+  //   });
+  //   const res = await axios.post('/api/photos/1', photo);
+  //   return res.data.small;
+  // };
 
   getAlbums = async () => {
     const res = await axios.get('/api/albums');

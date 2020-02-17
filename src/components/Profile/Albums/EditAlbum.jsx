@@ -65,7 +65,7 @@ class EditAlbum extends React.Component {
     this.state = {
       photos: [],
       photosToDelete: [],
-      photoTempUlr: 'http://localhost:8888/img/chat/',
+      photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
       visible: false,
       albumCoverUrl: '',
     };
@@ -86,7 +86,7 @@ class EditAlbum extends React.Component {
     const { photoTempUlr } = this.state;
     this.setState({
       visible: false,
-      albumCoverUrl: `${photoTempUlr}${photo.original}`,
+      albumCoverUrl: `${photoTempUlr}${photo.id}`,
     });
   };
 
@@ -104,7 +104,7 @@ class EditAlbum extends React.Component {
       },
     } = this.props;
     const url =
-      originalThumbImage === 'photo_album_placeholder'
+      originalThumbImage === 'thumb_image_placeholder'
         ? `/defaultAlbumTheme.jpg`
         : `${photoTempUlr}${originalThumbImage}`;
     this.setState({
@@ -159,7 +159,7 @@ class EditAlbum extends React.Component {
         >
           {photos.map(photo => (
             <ChooseNewCoverSectionImage
-              src={`${photoTempUlr}${photo.original}`}
+              src={`${photoTempUlr}${photo.id}`}
               key={photo.id}
               onClick={this.handleOk(photo)}
             />
@@ -202,7 +202,7 @@ class EditAlbum extends React.Component {
             <GaleryImages>
               {photos.map(photo => (
                 <EditAlbumImageWrapper key={photo.id}>
-                  <StyledImage src={`${photoTempUlr}${photo.original}`} />
+                  <StyledImage src={`${photoTempUlr}${photo.id}`} />
                   <ChoosePhotoButton
                     shape="circle"
                     icon={photosToDelete.includes(photo.id) ? 'check' : undefined}

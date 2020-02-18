@@ -25,7 +25,10 @@ class App extends React.Component {
     let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
       const user = JSON.parse(localStorage.getItem('user') || {});
-      initialState = { user, isLogin: true };
+      initialState = {
+        user,
+        isLogin: true,
+      };
     }
     this.state = { ...initialState };
   }
@@ -43,13 +46,13 @@ class App extends React.Component {
   logOut = async () => {
     localStorage.removeItem('user');
     queries.logOut();
-    this.setState(() => ({ isLogin: false, user: {} }));
+    this.setState({ isLogin: false, user: {} });
   };
 
   render() {
     const { isLogin, user } = this.state;
     const {
-      user: { userId },
+      user: { id },
     } = this.state;
 
     return (
@@ -66,11 +69,7 @@ class App extends React.Component {
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
-        <PrivateRoute
-          isLogin={isLogin && userId === 1}
-          path="/admin-panel"
-          component={AdminPanel}
-        />
+        <PrivateRoute isLogin={isLogin && id === 1} path="/admin-panel" component={AdminPanel} />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />

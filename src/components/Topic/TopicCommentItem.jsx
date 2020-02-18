@@ -8,12 +8,19 @@ import commentProps from './propTypes/commentProps';
 import TopicPhotoList from './TopicPhotoList';
 
 const TopicCommentItem = ({ comment, handleQuoteComment, withActions }) => {
-  const convertedImages = comment.imageComment.map(image => ({
-    uid: image.id,
-    url: image.img,
-    name: image.id,
-    status: 'done',
-  }));
+  const convertedImages = comment.imageComment
+    ? comment.imageComment.map(image => ({
+        uid: image.id,
+        url: image.img,
+        name: image.id,
+        status: 'done',
+      }))
+    : comment.photos.map(image => ({
+        uid: image.id,
+        url: image.img,
+        name: image.id,
+        status: 'done',
+      }));
 
   const commentActions = [
     <span key="comment-basic-position">#{comment.positionInTopic + 1}</span>,

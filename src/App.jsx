@@ -10,11 +10,13 @@ import {
   SubsectionRoute,
   SearchRoute,
   ArticlesRoute,
+  ChatRoute,
 } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
+import ChatAuth from './components/Chat/ChatAuth';
 import AdminPanel from './components/AdminPanel';
 
 class App extends React.Component {
@@ -48,8 +50,8 @@ class App extends React.Component {
   };
 
   render() {
+    const { isLogin, user } = this.state;
     const {
-      isLogin,
       user: { id },
     } = this.state;
 
@@ -72,6 +74,7 @@ class App extends React.Component {
         <SubsectionRoute />
         <SearchRoute />
         <ArticlesRoute isLogin={isLogin} />
+        <ChatRoute path="/chat" isLogin={isLogin} user={user} component={ChatAuth} />
       </Context.Provider>
     );
   }

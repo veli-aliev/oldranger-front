@@ -204,6 +204,34 @@ class Queries {
     });
     return res.data;
   };
+
+  getImage = async formData => {
+    const res = await axios.post('/api/chat/image', formData, {
+      headers: { 'content-type': 'multipart/form-data' },
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  isForbidden = async () => {
+    const res = await axios.get('/api/chat/isForbidden', { withCredentials: true });
+    return res.data;
+  };
+
+  getCurrentUser = async () => {
+    const res = await axios.get('/api/chat/user', { withCredentials: true });
+    return res.data;
+  };
+
+  getAllUsers = async () => {
+    const res = await axios.get('/api/chat/users');
+    return res.data;
+  };
+
+  getAllMessages = async page => {
+    const res = await axios.get(`/api/chat/messages?page=${page}`);
+    return res;
+  };
 }
 
 export default new Queries();

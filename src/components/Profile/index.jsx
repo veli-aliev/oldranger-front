@@ -10,8 +10,9 @@ import Messages from './Messages';
 import Themes from './Themes';
 import Subscriptions from './Subscriptions';
 import Invite from './Invite';
-import Albums from './Albums';
-import Album from './Album';
+import Albums from './Albums/Albums';
+import Album from './Albums/Album';
+import EditAlbum from './Albums/EditAlbum';
 
 const Profile = () => {
   const { path } = useRouteMatch();
@@ -48,7 +49,8 @@ const Profile = () => {
           <Route path={`${path}/subscriptions`} component={Subscriptions} />
           <Route path={`${path}/invite`} component={Invite} />
           <Route exact path={`${path}/albums/:id`} component={Album} />
-          <Route path={`${path}/albums`} component={Albums} />
+          <Route exact path={`${path}/albums`} component={Albums} />
+          <Route exact path={`${path}/albums/editAlbum/:id`} component={EditAlbum} />
         </Switch>
       </Route>
     </Switch>

@@ -17,6 +17,10 @@ const StyledField = styled.div`
   margin: 10px;
 `;
 
+const StyledError = styled.span`
+  color: red;
+`;
+
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .min(3, 'Минимальная длина 3 символа')
@@ -26,7 +30,7 @@ const validationSchema = Yup.object().shape({
     .required('Краткое описание обязательно для заполнения'),
 });
 
-class CreateTopic extends React.Component {
+class TopicCreate extends React.Component {
   constructor(props) {
     super(props);
     this.state = { children: [], subsection: '' };
@@ -89,7 +93,9 @@ class CreateTopic extends React.Component {
               <Field name="name">
                 {({ field }) => <Input {...field} placeholder="Заголовок" type="text" />}
               </Field>
-              {touched.name && errors.name && <span className="error">{errors.name}</span>}
+              {touched.name && errors.name && (
+                <StyledError className="error">{errors.name}</StyledError>
+              )}
             </StyledField>
             <StyledField>
               <Field name="startMessage">
@@ -98,7 +104,7 @@ class CreateTopic extends React.Component {
                 )}
               </Field>
               {touched.startMessage && errors.startMessage && (
-                <span className="error">{errors.startMessage}</span>
+                <StyledError className="error">{errors.startMessage}</StyledError>
               )}
             </StyledField>
             <StyledField>
@@ -137,7 +143,7 @@ class CreateTopic extends React.Component {
   }
 }
 
-const formikCreateTopic = withFormik({
+const formikTopicCreate = withFormik({
   mapPropsToValues({ name, startMessage }) {
     return {
       name: name || '',
@@ -155,10 +161,10 @@ const formikCreateTopic = withFormik({
     const response = await queries.createNewTopic(formData);
     if (response.status === 200) {
       setSubmitting(false);
-      resetForm();
       history.push(`/topic/${response.data.id}`);
+      resetForm();
     }
   },
-})(CreateTopic);
+})(TopicCreate);
 
-export default formikCreateTopic;
+export default formikTopicCreate;

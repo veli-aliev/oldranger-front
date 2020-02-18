@@ -1,13 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import TopicPage from '../components/Topic/TopicPage';
-import CreateTopic from '../components/Topic/CreateTopic';
+import TopicCreate from '../components/Topic/TopicCreate';
 
 const TopicRoute = () => (
   <Switch>
-    <Route exact path="/topic/add">
-      <CreateTopic />
-    </Route>
+    <Route exact path="/topic/add" render={props => <TopicCreate {...props} />} />
     <Route exact path="/topic/:topicId">
       <TopicPage />
     </Route>

@@ -28,6 +28,23 @@ width:44px;
 opacity: 0.7;
 z-index: 1;
 `;
+const CommentCounter = styled.span`
+  margin-left: 0 !important;
+  position: relative;
+  top: -5px;
+  color: red;
+  font-size: 10px;
+`;
+const OpenCommentsModalButton = styled(Button)`
+position: absolute;
+top:20px;
+left: 20px;
+padding:5px
+width:44px;
+opacity: 0.7;
+transition: none;
+z-index: 1;
+`;
 
 const DeletePhotoButton = styled(Button)`
   position: absolute;
@@ -73,6 +90,34 @@ const StyledRow = styled(Row)`
   margin-top: 30px;
 `;
 
+const CustomViewImage = styled.img`
+  height: auto;
+  max-height: 100vw;
+  max-width: 70%;
+  flex-shrink: 1;
+  user-select: none;
+  @media (max-width: 1000px) {
+    max-width: 100vw;
+  }
+`;
+
+const CustomViewMainDiv = styled.div`
+  line-height: 0;
+  position: relative;
+  text-align: center;
+  box-sizing: border-box;
+  padding-top: 50px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+`;
+const CustomViewCommentDiv = styled.div`
+  width: 300px;
+  background: red;
+  @media (max-width: 1000px) {
+    display: none;
+  }
+`;
 class Album extends React.Component {
   constructor(props) {
     super(props);
@@ -99,7 +144,6 @@ class Album extends React.Component {
     const {
       location: { state },
     } = this.props;
-
     const albumId = state.id;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
@@ -145,7 +189,7 @@ class Album extends React.Component {
       },
     } = this.props;
     const images = photos.reduce((acc, photo) => {
-      return [...acc, { src: `${photoTempUlr}${photo.id}?type=original` }];
+      return [...acc, { src: `${photoTempUlr}${photo.id}` }];
     }, []);
 
     const CustomHeader = ({ currentIndex, isModal, modalProps: { onClose } }) =>
@@ -163,8 +207,26 @@ class Album extends React.Component {
           >
             <Icon type="delete" title="delete" />
           </DeletePhotoModalButton>
+          {window.matchMedia('(max-width: 1000px)').matches ? (
+            <OpenCommentsModalButton title="комментарии" icon="message">
+              <CommentCounter>300</CommentCounter>
+            </OpenCommentsModalButton>
+          ) : null}
         </div>
       ) : null;
+    const CustomView = props => {
+      const { data, formatters, index } = props;
+      const innerProps = {
+        alt: formatters.getAltText({ data, index }),
+        src: data.src,
+      };
+      return (
+        <CustomViewMainDiv>
+          <CustomViewImage {...innerProps} />
+          <CustomViewCommentDiv>hello its comments part</CustomViewCommentDiv>
+        </CustomViewMainDiv>
+      );
+    };
 
     if (window.matchMedia('(max-width: 479px)').matches) {
       return (
@@ -181,7 +243,7 @@ class Album extends React.Component {
                     <StyledImage
                       title={photo.title}
                       alt="userPhoto"
-                      src={`${photoTempUlr}${photo.original}`}
+                      src={`${photoTempUlr}${photo.id}`}
                     />
                     <DeletePhotoButton
                       type="default"
@@ -217,11 +279,7 @@ class Album extends React.Component {
 
     const SortableItem = SortableElement(({ value, photoNum }) => (
       <ImageWrapper onClick={() => this.toggleLightbox(photoNum)}>
-        <StyledImage
-          title={value.title}
-          alt="userPhoto"
-          src={`http://localhost:8888/api/securedPhoto/photoFromAlbum/${value.id}`}
-        />
+        <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.id}`} />
         <DeletePhotoButton
           type="default"
           title="Удалить Фотографию"
@@ -254,7 +312,7 @@ class Album extends React.Component {
                   <Carousel
                     views={images}
                     currentIndex={selectedIndex}
-                    components={{ Header: CustomHeader }}
+                    components={{ Header: CustomHeader, View: CustomView }}
                   />
                 </Modal>
               ) : null}

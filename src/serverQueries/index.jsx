@@ -162,6 +162,11 @@ class Queries {
     });
     return res.data;
   };
+
+  loadAllExistingAlbums = async () => {
+    const res = await axios.get('/api/albums/viewAlbums');
+    return res.data;
+  };
 }
 
 export default new Queries();

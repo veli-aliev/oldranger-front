@@ -233,7 +233,7 @@ class Queries {
     return res;
   };
 
-  createNewTopic = async formData => {
+   createNewTopic = async formData => {
     const res = await axios.post('/api/topic/new', formData, {
       headers: { 'content-type': 'multipart/form-data' },
       withCredentials: true,

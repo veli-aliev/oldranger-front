@@ -181,6 +181,19 @@ class Album extends React.Component {
     });
   };
 
+  openAlbumComments = album => async event => {
+    event.stopPropagation();
+    const {
+      history,
+      location: { pathname },
+    } = this.props;
+    const url = `${pathname}/comments/`;
+    history.push({
+      pathname: url,
+      state: album,
+    });
+  };
+
   render() {
     const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
@@ -208,7 +221,13 @@ class Album extends React.Component {
             <Icon type="delete" title="delete" />
           </DeletePhotoModalButton>
           {window.matchMedia('(max-width: 1000px)').matches ? (
-            <OpenCommentsModalButton title="комментарии" icon="message">
+            <OpenCommentsModalButton
+              title="комментарии"
+              icon="message"
+              onClick={event => {
+                this.openAlbumComments(photos[currentIndex])(event);
+              }}
+            >
               <CommentCounter>300</CommentCounter>
             </OpenCommentsModalButton>
           ) : null}
@@ -330,7 +349,11 @@ class Album extends React.Component {
 }
 
 Album.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
     state: PropTypes.shape({
       id: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,

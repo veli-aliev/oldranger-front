@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { message, Button, Input, Modal } from 'antd';
 import styled from 'styled-components';
@@ -227,4 +227,4 @@ EditAlbum.propTypes = {
   }).isRequired,
 };
 
-export default EditAlbum;
+export default withRouter(EditAlbum);

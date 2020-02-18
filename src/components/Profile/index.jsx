@@ -13,6 +13,7 @@ import Invite from './Invite';
 import Albums from './Albums/Albums';
 import Album from './Albums/Album';
 import EditAlbum from './Albums/EditAlbum';
+import AlbumCommentPage from './Albums/AlbumCommentPage';
 
 const Profile = () => {
   const { path } = useRouteMatch();
@@ -51,6 +52,7 @@ const Profile = () => {
           <Route exact path={`${path}/albums/:id`} component={Album} />
           <Route exact path={`${path}/albums`} component={Albums} />
           <Route exact path={`${path}/albums/editAlbum/:id`} component={EditAlbum} />
+          <Route exact path={`${path}/albums/:id/comments/`} component={AlbumCommentPage} />
         </Switch>
       </Route>
     </Switch>

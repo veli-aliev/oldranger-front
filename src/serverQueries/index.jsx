@@ -201,6 +201,25 @@ class Queries {
     });
     return res.data;
   };
+
+  getUserById = async id => {
+    const res = await axios.get(`/api/admin/getUser/${id}`);
+    return res.data;
+  };
+
+  getUsersTree = async (id, deep) => {
+    const res = await axios.get(`/api/usersTree/user/${id}/${deep}`);
+    return res.data;
+  };
+
+  blackListRequest = async (id, dateUnblock = new Date()) => {
+    const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+    const res = await axios.post('/api/admin/blocking', {
+      id,
+      dateUnblock: new Date(new Date(dateUnblock) - timezoneOffset).toISOString(),
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

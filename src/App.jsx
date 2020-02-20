@@ -16,6 +16,7 @@ import Header from './components/layouts/Header';
 import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
 import AdminPanel from './components/AdminPanel';
+import UserInfo from './components/AdminPanel/UserInfo';
 
 class App extends React.Component {
   constructor(props) {
@@ -48,9 +49,11 @@ class App extends React.Component {
   };
 
   render() {
-    const { isLogin } = this.state;
-    const { id } = this.state.user;
-    
+    const {
+      isLogin,
+      user: { role },
+    } = this.state;
+
     return (
       <Context.Provider
         value={{
@@ -66,8 +69,14 @@ class App extends React.Component {
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
-          isLogin={isLogin && id === 1}
+          isLogin={isLogin && role === 'ROLE_ADMIN'}
+          path="/admin-panel/users/:id"
+          component={UserInfo}
+        />
+        <PrivateRoute
+          isLogin={isLogin && role === 'ROLE_ADMIN'}
           path="/admin-panel"
+          exact
           component={AdminPanel}
         />
         <TopicRoute />

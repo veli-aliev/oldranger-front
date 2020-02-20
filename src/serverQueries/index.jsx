@@ -42,9 +42,10 @@ class Queries {
   };
 
   getArticlesByTag = async tag => {
-    const res = await axios.get(`/api/article/tag?tag_id=${tag}`, {
+    const res = await axios.get(`/api/article/tag?tag_id=${tag}&page=1`, {
       withCredentials: true,
     });
+    console.log(res);
     return res.data;
   };
 

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { Spin } from 'antd';
 import { withRouter } from 'react-router-dom';
@@ -20,9 +21,12 @@ class ArticlesByTag extends React.Component {
         params: { articleTag },
       },
     } = this.props;
-    queries.getArticlesByTag(articleTag).then(el => {
-      this.setState({ articles: el.content, isEmpty: el.empty });
-    });
+    queries.getArticlesByTag(articleTag).then(el => {});
+    const { tag } = this.props;
+    // queries.getArticlesByTag(articleTag).then(el => {
+    // queries.getArticlesByTag(tag).then(el => {
+    //   this.setState({ articles: el.content, isEmpty: el.empty });
+    // });
   }
 
   render() {

@@ -232,6 +232,14 @@ class Queries {
     const res = await axios.get(`/api/chat/messages?page=${page}`);
     return res;
   };
+
+   createNewTopic = async formData => {
+    const res = await axios.post('/api/topic/new', formData, {
+      headers: { 'content-type': 'multipart/form-data' },
+      withCredentials: true,
+    });
+    return res;
+  };
 }
 
 export default new Queries();

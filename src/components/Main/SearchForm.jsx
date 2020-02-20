@@ -1,11 +1,11 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Formik, Field as FormikField } from 'formik';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Button, Form as AntForm, Input, Select } from 'antd';
 import SimpleInput from '../formItems/SimpleInput';
-import { StyledForm, StyledSelect } from './styled';
+import { StyledForm, StyledSelect, ButtonGroup } from './styled';
 
 const InputGroup = Input.Group;
 const { Option } = Select;
@@ -32,34 +32,39 @@ const SearchForm = ({ history }) => {
               validateStatus={touched.searchRequest && errors.searchRequest ? 'error' : 'success'}
               help={touched.searchRequest ? errors.searchRequest : ''}
             >
-              <InputGroup compact>
-                <SimpleInput placeholder="Поиск по Форуму" name="searchRequest" type="text" />
-                <FormikField name="searchBy">
-                  {({ field }) => (
-                    <StyledSelect
-                      {...field}
-                      onChange={value => setFieldValue('searchBy', value)}
-                      onBlur={() => setFieldTouched('searchBy', true)}
-                      value={values.searchBy}
-                    >
-                      <Option key={1} value="searchTopics">
-                        По темам
-                      </Option>
-                      <Option key={2} value="searchComments">
-                        По сообщениям
-                      </Option>
-                    </StyledSelect>
-                  )}
-                </FormikField>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon="search"
-                  disabled={!!touched.searchRequest && !!errors.searchRequest}
-                >
-                  Искать
+              <ButtonGroup>
+                <Button>
+                  <Link to="/topic/add">Создать тему</Link>
                 </Button>
-              </InputGroup>
+                <InputGroup compact>
+                  <SimpleInput placeholder="Поиск по Форуму" name="searchRequest" type="text" />
+                  <FormikField name="searchBy">
+                    {({ field }) => (
+                      <StyledSelect
+                        {...field}
+                        onChange={value => setFieldValue('searchBy', value)}
+                        onBlur={() => setFieldTouched('searchBy', true)}
+                        value={values.searchBy}
+                      >
+                        <Option key={1} value="searchTopics">
+                          По темам
+                        </Option>
+                        <Option key={2} value="searchComments">
+                          По сообщениям
+                        </Option>
+                      </StyledSelect>
+                    )}
+                  </FormikField>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon="search"
+                    disabled={!!touched.searchRequest && !!errors.searchRequest}
+                  >
+                    Искать
+                  </Button>
+                </InputGroup>
+              </ButtonGroup>
             </AntForm.Item>
           </StyledForm>
         );

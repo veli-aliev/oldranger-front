@@ -159,11 +159,14 @@ class Queries {
     return res.data;
   };
 
-  uploadPhoto = async photo => {
-    // пока бекенд не готов, загружаем фото в первый и единственный альбом
-    const res = await axios.post('/api/photos/1', photo);
-    return res.data.small;
-  };
+  // uploadPhoto = async photo => {
+  //   // пока бекенд не готов, загружаем фото в первый и единственный альбом
+  //   const res = await axios.post('/api/photos/1', photo, {
+  //     withCredentials: true,
+  //   });
+  //   const res = await axios.post('/api/photos/1', photo);
+  //   return res.data.small;
+  // };
 
   getAlbums = async () => {
     const res = await axios.get('/api/albums');
@@ -219,6 +222,41 @@ class Queries {
       dateUnblock: new Date(new Date(dateUnblock) - timezoneOffset).toISOString(),
     });
     return res.data;
+  };
+  getImage = async formData => {
+    const res = await axios.post('/api/chat/image', formData, {
+      headers: { 'content-type': 'multipart/form-data' },
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
+  isForbidden = async () => {
+    const res = await axios.get('/api/chat/isForbidden', { withCredentials: true });
+    return res.data;
+  };
+
+  getCurrentUser = async () => {
+    const res = await axios.get('/api/chat/user', { withCredentials: true });
+    return res.data;
+  };
+
+  getAllUsers = async () => {
+    const res = await axios.get('/api/chat/users');
+    return res.data;
+  };
+
+  getAllMessages = async page => {
+    const res = await axios.get(`/api/chat/messages?page=${page}`);
+    return res;
+  };
+
+   createNewTopic = async formData => {
+    const res = await axios.post('/api/topic/new', formData, {
+      headers: { 'content-type': 'multipart/form-data' },
+      withCredentials: true,
+    });
+    return res;
   };
 }
 

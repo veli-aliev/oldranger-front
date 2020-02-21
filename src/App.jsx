@@ -10,11 +10,14 @@ import {
   SubsectionRoute,
   SearchRoute,
   ArticlesRoute,
+  ChatRoute,
 } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
+import ChatAuth from './components/Chat/ChatAuth';
+import AdminPanel from './components/AdminPanel';
 
 class App extends React.Component {
   constructor(props) {
@@ -22,7 +25,10 @@ class App extends React.Component {
     let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
       const user = JSON.parse(localStorage.getItem('user') || {});
-      initialState = { user, isLogin: true };
+      initialState = {
+        user,
+        isLogin: true,
+      };
     }
     this.state = { ...initialState };
   }
@@ -40,11 +46,14 @@ class App extends React.Component {
   logOut = async () => {
     localStorage.removeItem('user');
     queries.logOut();
-    this.setState(() => ({ isLogin: false, user: {} }));
+    this.setState({ isLogin: false, user: {} });
   };
 
   render() {
-    const { isLogin } = this.state;
+    const { isLogin, user } = this.state;
+    const {
+      user: { id },
+    } = this.state;
 
     return (
       <Context.Provider
@@ -60,10 +69,12 @@ class App extends React.Component {
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+        <PrivateRoute isLogin={isLogin && id === 1} path="/admin-panel" component={AdminPanel} />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />
         <ArticlesRoute isLogin={isLogin} />
+        <ChatRoute path="/chat" isLogin={isLogin} user={user} component={ChatAuth} />
       </Context.Provider>
     );
   }

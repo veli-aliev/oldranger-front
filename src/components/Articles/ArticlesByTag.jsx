@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { Spin } from 'antd';
 import { withRouter } from 'react-router-dom';

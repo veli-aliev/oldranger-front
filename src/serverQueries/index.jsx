@@ -35,14 +35,9 @@ class Queries {
   };
 
   getArticlesByTag = async tag => {
-<<<<<<< HEAD
     const res = await axios.get(`/api/article/tag?tag_id=${tag}&page=1`, {
       withCredentials: true,
     });
-    console.log(res);
-=======
-    const res = await axios.get(`/api/article/tag?tag_id=${tag}`);
->>>>>>> 23c3247c78549dc5ca8e3bc5d92e21ef63152e0c
     return res.data;
   };
 
@@ -157,7 +152,6 @@ class Queries {
   };
 
   sendInviteCode = async values => {
-<<<<<<< HEAD
     const res = await axios.post(
       `/api/token/invite/bymail?mail=${values.mail}`,
       {},
@@ -176,9 +170,6 @@ class Queries {
         withCredentials: true,
       }
     );
-=======
-    const res = await axios.post('/api/token/invite/bymail', values);
->>>>>>> 23c3247c78549dc5ca8e3bc5d92e21ef63152e0c
     return res.data;
   };
 
@@ -261,7 +252,7 @@ class Queries {
     return res;
   };
 
-   createNewTopic = async formData => {
+  createNewTopic = async formData => {
     const res = await axios.post('/api/topic/new', formData, {
       headers: { 'content-type': 'multipart/form-data' },
       withCredentials: true,

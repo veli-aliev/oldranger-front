@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Button, Row, Divider } from 'antd';
 import { Form, Input } from 'formik-antd';
 import { Formik } from 'formik';
@@ -37,18 +37,22 @@ const validationSchema = Yup.object({
     .required('Это поле обязательно'),
 });
 
-const register = (key, { changeLoadingState }) => async values => {
-  changeLoadingState(true);
-
-  await queries.registrationUser({ key, ...values });
-
-  changeLoadingState(false);
-};
-
 const Registration = () => {
   const [loading, changeLoadingState] = useState(false);
-  const { key } = useParams();
+  const query = new URLSearchParams(useLocation().search);
+  const key = query.get('key');
 
+  const register = token => async (values, { setStatus }) => {
+    changeLoadingState(true);
+    setStatus('');
+    const res = await queries.registrationUser({ key: token, ...values });
+    if (res === 1) {
+      setStatus('Письмо с подтверждением отправлено на ваш email');
+    } else {
+      setStatus('Некорректный token регистрации');
+    }
+    changeLoadingState(false);
+  };
   return (
     <Formik
       initialValues={{
@@ -60,36 +64,45 @@ const Registration = () => {
         email: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={register(key, { changeLoadingState })}
+      onSubmit={register(key)}
     >
-      <Form {...formLayoutSchema}>
-        <FormItem label="Логин" name="nickName">
-          <Input name="nickName" />
-        </FormItem>
-        <FormItem label="Имя" name="firstName">
-          <Input name="firstName" />
-        </FormItem>
-        <FormItem label="Фамилия" name="lastName">
-          <Input name="lastName" />
-        </FormItem>
-        <Divider />
-        <FormItem label="Пароль" name="password">
-          <Input.Password name="password" />
-        </FormItem>
-        <FormItem label="Повторите пароль" name="repeatPassword">
-          <Input.Password name="repeatPassword" />
-        </FormItem>
-        <Divider />
-        <FormItem label="Почта" name="email">
-          <Input name="email" />
-        </FormItem>
+      {({ status }) => (
+        <>
+          {status && (
+            <Row type="flex" justify="center">
+              <h3>{status}</h3>
+            </Row>
+          )}
+          <Form {...formLayoutSchema}>
+            <FormItem label="Логин" name="nickName">
+              <Input name="nickName" />
+            </FormItem>
+            <FormItem label="Имя" name="firstName">
+              <Input name="firstName" />
+            </FormItem>
+            <FormItem label="Фамилия" name="lastName">
+              <Input name="lastName" />
+            </FormItem>
+            <Divider />
+            <FormItem label="Пароль" name="password">
+              <Input.Password name="password" />
+            </FormItem>
+            <FormItem label="Повторите пароль" name="repeatPassword">
+              <Input.Password name="repeatPassword" />
+            </FormItem>
+            <Divider />
+            <FormItem label="Почта" name="email">
+              <Input name="email" />
+            </FormItem>
 
-        <Row type="flex" justify="center">
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Зарегистрироваться
-          </Button>
-        </Row>
-      </Form>
+            <Row type="flex" justify="center">
+              <Button type="primary" htmlType="submit" loading={loading}>
+                Зарегистрироваться
+              </Button>
+            </Row>
+          </Form>
+        </>
+      )}
     </Formik>
   );
 };

@@ -4,13 +4,17 @@ import { Route, Redirect } from 'react-router-dom';
 
 import Login from '../components/Login';
 import Registration from '../components/Registration';
+import RegistrationAccept from '../components/RegistrationAccept';
 
-const AuthRoute = ({ isLogin }) => (
-  <>
-    <Route path="/registration/:token">{isLogin ? <Redirect to="/" /> : <Registration />}</Route>
-    <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
-  </>
-);
+const AuthRoute = ({ isLogin }) => {
+  return (
+    <>
+      <Route path="/invite">{isLogin ? <Redirect to="/" /> : <Registration />}</Route>
+      <Route path="/registration-accept" component={RegistrationAccept} />
+      <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
+    </>
+  );
+};
 
 AuthRoute.propTypes = {
   isLogin: PropTypes.bool.isRequired,

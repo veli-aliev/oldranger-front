@@ -56,6 +56,7 @@ class Queries {
 
   getTopic = async (topicId, page, limit) => {
     const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=${limit}`);
+    console.log('TopicAndTopicDTO: ', res.data);
     return res.data;
   };
 
@@ -233,7 +234,7 @@ class Queries {
     return res;
   };
 
-   createNewTopic = async formData => {
+  createNewTopic = async formData => {
     const res = await axios.post('/api/topic/new', formData, {
       headers: { 'content-type': 'multipart/form-data' },
       withCredentials: true,

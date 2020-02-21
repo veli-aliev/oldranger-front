@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Avatar, Breadcrumb, message, notification, Spin, Typography } from 'antd';
 import Comment from 'antd/es/comment';
+import { Markup } from 'interweave';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
@@ -98,6 +99,7 @@ class TopicPage extends React.Component {
   };
 
   handleSubmitComment = async (messageText, resetForm) => {
+    console.log('messageText: ', messageText);
     if (messageText === '') {
       notification.open({
         message: 'Сообщение не может быть пустым',
@@ -249,10 +251,12 @@ class TopicPage extends React.Component {
             closeText="Отменить комментирование"
             onClose={this.handleCancelReply}
             message={
-              <span>
-                Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>{' '}
-                <Text code>{reply.replyText}</Text>
-              </span>
+              <>
+                <span>
+                  Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>
+                </span>
+                <Markup content={reply.replyText} />
+              </>
             }
           />
         )}

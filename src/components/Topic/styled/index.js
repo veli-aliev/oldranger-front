@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Col, Row, Icon, Alert, Upload, Tag } from 'antd';
+import { Button, Col, Row, Icon, Alert, Upload } from 'antd';
 
 export const StyledTopicUserInfo = styled(Row)`
   min-height: 120px;
@@ -29,8 +29,12 @@ export const TopicCommentReplyAlert = styled(Alert)`
   margin-top: 20px;
 `;
 
-export const ReplyTag = styled(Tag)`
+export const ReplyTag = styled.span`
   display: inline-block;
+  margin: 0 5px;
+  color: ${props => (props.green ? '#87D068' : '#87D068')};
+  font-weight: 500;
+  text-decoration: underline;
 `;
 
 export const UploadViewOnly = styled(Upload)`

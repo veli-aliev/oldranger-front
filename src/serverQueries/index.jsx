@@ -35,7 +35,9 @@ class Queries {
   };
 
   getArticlesByTag = async tag => {
-    const res = await axios.get(`/api/article/tag?tag_id=${tag}`);
+    const res = await axios.get(`/api/article/tag?tag_id=${tag}&page=1`, {
+      withCredentials: true,
+    });
     return res.data;
   };
 
@@ -151,7 +153,24 @@ class Queries {
   };
 
   sendInviteCode = async values => {
-    const res = await axios.post('/api/token/invite/bymail', values);
+    const res = await axios.post(
+      `/api/token/invite/bymail?mail=${values.mail}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  };
+
+  registrationUserAdd = async key => {
+    const res = await axios.post(
+      `/api/registration?key=${key}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
     return res.data;
   };
 

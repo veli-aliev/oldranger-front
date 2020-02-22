@@ -1,0 +1,11 @@
+.my-quill .ql-container.ql-snow {
+  border-right: 1px solid #37A3FF;
+  border-left: 1px solid #37A3FF;
+  border-bottom: 1px solid #37A3FF;
+}
+
+.my-quill .ql-toolbar.ql-snow {
+  border-right: 1px solid #37A3FF;
+  border-left: 1px solid #37A3FF;
+  border-top: 1px solid #37A3FF;
+}

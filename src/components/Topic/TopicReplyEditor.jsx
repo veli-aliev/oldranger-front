@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import './styled/quill.css';
 
 const modules = {
   toolbar: [
@@ -11,13 +12,21 @@ const modules = {
 };
 
 const TopicReplyEditor = props => {
+  const [clazz, setClazz] = useState('');
   const { value, onChange, replyRef, ...rest } = props;
   return (
     <ReactQuill
+      className={clazz}
       ref={replyRef}
       value={value}
       onChange={onChange}
       theme="snow"
+      onFocus={() => {
+        setClazz('my-quill');
+      }}
+      onBlur={() => {
+        setClazz('');
+      }}
       modules={modules}
       {...rest}
     />

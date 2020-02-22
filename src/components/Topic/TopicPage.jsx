@@ -36,19 +36,6 @@ class TopicPage extends React.Component {
     this.getTopics(parseInt(page, 10));
   }
 
-  topicToComment = topic => ({
-    positionInTopic: 0,
-    topicId: topic.subsection.id,
-    author: topic.topicStarter,
-    commentDateTime: topic.startTime,
-    messageCount: topic.messageCount,
-    replyDateTime: null,
-    replyNick: null,
-    replyText: null,
-    commentText: topic.startMessage,
-    photos: [], // no topic images from backend at this moment
-  });
-
   getTopics = page => {
     // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
@@ -78,6 +65,7 @@ class TopicPage extends React.Component {
   };
 
   replyButtonHandler = () => {
+    console.log(this.replyForm);
     this.replyForm.focus();
   };
 
@@ -99,7 +87,6 @@ class TopicPage extends React.Component {
   };
 
   handleSubmitComment = async (messageText, resetForm) => {
-    console.log('messageText: ', messageText);
     if (messageText === '') {
       notification.open({
         message: 'Сообщение не может быть пустым',

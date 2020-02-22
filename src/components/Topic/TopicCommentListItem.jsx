@@ -68,6 +68,7 @@ export default TopicCommentListItem;
 TopicCommentListItem.defaultProps = {
   withActions: false,
   convertedImages: null,
+  contentReplyText: null,
 };
 
 TopicCommentListItem.propTypes = {
@@ -78,5 +79,5 @@ TopicCommentListItem.propTypes = {
   contentCommentText: PropTypes.node.isRequired,
   convertedImages: PropTypes.arrayOf(fileProps),
   comment: commentProps.isRequired,
-  contentReplyText: PropTypes.node.isRequired,
+  contentReplyText: PropTypes.node,
 };

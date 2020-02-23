@@ -48,7 +48,10 @@ const Registration = () => {
     const res = await queries.registrationUser({ key: token, ...values });
     if (res === 1) {
       setStatus('Письмо с подтверждением отправлено на ваш email');
-    } else {
+    } else if (res === 3) {
+      setStatus('Пользователь с таким email или логином уже зарегистрирован');
+    }
+    else {
       setStatus('Некорректный token регистрации');
     }
     changeLoadingState(false);

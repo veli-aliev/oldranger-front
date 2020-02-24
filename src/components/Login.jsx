@@ -36,13 +36,13 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
 
   try {
     await queries.logIn(formData);
-    const profile = await queries.getProfileData();
+    const userData = await queries.getProfileData();
 
-    localStorage.setItem('user', JSON.stringify(profile));
+    localStorage.setItem('user', JSON.stringify(userData));
 
     setStatus('');
     changeLoginState();
-    changeUserState(profile);
+    changeUserState(userData);
   } catch (error) {
     if (error.response.status === 401) {
       setStatus('Проверьте правильность ввода логина и пароля');

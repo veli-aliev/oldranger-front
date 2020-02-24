@@ -50,8 +50,7 @@ const Registration = () => {
       setStatus('Письмо с подтверждением отправлено на ваш email');
     } else if (res === 3) {
       setStatus('Пользователь с таким email или логином уже зарегистрирован');
-    }
-    else {
+    } else {
       setStatus('Некорректный token регистрации');
     }
     changeLoadingState(false);

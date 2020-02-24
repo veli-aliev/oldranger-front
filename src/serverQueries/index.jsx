@@ -175,7 +175,6 @@ class Queries {
 
   registrationUser = async values => {
     const res = await axios.post('/api/token/confirm/bymail', values);
-    console.log(res)
     if (res.status === 400) {
       return 3;
     }

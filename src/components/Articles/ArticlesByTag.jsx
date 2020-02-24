@@ -1,3 +1,4 @@
+// TODO скорее всего можно будет удалить это
 import React from 'react';
 import { Spin } from 'antd';
 import { withRouter } from 'react-router-dom';
@@ -31,12 +32,9 @@ class ArticlesByTag extends React.Component {
     return (
       <>
         {articles.length === 0 ? LoadOrNotFound : null}
-        {articles
-          // .filter(el => el.hideToAnon !== true)
-          .reverse()
-          .map(el => {
-            return <Article key={el.id} articleInfo={el} />;
-          })}
+        {articles.reverse().map(el => {
+          return <Article key={el.id} articleInfo={el} />;
+        })}
       </>
     );
   }

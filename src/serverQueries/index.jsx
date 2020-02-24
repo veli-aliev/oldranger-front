@@ -30,8 +30,9 @@ class Queries {
     return res.data;
   };
 
-  getArticlesByTag = async tag => {
-    const res = await axios.get(`/api/article/tag?tag_id=${tag}`, {
+  getArticlesByTag = async tags => {
+    const tagsString = tags.join('&tag_id=');
+    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {
       withCredentials: true,
     });
     return res.data;

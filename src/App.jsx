@@ -18,6 +18,7 @@ import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
 import ChatAuth from './components/Chat/ChatAuth';
 import AdminPanel from './components/AdminPanel';
+import UserInfo from './components/AdminPanel/UserInfo';
 
 class App extends React.Component {
   constructor(props) {
@@ -50,9 +51,9 @@ class App extends React.Component {
   };
 
   render() {
-    const { isLogin, user } = this.state;
     const {
-      user: { id },
+      isLogin,
+      user: { role },
     } = this.state;
 
     return (
@@ -69,7 +70,17 @@ class App extends React.Component {
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
-        <PrivateRoute isLogin={isLogin && id === 1} path="/admin-panel" component={AdminPanel} />
+        <PrivateRoute
+          isLogin={isLogin && role === 'ROLE_ADMIN'}
+          path="/admin-panel/users/:id"
+          component={UserInfo}
+        />
+        <PrivateRoute
+          isLogin={isLogin && role === 'ROLE_ADMIN'}
+          path="/admin-panel"
+          exact
+          component={AdminPanel}
+        />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />

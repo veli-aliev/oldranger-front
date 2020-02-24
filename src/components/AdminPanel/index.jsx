@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
+import { Link } from 'react-router-dom';
 import serverQueries from '../../serverQueries';
 import { dateToDateDistance } from '../../utils';
 
 const AdminPanel = () => {
-  const [users, setUsers] = useState([]);
-  const [pageParams, setPageParams] = useState({ total: 50, pageSize: 5, currentPage: 0 });
+  const [usersList, setUsersList] = useState([]);
+  const [pageParams, setPageParams] = useState({ total: 0, pageSize: 5, currentPage: 0 });
 
   useEffect(() => {
-    serverQueries.getUsersList(0).then(setUsers);
+    serverQueries.getUsersList(0).then(({ users, usersCount }) => {
+      setUsersList(users);
+      setPageParams({ total: usersCount });
+    });
   }, []);
 
   const handlepageChange = ({ current }) => {
-    serverQueries.getUsersList(current - 1).then(setUsers);
+    serverQueries.getUsersList(current - 1).then(({ users }) => {
+      setUsersList(users);
+    });
     setPageParams({ currentPage: current });
   };
 
@@ -20,6 +26,9 @@ const AdminPanel = () => {
     {
       title: 'Nickname',
       dataIndex: 'nickName',
+      render: (text, { userStatisticId }) => (
+        <Link to={`/admin-panel/users/${userStatisticId}`}>{text}</Link>
+      ),
     },
     {
       title: 'Email',
@@ -52,7 +61,7 @@ const AdminPanel = () => {
       <Table
         rowKey="email"
         columns={columns}
-        dataSource={users}
+        dataSource={usersList}
         pagination={pageParams}
         onChange={handlepageChange}
       />

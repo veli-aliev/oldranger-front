@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, Input, Form as AntForm, message } from 'antd';
+import { Button, Form as AntForm, message } from 'antd';
 import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import { withRouter } from 'react-router-dom';
 import * as Yup from 'yup';
+import TopicReplyEditor from './TopicReplyEditor';
 import queries from '../../serverQueries';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
@@ -64,7 +65,7 @@ class TopicEditingForm extends React.Component {
   };
 
   render() {
-    const { edetingText, replyRef, handleCancel, fileList } = this.props;
+    const { edetingText, handleCancel, fileList } = this.props;
     const { files } = this.state;
     return (
       <Formik
@@ -72,8 +73,8 @@ class TopicEditingForm extends React.Component {
           message: edetingText,
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { resetForm }) => {
-          this.handleSubmitForm(values.message, resetForm);
+        onSubmit={values => {
+          this.handleSubmitForm(values.message);
         }}
       >
         {({ handleSubmit, handleChange, errors, touched, values, handleBlur }) => {
@@ -84,13 +85,12 @@ class TopicEditingForm extends React.Component {
                 validateStatus={touched.message && errors.message ? 'error' : 'success'}
                 help={touched.message ? errors.message : ''}
               >
-                <Input.TextArea
-                  name="message"
+                <TopicReplyEditor
                   value={values.message}
-                  onChange={handleChange}
+                  onChange={handleChange('message')}
                   onBlur={handleBlur}
+                  name="message"
                   rows={4}
-                  ref={replyRef}
                 />
               </AntForm.Item>
               <AntForm.Item>
@@ -134,7 +134,6 @@ TopicEditingForm.defaultProps = {
 
 TopicEditingForm.propTypes = {
   edetingText: PropTypes.string.isRequired,
-  replyRef: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   fileList: PropTypes.arrayOf(fileProps).isRequired,
   idTopic: PropTypes.number.isRequired,

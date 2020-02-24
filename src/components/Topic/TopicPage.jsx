@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { Avatar, Breadcrumb, message, notification, Spin, Typography } from 'antd';
+import { Avatar, Breadcrumb, message, notification, Spin, Typography, Result, Button } from 'antd';
 import Comment from 'antd/es/comment';
+import { Markup } from 'interweave';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
@@ -26,6 +27,7 @@ class TopicPage extends React.Component {
       answerId: null,
       files: [],
       uploading: false,
+      error: false,
     };
     this.replyForm = React.createRef();
   }
@@ -35,38 +37,37 @@ class TopicPage extends React.Component {
     this.getTopics(parseInt(page, 10));
   }
 
-  topicToComment = topic => ({
-    positionInTopic: 0,
-    topicId: topic.subsection.id,
-    author: topic.topicStarter,
-    commentDateTime: topic.startTime,
-    messageCount: topic.messageCount,
-    replyDateTime: null,
-    replyNick: null,
-    replyText: null,
-    commentText: topic.startMessage,
-    photos: [], // no topic images from backend at this moment
-  });
-
   getTopics = page => {
     // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
     if (page === 1) {
-      queries.getTopic(match.params.topicId, 0, 10).then(({ topic, commentDto }) => {
-        this.setState({
-          topic,
-          page,
-          messages: commentDto ? commentDto.content : null,
+      queries
+        .getTopic(match.params.topicId, 0, 10)
+        .then(({ topic, commentDto }) => {
+          this.setState({
+            topic,
+            page,
+            messages: commentDto ? commentDto.content : null,
+            error: false,
+          });
+        })
+        .catch(() => {
+          this.setState({ error: true });
         });
-      });
     } else {
-      queries.getTopic(match.params.topicId, page - 1, 10).then(({ topic, commentDto }) => {
-        this.setState({
-          topic,
-          page,
-          messages: commentDto ? commentDto.content : null,
+      queries
+        .getTopic(match.params.topicId, page - 1, 10)
+        .then(({ topic, commentDto }) => {
+          this.setState({
+            topic,
+            page,
+            messages: commentDto ? commentDto.content : null,
+            error: false,
+          });
+        })
+        .catch(() => {
+          this.setState({ error: true });
         });
-      });
     }
   };
 
@@ -77,6 +78,7 @@ class TopicPage extends React.Component {
   };
 
   replyButtonHandler = () => {
+    console.log(this.replyForm);
     this.replyForm.focus();
   };
 
@@ -201,9 +203,21 @@ class TopicPage extends React.Component {
   };
 
   render() {
-    const { messages, topic, page, reply, files, uploading } = this.state;
+    const { messages, topic, page, reply, files, uploading, error } = this.state;
     const { isLogin } = this.context;
-    return (
+
+    return error ? (
+      <Result
+        status="403"
+        title="403"
+        subTitle="Извините, вы не авторизованы для доступа к этой странице."
+        extra={
+          <Button type="primary">
+            <Link to="/login">Авторизироваться</Link>
+          </Button>
+        }
+      />
+    ) : (
       <div>
         {topic ? (
           <div>
@@ -249,10 +263,12 @@ class TopicPage extends React.Component {
             closeText="Отменить комментирование"
             onClose={this.handleCancelReply}
             message={
-              <span>
-                Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>{' '}
-                <Text code>{reply.replyText}</Text>
-              </span>
+              <>
+                <span>
+                  Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>
+                </span>
+                <Markup content={reply.replyText} />
+              </>
             }
           />
         )}

@@ -36,8 +36,7 @@ class Queries {
 
   getArticlesByTag = async tags => {
     const tagsString = tags.join('&tag_id=');
-    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {
-    });
+    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {});
     return res.data;
   };
 
@@ -243,6 +242,7 @@ class Queries {
     });
     return res.data;
   };
+
   getImage = async formData => {
     const res = await axios.post('/api/chat/image', formData, {
       headers: { 'content-type': 'multipart/form-data' },

@@ -41,7 +41,6 @@ class Subsection extends React.Component {
 
   render() {
     const { topics, name, hasMore } = this.state;
-    console.log('topics: ', topics);
     return (
       <>
         {topics.length > 0 && (

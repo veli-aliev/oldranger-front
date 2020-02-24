@@ -17,11 +17,9 @@ class MainPage extends React.Component {
 
   componentDidMount() {
     queries.getActualTopics().then(actualTopics => {
-      console.log('actualTopics: ', actualTopics);
       this.setState({ actualTopics });
     });
     queries.getAllSections().then(sections => {
-      console.log('rootSections: ', sections);
       this.setState({ rootSections: sections });
     });
   }

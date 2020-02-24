@@ -10,6 +10,9 @@ import Messages from './Messages';
 import Themes from './Themes';
 import Subscriptions from './Subscriptions';
 import Invite from './Invite';
+import Albums from './Albums/Albums';
+import Album from './Albums/Album';
+import EditAlbum from './Albums/EditAlbum';
 
 const Profile = () => {
   const { path } = useRouteMatch();
@@ -36,6 +39,7 @@ const Profile = () => {
             <Radio.Button value="themes">Темы</Radio.Button>
             <Radio.Button value="subscriptions">Подписки</Radio.Button>
             <Radio.Button value="invite">Пригласить друга</Radio.Button>
+            <Radio.Button value="albums">Мои альбомы</Radio.Button>
           </Radio.Group>
         </div>
         <Switch>
@@ -44,6 +48,9 @@ const Profile = () => {
           <Route path={`${path}/themes`} component={Themes} />
           <Route path={`${path}/subscriptions`} component={Subscriptions} />
           <Route path={`${path}/invite`} component={Invite} />
+          <Route exact path={`${path}/albums/:id`} component={Album} />
+          <Route exact path={`${path}/albums`} component={Albums} />
+          <Route exact path={`${path}/albums/editAlbum/:id`} component={EditAlbum} />
         </Switch>
       </Route>
     </Switch>

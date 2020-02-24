@@ -1,41 +1,71 @@
-import React from 'react';
-import { Spin } from 'antd';
+import React, { useContext } from 'react';
+import { Result, Icon, Button } from 'antd';
 import PropTypes from 'prop-types';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import commentProps from './propTypes/commentProps';
 import { StyledList, StyledTitle } from '../Main/styled';
+import Context from '../Context';
 
-const TopicCommentsList = ({ messages, hasMore, fetchMessages, itemComponent, title }) => {
-  return messages.length > 0 ? (
-    <InfiniteScroll
-      dataLength={messages.length}
-      next={fetchMessages}
-      hasMore={hasMore}
-      loader={<Spin />}
-    >
+const TopicCommentsList = ({
+  messages,
+  itemComponent,
+  changePageHandler,
+  total,
+  page,
+  replyButtonHandler,
+  openNotification,
+}) => {
+  const { isLogin } = useContext(Context);
+  if (!messages) {
+    return (
+      <Result status="500" title="500" subTitle="Извините на сервере возникла неожиданная ошибка" />
+    );
+  }
+  if (messages.length > 0) {
+    return (
       <StyledList
-        header={title.length > 0 && <StyledTitle>{title}</StyledTitle>}
+        className="comment-list"
+        header={<StyledTitle>Комментарии ({total})</StyledTitle>}
         itemLayout="horizontal"
         dataSource={messages}
         renderItem={itemComponent}
+        pagination={{
+          current: page,
+          onChange: currentPage => {
+            changePageHandler(currentPage);
+          },
+          pageSize: 10,
+          total,
+        }}
       />
-    </InfiniteScroll>
-  ) : (
-    <Spin />
+    );
+  }
+  return (
+    <Result
+      icon={<Icon type="smile" theme="twoTone" />}
+      title="Комментариев нет!"
+      extra={
+        <Button onClick={isLogin ? replyButtonHandler : openNotification} type="primary">
+          Добавить комментарий
+        </Button>
+      }
+    />
   );
 };
 
 TopicCommentsList.propTypes = {
-  fetchMessages: PropTypes.func.isRequired,
   messages: PropTypes.arrayOf(commentProps).isRequired,
-  hasMore: PropTypes.bool,
   itemComponent: PropTypes.func.isRequired,
-  title: PropTypes.string,
+  changePageHandler: PropTypes.func,
+  total: PropTypes.number,
+  page: PropTypes.number,
+  replyButtonHandler: PropTypes.func.isRequired,
+  openNotification: PropTypes.func.isRequired,
 };
 
 TopicCommentsList.defaultProps = {
-  hasMore: false,
-  title: 'No Title',
+  total: 1,
+  page: 1,
+  changePageHandler: () => {},
 };
 
 export default TopicCommentsList;

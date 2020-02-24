@@ -1,5 +1,6 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
+import { Breadcrumb } from 'antd';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
 import TopicsList from './TopicsList';
@@ -41,13 +42,32 @@ class Subsection extends React.Component {
   render() {
     const { topics, name, hasMore } = this.state;
     return (
-      <TopicsList
-        fetchMessages={this.lazyLoadMore}
-        hasMore={hasMore}
-        items={topics}
-        title={name}
-        itemComponent={item => <TopicsListItem topicData={item} />}
-      />
+      <>
+        {topics.length > 0 && (
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to="/">Главная</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to={`/section/${topics[0].topic.section.id}`}>
+                {topics[0].topic.section.name}
+              </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to={`/subsection/${topics[0].topic.subsection.id}`}>
+                {topics[0].topic.subsection.name}
+              </Link>
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        )}
+        <TopicsList
+          fetchMessages={this.lazyLoadMore}
+          hasMore={hasMore}
+          items={topics}
+          title={name}
+          itemComponent={item => <TopicsListItem topicData={item} />}
+        />
+      </>
     );
   }
 }

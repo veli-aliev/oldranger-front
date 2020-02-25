@@ -180,7 +180,6 @@ class Albums extends React.Component {
           <StyledAlbumWrapper>
             {albums.map(album => (
               <StyledAlbumCard onClick={this.openAlbum(album)} key={album.id}>
-                {console.log(album)}
                 <AlbomBackgroundImage
                   src={
                     album.originalThumbImage === 'thumb_image_placeholder' ||

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import Carousel, { Modal, ModalGateway } from 'react-images';
-import { Avatar, Breadcrumb, message, notification, Spin, Typography, Icon, Button } from 'antd';
-import styled from 'styled-components';
+import { Avatar, Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
+// import styled from 'styled-components';
 import Comment from 'antd/es/comment';
+import { Markup } from 'interweave';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
@@ -15,15 +15,15 @@ import Context from '../Context';
 
 const { Text } = Typography;
 
-const CloseModalButton = styled(Button)`
-position:absolute;
-top:20px;
-padding:5px
-right:20px;
-width:44px;
-opacity: 0.7;
-z-index: 1;
-`;
+// const CloseModalButton = styled(Button)`
+// position:absolute;
+// top:20px;
+// padding:5px
+// right:20px;
+// width:44px;
+// opacity: 0.7;
+// z-index: 1;
+// `;
 
 class TopicPage extends React.Component {
   constructor(props) {
@@ -38,9 +38,8 @@ class TopicPage extends React.Component {
       answerId: null,
       files: [],
       uploading: false,
-      images: [],
       lightboxIsOpen: false,
-      selectedIndex: null,
+      error: false,
     };
     this.replyForm = React.createRef();
   }
@@ -50,33 +49,38 @@ class TopicPage extends React.Component {
     this.getTopics(parseInt(page, 10));
   }
 
-  topicToComment = topic => ({
-    positionInTopic: 0,
-    topicId: topic.subsection.id,
-    author: topic.topicStarter,
-    commentDateTime: topic.startTime,
-    messageCount: topic.messageCount,
-    replyDateTime: null,
-    replyNick: null,
-    replyText: null,
-    commentText: topic.startMessage,
-    photos: [], // no topic images from backend at this moment
-  });
-
-  getTopics = async page => {
-    const imageTempUrl = 'http://localhost:8888/api/securedPhoto/photoFromAlbum/';
+  getTopics = page => {
+    // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
-    const { topic, commentDto } = await queries.getTopic(match.params.topicId, page - 1, 10);
-    const photos = await queries.getPhotosFromAlbum(topic.photoAlbum.id);
-    const images = photos
-      .filter(image => !image.description)
-      .map(image => ({ ...image, src: `${imageTempUrl}${image.id}` }));
-    this.setState({
-      images,
-      topic,
-      page,
-      messages: commentDto ? commentDto.content : null,
-    });
+    if (page === 1) {
+      queries
+        .getTopic(match.params.topicId, 0, 10)
+        .then(({ topic, commentDto }) => {
+          this.setState({
+            topic,
+            page,
+            messages: commentDto ? commentDto.content : null,
+            error: false,
+          });
+        })
+        .catch(() => {
+          this.setState({ error: true });
+        });
+    } else {
+      queries
+        .getTopic(match.params.topicId, page - 1, 10)
+        .then(({ topic, commentDto }) => {
+          this.setState({
+            topic,
+            page,
+            messages: commentDto ? commentDto.content : null,
+            error: false,
+          });
+        })
+        .catch(() => {
+          this.setState({ error: true });
+        });
+    }
   };
 
   changePageHandler = page => {
@@ -209,52 +213,31 @@ class TopicPage extends React.Component {
     }
   };
 
-  toggleLightbox = selectedIndex => {
+  toggleLightbox = () => {
     this.setState(state => ({
       lightboxIsOpen: !state.lightboxIsOpen,
-      selectedIndex,
     }));
   };
 
   render() {
-    const {
-      messages,
-      topic,
-      page,
-      reply,
-      files,
-      uploading,
-      images,
-      lightboxIsOpen,
-      selectedIndex,
-    } = this.state;
+    const { messages, topic, page, reply, files, uploading, error } = this.state;
     const { isLogin } = this.context;
 
-    const CustomHeader = ({ isModal, modalProps: { onClose } }) =>
-      isModal ? (
-        <div>
-          <CloseModalButton onClick={onClose} title="close">
-            <Icon type="close" />
-          </CloseModalButton>
-        </div>
-      ) : null;
-
-    return (
+    return error ? (
+      <Result
+        status="403"
+        title="403"
+        subTitle="Извините, вы не авторизованы для доступа к этой странице."
+        extra={
+          <Button type="primary">
+            <Link to="/login">Авторизироваться</Link>
+          </Button>
+        }
+      />
+    ) : (
       <div>
         {topic ? (
           <div>
-            <ModalGateway>
-              {lightboxIsOpen ? (
-                <Modal onClose={this.toggleLightbox}>
-                  <Carousel
-                    views={images}
-                    currentIndex={selectedIndex}
-                    components={{ Header: CustomHeader }}
-                  />
-                </Modal>
-              ) : null}
-            </ModalGateway>
-
             <Breadcrumb>
               <Breadcrumb.Item>
                 <Link to="/">Главная</Link>
@@ -269,7 +252,7 @@ class TopicPage extends React.Component {
                 <Link to={`/topic/${topic.id}`}>{topic.name}</Link>
               </Breadcrumb.Item>
             </Breadcrumb>
-            <TopicStartMessage topic={topic} images={images} toggleLightbox={this.toggleLightbox} />
+            <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}
@@ -297,10 +280,12 @@ class TopicPage extends React.Component {
             closeText="Отменить комментирование"
             onClose={this.handleCancelReply}
             message={
-              <span>
-                Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>{' '}
-                <Text code>{reply.replyText}</Text>
-              </span>
+              <>
+                <span>
+                  Ответ на сообщение пользователя <Text strong>{reply.replyNick}</Text>
+                </span>
+                <Markup content={reply.replyText} />
+              </>
             }
           />
         )}

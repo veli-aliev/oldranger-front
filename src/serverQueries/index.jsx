@@ -35,7 +35,9 @@ class Queries {
   };
 
   getArticlesByTag = async tag => {
-    const res = await axios.get(`/api/article/tag?tag_id=${tag}`);
+    const res = await axios.get(`/api/article/tag?tag_id=${tag}&page=1`, {
+      withCredentials: true,
+    });
     return res.data;
   };
 
@@ -56,6 +58,7 @@ class Queries {
 
   getTopic = async (topicId, page, limit) => {
     const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=${limit}`);
+    console.log('TopicAndTopicDTO: ', res.data);
     return res.data;
   };
 
@@ -150,7 +153,24 @@ class Queries {
   };
 
   sendInviteCode = async values => {
-    const res = await axios.post('/api/token/invite/bymail', values);
+    const res = await axios.post(
+      `/api/token/invite/bymail?mail=${values.mail}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  };
+
+  registrationUserAdd = async key => {
+    const res = await axios.post(
+      `/api/registration?key=${key}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
     return res.data;
   };
 
@@ -205,6 +225,24 @@ class Queries {
     return res.data;
   };
 
+  getUserById = async id => {
+    const res = await axios.get(`/api/admin/getUser/${id}`);
+    return res.data;
+  };
+
+  getUsersTree = async (id, deep) => {
+    const res = await axios.get(`/api/usersTree/user/${id}/${deep}`);
+    return res.data;
+  };
+
+  blackListRequest = async (id, dateUnblock = new Date()) => {
+    const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+    const res = await axios.post('/api/admin/blocking', {
+      id,
+      dateUnblock: new Date(new Date(dateUnblock) - timezoneOffset).toISOString(),
+    });
+    return res.data;
+  };
   getImage = async formData => {
     const res = await axios.post('/api/chat/image', formData, {
       headers: { 'content-type': 'multipart/form-data' },

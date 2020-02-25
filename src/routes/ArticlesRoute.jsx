@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Articles from '../components/Articles/Articles';
 import ArticlesByTag from '../components/Articles/ArticlesByTag';
@@ -8,23 +8,13 @@ import ArticleCreate from '../components/Articles/ArticleCreate';
 const ArticlesRoute = ({ isLogin }) => {
   return (
     <>
-      <Route>
-        {isLogin ? (
-          <Switch>
-            <Route exact path="/articles">
-              <Articles />
-            </Route>
-            <Route exact path="/articles/:articleTag">
-              <ArticlesByTag />
-            </Route>
-            <Route exact path="/articleCreate">
-              <ArticleCreate />
-            </Route>
-          </Switch>
-        ) : (
-          <Redirect to="/login" />
-        )}
+      <Route exact path="/articles">
+        {isLogin ? <Articles /> : <Redirect to="/login" />}
       </Route>
+      <Route path="/articles/:articleTag">
+        {isLogin ? <ArticlesByTag /> : <Redirect to="/login" />}
+      </Route>
+      <Route path="/articleCreate">{isLogin ? <ArticleCreate /> : <Redirect to="/login" />}</Route>
     </>
   );
 };

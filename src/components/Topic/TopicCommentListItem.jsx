@@ -17,12 +17,21 @@ const TopicCommentListItem = ({
   commentActions,
   contentEditingForm,
   contentCommentText,
+  contentReplyText,
 }) => {
   return (
     <ListItem id={comment.positionInTopic + 1}>
       <Comment
         actions={withActions ? commentActions : null}
-        author={comment.author.nickName}
+        author={
+          !contentReplyText ? (
+            comment.author.nickName
+          ) : (
+            <span>
+              {comment.author.nickName} {contentReplyText}
+            </span>
+          )
+        }
         avatar={
           <Popover
             content={
@@ -59,6 +68,7 @@ export default TopicCommentListItem;
 TopicCommentListItem.defaultProps = {
   withActions: false,
   convertedImages: null,
+  contentReplyText: null,
 };
 
 TopicCommentListItem.propTypes = {
@@ -69,4 +79,5 @@ TopicCommentListItem.propTypes = {
   contentCommentText: PropTypes.node.isRequired,
   convertedImages: PropTypes.arrayOf(fileProps),
   comment: commentProps.isRequired,
+  contentReplyText: PropTypes.node,
 };

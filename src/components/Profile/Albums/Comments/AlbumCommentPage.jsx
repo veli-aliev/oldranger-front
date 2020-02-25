@@ -2,15 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import PhotoCommentsComponent from './PhotoCommentsComponent';
 
 const ImageSection = styled.div`
   max-width: 600px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: 20px;
+  max-height: 640px;
 `;
 const AlbumCommentPapeStyledImage = styled.img`
   width: 100%;
+  max-height: 600px;
+  object-fit: cover;
 `;
 
 const CommentsSection = styled.div`
@@ -19,7 +23,8 @@ const CommentsSection = styled.div`
   box-sizing: border-box;
   padding: 0 20px;
 `;
-class EditAlbum extends React.Component {
+
+class AlbumCommentPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,39 +36,39 @@ class EditAlbum extends React.Component {
     const {
       location: { state },
     } = this.props;
-
-    const { id, album } = state;
+    const { photoID, photoAlbumDto } = state;
     const { photoTempUlr } = this.state;
     return (
       <div>
         <div>
-          <Link to="/profile/albums">Альбомы </Link>
+          <Link to="/profile/albums">Альбомы</Link>
           {'>'}
           <Link
             to={{
-              pathname: `/profile/albums/${id}`,
-              state: album,
+              pathname: `/profile/albums/${photoID}`,
+              state: photoAlbumDto,
             }}
           >
             {' '}
-            {`${album.title}`}{' '}
+            {`${photoAlbumDto.title}`}{' '}
           </Link>
           {'>'} <span>Комментарии к фотографии</span>
         </div>
         <ImageSection>
-          <AlbumCommentPapeStyledImage src={`${photoTempUlr}${id}`} />
+          <AlbumCommentPapeStyledImage src={`${photoTempUlr}${photoID}`} />
         </ImageSection>
-        <CommentsSection>comments</CommentsSection>
+        <CommentsSection>
+          <PhotoCommentsComponent photoId={photoID} commentPage />
+        </CommentsSection>
       </div>
     );
   }
 }
-EditAlbum.propTypes = {
+AlbumCommentPage.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      album: PropTypes.shape({
+      photoID: PropTypes.number.isRequired,
+      photoAlbumDto: PropTypes.shape({
         title: PropTypes.string.isRequired,
       }),
       original: PropTypes.string.isRequired,
@@ -71,4 +76,4 @@ EditAlbum.propTypes = {
   }).isRequired,
 };
 
-export default EditAlbum;
+export default AlbumCommentPage;

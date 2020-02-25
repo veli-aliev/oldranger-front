@@ -13,7 +13,7 @@ import Invite from './Invite';
 import Albums from './Albums/Albums';
 import Album from './Albums/Album';
 import EditAlbum from './Albums/EditAlbum';
-import AlbumCommentPage from './Albums/AlbumCommentPage';
+import AlbumCommentPage from './Albums/Comments/AlbumCommentPage';
 
 const Profile = () => {
   const { path } = useRouteMatch();

@@ -167,6 +167,16 @@ class Queries {
     const res = await axios.get('/api/albums/viewAlbums');
     return res.data;
   };
+
+  loadPhotoComments = async id => {
+    const res = await axios.get(`/api/photos/${id}`);
+    return res.data;
+  };
+
+  addCommentToPhoto = async ({ value, photoId }) => {
+    const res = await axios.post(`/api/photo/comment/add?idPhoto=${photoId}&commentText=${value}`);
+    return res;
+  };
 }
 
 export default new Queries();

@@ -69,6 +69,7 @@ class App extends React.Component {
           path="/admin-panel"
           component={AdminPanel}
         />
+
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />

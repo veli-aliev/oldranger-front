@@ -4,10 +4,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import { Link, withRouter } from 'react-router-dom';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
-import UploadPhoto from './UploadPhoto';
+import PhotoCommentsComponent from './Comments/PhotoCommentsComponent';
 
 const CloseModalButton = styled(Button)`
 position:absolute;
@@ -92,9 +90,10 @@ const StyledRow = styled(Row)`
 
 const CustomViewImage = styled.img`
   height: auto;
-  max-height: 100vw;
-  max-width: 70%;
+  max-height: 100%;
+  max-width: 100%;
   flex-shrink: 1;
+  margin: 0 auto;
   user-select: none;
   @media (max-width: 1000px) {
     max-width: 100vw;
@@ -104,16 +103,26 @@ const CustomViewImage = styled.img`
 const CustomViewMainDiv = styled.div`
   line-height: 0;
   position: relative;
-  text-align: center;
   box-sizing: border-box;
-  padding-top: 50px;
   display: flex;
   flex-wrap: nowrap;
   justify-content: center;
+  max-height: 500px;
+`;
+
+const CustomViewImageWrapper = styled.div`
+  max-height: 100%;
+  max-width: 70%;
+  min-width: 500px;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  background: lightgrey;
 `;
 const CustomViewCommentDiv = styled.div`
   width: 300px;
-  background: red;
+  background: #fff;
+  padding: 0 20px;
   @media (max-width: 1000px) {
     display: none;
   }
@@ -174,13 +183,6 @@ class Album extends React.Component {
     }
   };
 
-  onSortEnd = ({ oldIndex, newIndex }) => {
-    const { photos } = this.state;
-    this.setState({
-      photos: arrayMove(photos, oldIndex, newIndex),
-    });
-  };
-
   openAlbumComments = album => async event => {
     event.stopPropagation();
     const {
@@ -198,11 +200,11 @@ class Album extends React.Component {
     const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
       location: {
-        state: { id, title },
+        state: { title },
       },
     } = this.props;
     const images = photos.reduce((acc, photo) => {
-      return [...acc, { src: `${photoTempUlr}${photo.id}` }];
+      return [...acc, { src: `${photoTempUlr}${photo.photoID}` }];
     }, []);
 
     const CustomHeader = ({ currentIndex, isModal, modalProps: { onClose } }) =>
@@ -214,7 +216,7 @@ class Album extends React.Component {
           <DeletePhotoModalButton
             title="delete"
             onClick={event => {
-              this.deletePhoto(photos[currentIndex].id)(event);
+              this.deletePhoto(photos[currentIndex].photoID)(event);
               onClose();
             }}
           >
@@ -241,8 +243,12 @@ class Album extends React.Component {
       };
       return (
         <CustomViewMainDiv>
-          <CustomViewImage {...innerProps} />
-          <CustomViewCommentDiv>hello its comments part</CustomViewCommentDiv>
+          <CustomViewImageWrapper>
+            <CustomViewImage {...innerProps} />
+          </CustomViewImageWrapper>
+          <CustomViewCommentDiv>
+            <PhotoCommentsComponent photoId={photos[index].photoID} />
+          </CustomViewCommentDiv>
         </CustomViewMainDiv>
       );
     };
@@ -258,16 +264,16 @@ class Album extends React.Component {
             {photos.length > 0 ? (
               <>
                 {photos.map((photo, index) => (
-                  <ImageWrapper onClick={() => this.toggleLightbox(index)} key={photo.id}>
+                  <ImageWrapper onClick={() => this.toggleLightbox(index)} key={photo.photoID}>
                     <StyledImage
-                      title={photo.title}
+                      title={photo.description}
                       alt="userPhoto"
-                      src={`${photoTempUlr}${photo.id}`}
+                      src={`${photoTempUlr}${photo.photoID}`}
                     />
                     <DeletePhotoButton
                       type="default"
                       title="Удалить Фотографию"
-                      onClick={this.deletePhoto(photo.id)}
+                      onClick={this.deletePhoto(photo.photoID)}
                     >
                       <Icon type="delete" style={{ color: 'red' }} />
                     </DeletePhotoButton>
@@ -288,17 +294,21 @@ class Album extends React.Component {
             ) : (
               <StyledRow type="flex" justify="center">
                 <h4>Альбом пуст</h4>
+                <Button>Добавить фотографии</Button>
               </StyledRow>
             )}
           </AlbumWrapper>
-          <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
         </>
       );
     }
 
-    const SortableItem = SortableElement(({ value, photoNum }) => (
+    const PhotoItem = ({ value, photoNum }) => (
       <ImageWrapper onClick={() => this.toggleLightbox(photoNum)}>
-        <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.id}`} />
+        <StyledImage
+          title={value.description}
+          alt="userPhoto"
+          src={`${photoTempUlr}${value.photoID}`}
+        />
         <DeletePhotoButton
           type="default"
           title="Удалить Фотографию"
@@ -307,15 +317,15 @@ class Album extends React.Component {
           <Icon type="delete" style={{ color: 'red' }} />
         </DeletePhotoButton>
       </ImageWrapper>
-    ));
+    );
 
-    const SortableList = SortableContainer(({ items }) => (
+    const PhotoList = ({ items }) => (
       <AlbumWrapper>
         {items.map((photo, index) => (
-          <SortableItem key={photo.id} index={index} value={photo} photoNum={index} />
+          <PhotoItem key={photo.photoID} index={index} value={photo} photoNum={index} />
         ))}
       </AlbumWrapper>
-    ));
+    );
     return (
       <>
         <AlbumNavigation>
@@ -324,7 +334,7 @@ class Album extends React.Component {
         </AlbumNavigation>
         {photos.length > 0 ? (
           <>
-            <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} distance={1} />
+            <PhotoList items={photos} />
             <ModalGateway>
               {lightboxIsOpen ? (
                 <Modal onClose={this.toggleLightbox}>
@@ -342,7 +352,7 @@ class Album extends React.Component {
             <h4>Альбом пуст</h4>
           </StyledRow>
         )}
-        <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+        <Button>Добавить фотографии</Button>
       </>
     );
   }

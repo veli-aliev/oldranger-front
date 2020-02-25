@@ -16,6 +16,9 @@ const StyledSpan = styled.span`
     display: block !important;
   }
 `;
+const MainWrapper = styled.div`
+  margin-top: 40px;
+`;
 class UploadPhoto extends React.Component {
   constructor(props) {
     super(props);
@@ -74,7 +77,7 @@ class UploadPhoto extends React.Component {
       fileList,
     };
     return (
-      <>
+      <MainWrapper>
         <Row type="flex" justify="center">
           <Upload {...uploadProps} disabled={uploading}>
             <UploadButton>
@@ -94,7 +97,7 @@ class UploadPhoto extends React.Component {
             {uploading ? 'Загружаем' : 'Добавить Фотографии в альбом'}
           </Button>
         </Row>
-      </>
+      </MainWrapper>
     );
   }
 }

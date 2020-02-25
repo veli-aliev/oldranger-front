@@ -1,11 +1,17 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { message, Button, Input, Modal } from 'antd';
+import { message, Button, Input, Modal, Row } from 'antd';
 import styled from 'styled-components';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
 import { StyledImage } from './Album';
+import UploadPhoto from './UploadPhoto';
 
+const CustomUploadPhoto = styled(UploadPhoto)`
+  margin-top: 20px;
+`;
 const EditSection = styled.div`
   justify-content: space-around;
   margin-top: 50px;
@@ -86,13 +92,20 @@ class EditAlbum extends React.Component {
     const { photoTempUlr } = this.state;
     this.setState({
       visible: false,
-      albumCoverUrl: `${photoTempUlr}${photo.id}`,
+      albumCoverUrl: `${photoTempUlr}${photo.photoID}`,
     });
   };
 
   handleCancel = () => {
     this.setState({
       visible: false,
+    });
+  };
+
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const { photos } = this.state;
+    this.setState({
+      photos: arrayMove(photos, oldIndex, newIndex),
     });
   };
 
@@ -128,7 +141,8 @@ class EditAlbum extends React.Component {
     }
   };
 
-  addPhotoToDeleteArray(photoId) {
+  addPhotoToDeleteArray = photoId => event => {
+    event.stopPropagation();
     const { photosToDelete } = this.state;
     if (photosToDelete.indexOf(photoId) !== -1) {
       photosToDelete.splice(photosToDelete.indexOf(photoId), 1);
@@ -141,7 +155,17 @@ class EditAlbum extends React.Component {
         photosToDelete: [...photosToDelete],
       });
     }
-  }
+  };
+
+  openPhotoComents = photo => event => {
+    event.stopPropagation();
+    const { history } = this.props;
+    const url = `/profile/albums/${photo.id}/comments/`;
+    history.push({
+      pathname: url,
+      state: photo,
+    });
+  };
 
   render() {
     const {
@@ -149,6 +173,29 @@ class EditAlbum extends React.Component {
     } = this.props;
     const { title, id } = state;
     const { photoTempUlr, photos, photosToDelete, albumCoverUrl, visible } = this.state;
+
+    const SortableItem = SortableElement(({ value }) => (
+      <EditAlbumImageWrapper
+        key={value.photoID}
+        onClick={event => this.openPhotoComents(value)(event)}
+      >
+        <StyledImage src={`${photoTempUlr}${value.photoID}`} />
+        <ChoosePhotoButton
+          shape="circle"
+          icon={photosToDelete.includes(value.photoID) ? 'check' : undefined}
+          onClick={event => this.addPhotoToDeleteArray(value.photoID)(event)}
+        />
+      </EditAlbumImageWrapper>
+    ));
+
+    const SortableList = SortableContainer(({ items }) => (
+      <GaleryImages>
+        {items.map((photo, index) => (
+          <SortableItem key={photo.photoID} index={index} value={photo} photoNum={index} />
+        ))}
+      </GaleryImages>
+    ));
+
     return (
       <div>
         <Modal
@@ -159,8 +206,8 @@ class EditAlbum extends React.Component {
         >
           {photos.map(photo => (
             <ChooseNewCoverSectionImage
-              src={`${photoTempUlr}${photo.id}`}
-              key={photo.id}
+              src={`${photoTempUlr}${photo.photoID}`}
+              key={photo.photoID}
               onClick={this.handleOk(photo)}
             />
           ))}
@@ -199,18 +246,16 @@ class EditAlbum extends React.Component {
 
           <Galery>
             <GaleryTitle>Фотографии альбома</GaleryTitle>
-            <GaleryImages>
-              {photos.map(photo => (
-                <EditAlbumImageWrapper key={photo.id}>
-                  <StyledImage src={`${photoTempUlr}${photo.id}`} />
-                  <ChoosePhotoButton
-                    shape="circle"
-                    icon={photosToDelete.includes(photo.id) ? 'check' : undefined}
-                    onClick={() => this.addPhotoToDeleteArray(photo.id)}
-                  />
-                </EditAlbumImageWrapper>
-              ))}
-            </GaleryImages>
+            {photos.length > 0 ? (
+              <>
+                <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} distance={1} />
+              </>
+            ) : (
+              <Row type="flex" justify="center">
+                <h4>Альбом пуст</h4>
+              </Row>
+            )}
+            <CustomUploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
           </Galery>
         </EditSection>
       </div>
@@ -218,6 +263,9 @@ class EditAlbum extends React.Component {
   }
 }
 EditAlbum.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
       id: PropTypes.number.isRequired,

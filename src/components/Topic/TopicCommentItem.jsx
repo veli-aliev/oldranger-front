@@ -1,78 +1,160 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
-import { Avatar, Comment, Popover, Tooltip } from 'antd';
-import { parseISO, format, formatDistanceToNow } from 'date-fns';
+import { Popover, Tooltip, Icon } from 'antd';
+import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
-import TopicUserInfo from './TopicUserInfo';
+import { Markup } from 'interweave';
+import { ReplyTag } from './styled';
+import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
-import TopicPhotoList from './TopicPhotoList';
+import TopicCommentListItem from './TopicCommentListItem';
+import UserContext from '../UserContext';
+import userRoles from '../UserRoles';
 
-const TopicCommentItem = ({ comment, handleQuoteComment, withActions }) => {
-  const convertedImages = comment.imageComment.map(image => ({
-    uid: image.id,
-    url: image.img,
-    name: image.id,
-    status: 'done',
-  }));
+const IconText = ({ type, onHandleClick, title }) => (
+  <Tooltip placement="topRight" title={title}>
+    <span onClick={onHandleClick}>
+      <Icon type={type} theme="twoTone" />
+    </span>
+  </Tooltip>
+);
 
-  const commentActions = [
-    <span key="comment-basic-position">#{comment.positionInTopic + 1}</span>,
-    <span
-      key="comment-basic-reply-to"
-      onClick={handleQuoteComment(comment)}
-      onKeyPress={handleQuoteComment(comment)}
-      role="button"
-      tabIndex="0"
-    >
-      Комментировать
-    </span>,
-  ];
+class TopicCommentItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      toggleEdeting: false,
+      withActions: true,
+    };
+  }
 
-  return (
-    <li id={comment.positionInTopic + 1}>
-      <Comment
-        actions={withActions ? commentActions : null}
-        author={comment.author.nickName}
-        avatar={
-          <Popover
-            content={
-              <TopicUserInfo user={{ ...comment.author, messageCount: comment.messageCount }} />
-            }
-            placement="right"
-          >
-            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-          </Popover>
-        }
-        content={comment.commentText}
-        datetime={
-          <Tooltip
-            title={format(parseISO(comment.commentDateTime), "dd MMMM yyyy 'в' HH:mm", {
-              locale: ru,
-            })}
-          >
-            <span>
-              {formatDistanceToNow(parseISO(comment.commentDateTime), {
-                locale: ru,
-                addSuffix: true,
-              })}
-            </span>
-          </Tooltip>
-        }
+  handleClickEditBtn = () => {
+    this.setState({ toggleEdeting: true, withActions: false });
+  };
+
+  handleCancel = () => {
+    this.setState({ toggleEdeting: false, withActions: true });
+  };
+
+  showFieldOrNot() {
+    const { user } = this.context;
+    const { comment } = this.props;
+    return (
+      (user.id === comment.author.id && comment.updatable === true) ||
+      user.role === userRoles.admin ||
+      user.role === userRoles.moderator
+    );
+  }
+
+  render() {
+    const { comment, handleQuoteComment, deleteComment, getTopics, page } = this.props;
+    const { withActions, toggleEdeting } = this.state;
+    const convertedImages = comment.photos.map(photo => {
+      return {
+        uid: `-${String(photo.id)}`,
+        url: `http://localhost:8888/api/securedPhoto/photoFromAlbum/${photo.id}?type=small`,
+        name: `Photo_name_${photo.description}`,
+        status: 'done',
+      };
+    });
+    const commentActions = [
+      <span key="comment-basic-position">#{comment.positionInTopic}</span>,
+      <span
+        key="comment-basic-reply-to"
+        onClick={handleQuoteComment(comment)}
+        onKeyPress={handleQuoteComment(comment)}
+        role="button"
+        tabIndex="0"
+      >
+        Ответить на сообщение {comment.author.nickName}
+      </span>,
+      this.showFieldOrNot() ? (
+        <IconText type="edit" onHandleClick={this.handleClickEditBtn} title="Редактировать" />
+      ) : null,
+      this.showFieldOrNot() ? (
+        <IconText
+          type="delete"
+          onHandleClick={() => {
+            deleteComment(comment.commentId);
+          }}
+          title="Удалить"
+        />
+      ) : null,
+    ];
+
+    let contentCommentText = null;
+    let contentReplyText = null;
+    const contentEditingForm = (
+      <TopicEditingForm
+        edetingText={comment.commentText}
+        fileList={convertedImages}
+        handleCancel={this.handleCancel}
+        idTopic={comment.topicId}
+        idUser={comment.author.id}
+        commentId={comment.commentId}
+        getTopics={getTopics}
+        page={page}
       />
-      {convertedImages && <TopicPhotoList fileList={convertedImages} />}
-    </li>
-  );
+    );
+    if (comment.replyNick) {
+      contentCommentText = <Markup content={comment.commentText} />;
+      contentReplyText = (
+        <Popover
+          content={<Markup content={comment.replyText} />}
+          title={`${comment.replyNick}, ${formatDistanceToNow(parseISO(comment.replyDateTime), {
+            locale: ru,
+            addSuffix: true,
+          })}`}
+          placement="topLeft"
+        >
+          <ReplyTag green>
+            ответил на комментарий <strong>{comment.replyNick}</strong>
+          </ReplyTag>
+        </Popover>
+      );
+    } else if (comment.rootDeleted) {
+      contentCommentText = <Markup content={comment.commentText} />;
+      contentReplyText = <ReplyTag>ответил на удаленный комментарий</ReplyTag>;
+    } else {
+      contentCommentText = <Markup content={comment.commentText} />;
+    }
+
+    return (
+      <TopicCommentListItem
+        comment={comment}
+        withActions={withActions}
+        toggleEdeting={toggleEdeting}
+        convertedImages={convertedImages}
+        commentActions={commentActions}
+        contentCommentText={contentCommentText}
+        contentEditingForm={contentEditingForm}
+        contentReplyText={contentReplyText}
+      />
+    );
+  }
+}
+
+TopicCommentItem.contextType = UserContext;
+
+IconText.propTypes = {
+  type: PropTypes.string.isRequired,
+  onHandleClick: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 TopicCommentItem.propTypes = {
   comment: commentProps.isRequired,
   handleQuoteComment: PropTypes.func,
-  withActions: PropTypes.bool,
+  deleteComment: PropTypes.func,
+  getTopics: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
 };
 
 TopicCommentItem.defaultProps = {
   handleQuoteComment: () => {},
-  withActions: false,
+  deleteComment: () => {},
 };
 
 export default TopicCommentItem;

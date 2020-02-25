@@ -2,6 +2,11 @@ import styled from 'styled-components';
 
 import { Select, Form as AntForm, Input, List } from 'antd';
 
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const StyledList = styled(List)`
   margin-top: 20px;
   .ant-list-item {

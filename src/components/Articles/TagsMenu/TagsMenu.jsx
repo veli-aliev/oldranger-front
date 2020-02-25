@@ -1,13 +1,17 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useEffect } from 'react';
+import queries from '../../../serverQueries/index';
 import { Menu } from 'antd';
 
-class TagsMenu extends React.Component {
-  render() {
-    return (
-      <Menu></Menu>
-    );
-  }
+const TagsMenu = () => {
+  // TODO ждёмс реализации дерева на бэке
+  useEffect(() => {
+    queries.createNode();
+    queries.getTagsDtoTree();
+  }, []);
+  return (
+    <h1>ku</h1>
+  );
 }
 
 export default TagsMenu;

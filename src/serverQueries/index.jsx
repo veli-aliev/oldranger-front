@@ -34,6 +34,23 @@ class Queries {
     return res.data;
   };
 
+  createNode = async () => {
+    const res = await axios.post('/api/tags/node/add?parentId=0&position=0', {
+      "id": 1,
+      "name": "Первый пункт"
+    });
+    console.log(res, 'create node')
+    return res.data;
+  };
+
+  getTagsDtoTree = async () => {
+    const res = await axios.get('/api/tags/node/tree', {
+      withCredentials: true,
+    });
+    console.log(res, 'get node');
+    return res.data;
+  }
+
   getArticlesByTag = async tag => {
     const res = await axios.get(`/api/article/tag?tag_id=${tag}&page=1`, {
       withCredentials: true,

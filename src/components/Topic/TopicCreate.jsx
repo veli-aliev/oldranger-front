@@ -1,24 +1,33 @@
 /* eslint react/prop-types: 0 */
+/* eslint no-restricted-syntax: 0 */
+/* eslint no-unused-vars: 0 */
 import React from 'react';
 import * as Yup from 'yup';
 import styled from 'styled-components';
-import { Button, Input, Select, Spin } from 'antd';
+import { Button, Input, Select, Spin, Row } from 'antd';
 import { withFormik, Field, Form } from 'formik';
 import { Link } from 'react-router-dom';
 import queries from '../../serverQueries';
+import TopicAddFileModal from './TopicAddFileModal';
 
 const StyledForm = styled(Form)`
   margin: 0 auto;
   width: 500px;
-  text-align: center;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 10px;
 `;
 
 const StyledField = styled.div`
-  margin: 10px;
+  margin-bottom: 10px;
 `;
 
 const StyledError = styled.span`
   color: red;
+`;
+
+const PrimaryButton = styled(Button)`
+  margin: 10px 10px 0 0;
 `;
 
 const validationSchema = Yup.object().shape({
@@ -33,7 +42,12 @@ const validationSchema = Yup.object().shape({
 class TopicCreate extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { children: [], subsection: '' };
+    this.state = {
+      children: [],
+      subsection: '',
+      isModal: false,
+      imagesToUpload: [],
+    };
   }
 
   componentDidMount = async () => {
@@ -72,73 +86,124 @@ class TopicCreate extends React.Component {
     });
   };
 
+  toggleImageToUpload = id => () => {
+    const { imagesToUpload } = this.state;
+    if (imagesToUpload.indexOf(id) !== -1) {
+      imagesToUpload.splice(imagesToUpload.indexOf(id), 1);
+      this.setState({
+        imagesToUpload: [...imagesToUpload],
+      });
+    } else {
+      this.setState(state => ({
+        imagesToUpload: [...state.imagesToUpload, id],
+      }));
+    }
+  };
+
+  setFileList = formData => {
+    let count = 0;
+    for (const field of formData) {
+      count += 1;
+    }
+    this.setState({ fileList: formData, count, isModal: false });
+  };
+
   handleSubmit = () => {
     const { values, setValues } = this.props;
-    const { subsection } = this.state;
+    const { subsection, fileList } = this.state;
     setValues({
       ...values,
       subsection,
       subsectionsData: this.subsectionsData,
+      fileList,
     });
   };
 
+  handleToggleModal = bool => () => {
+    this.setState(state => ({
+      isModal: !state.isModal,
+      imagesToUpload: bool ? state.imagesToUpload : [],
+    }));
+  };
+
   render() {
-    const { children, subsection } = this.state;
+    const { children, subsection, isModal, count, imagesToUpload } = this.state;
     const { errors, touched, isSubmitting } = this.props;
     return (
-      <StyledForm>
-        {children.length !== 0 ? (
-          <>
-            <StyledField>
-              <Field name="name">
-                {({ field }) => <Input {...field} placeholder="Заголовок" type="text" />}
-              </Field>
-              {touched.name && errors.name && (
-                <StyledError className="error">{errors.name}</StyledError>
-              )}
-            </StyledField>
-            <StyledField>
-              <Field name="startMessage">
-                {({ field }) => (
-                  <Input.TextArea {...field} rows="2" placeholder="Сообщение" type="text" />
+      <>
+        {isModal ? (
+          <TopicAddFileModal
+            handleCloseModal={this.handleToggleModal}
+            setFileList={this.setFileList}
+            imagesToUpload={imagesToUpload}
+            toggleImageToUpload={this.toggleImageToUpload}
+          />
+        ) : null}
+
+        <StyledForm>
+          {children.length !== 0 ? (
+            <>
+              <StyledField>
+                <Field name="name">
+                  {({ field }) => <Input {...field} placeholder="Заголовок" type="text" />}
+                </Field>
+                {touched.name && errors.name && (
+                  <StyledError className="error">{errors.name}</StyledError>
                 )}
-              </Field>
-              {touched.startMessage && errors.startMessage && (
-                <StyledError className="error">{errors.startMessage}</StyledError>
-              )}
-            </StyledField>
-            <StyledField>
-              {this.data && (
-                <>
-                  <Select defaultValue={this.sections[0]} onChange={this.handleSectionChange}>
-                    {this.sections.map(item => (
-                      <Select.Option key={item}>{item}</Select.Option>
-                    ))}
-                  </Select>
-                  <Select value={subsection} onChange={this.handleSubsectionChange}>
-                    {children.map(subs => (
-                      <Select.Option key={subs.name}>{subs.name}</Select.Option>
-                    ))}
-                  </Select>
-                </>
-              )}
-            </StyledField>
-            <Button
-              htmlType="submit"
-              type="primary"
-              disabled={isSubmitting}
-              onClick={this.handleSubmit}
-            >
-              Создать
-            </Button>
-            <Button className="home-button">
-              <Link to="/">На главную</Link>
-            </Button>
-          </>
-        ) : (
-          <Spin />
-        )}
-      </StyledForm>
+              </StyledField>
+              <StyledField>
+                <Field name="startMessage">
+                  {({ field }) => (
+                    <Input.TextArea {...field} rows="2" placeholder="Сообщение" type="text" />
+                  )}
+                </Field>
+                {touched.startMessage && errors.startMessage && (
+                  <StyledError className="error">{errors.startMessage}</StyledError>
+                )}
+              </StyledField>
+              <StyledField>
+                {this.data && (
+                  <>
+                    <Select defaultValue={this.sections[0]} onChange={this.handleSectionChange}>
+                      {this.sections.map(item => (
+                        <Select.Option key={item}>{item}</Select.Option>
+                      ))}
+                    </Select>
+                    <Select value={subsection} onChange={this.handleSubsectionChange}>
+                      {children.map(subs => (
+                        <Select.Option key={subs.name}>{subs.name}</Select.Option>
+                      ))}
+                    </Select>
+                  </>
+                )}
+              </StyledField>
+              <Row type="flex" justify="center">
+                <Button
+                  type={count > 0 ? 'dashed' : 'default'}
+                  onClick={this.handleToggleModal(true)}
+                >
+                  {count > 0 ? `Выбрано ${count} фото` : 'Добавить фото'}
+                </Button>
+              </Row>
+              <Row type="flex" justify="center">
+                <PrimaryButton
+                  htmlType="submit"
+                  type="primary"
+                  disabled={isSubmitting}
+                  onClick={this.handleSubmit}
+                >
+                  Создать
+                </PrimaryButton>
+                <PrimaryButton className="home-button">
+                  <Link to="/">На главную</Link>
+                </PrimaryButton>
+              </Row>
+            </>
+          ) : (
+            <Spin />
+          )}
+        </StyledForm>
+      </>
     );
   }
 }
@@ -153,11 +218,14 @@ const formikTopicCreate = withFormik({
   validationSchema,
   handleSubmit: async (values, { setSubmitting, resetForm, props }) => {
     const { history } = props;
-    const { name, startMessage, subsection, subsectionsData } = values;
+    const { name, startMessage, subsection, subsectionsData, fileList } = values;
     const formData = new FormData();
     formData.append('name', name);
     formData.append('startMessage', startMessage);
     formData.append('subsection', subsectionsData[subsection].id);
+    fileList.forEach(file => {
+      formData.append('photos', file);
+    });
     const response = await queries.createNewTopic(formData);
     if (response.status === 200) {
       setSubmitting(false);

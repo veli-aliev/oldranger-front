@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { Avatar, Breadcrumb, message, notification, Spin, Typography } from 'antd';
+import Carousel, { Modal, ModalGateway } from 'react-images';
+import { Avatar, Breadcrumb, message, notification, Spin, Typography, Icon, Button } from 'antd';
+import styled from 'styled-components';
 import Comment from 'antd/es/comment';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
@@ -12,6 +14,16 @@ import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 
 const { Text } = Typography;
+
+const CloseModalButton = styled(Button)`
+position:absolute;
+top:20px;
+padding:5px
+right:20px;
+width:44px;
+opacity: 0.7;
+z-index: 1;
+`;
 
 class TopicPage extends React.Component {
   constructor(props) {
@@ -26,6 +38,9 @@ class TopicPage extends React.Component {
       answerId: null,
       files: [],
       uploading: false,
+      images: [],
+      lightboxIsOpen: false,
+      selectedIndex: null,
     };
     this.replyForm = React.createRef();
   }
@@ -48,26 +63,20 @@ class TopicPage extends React.Component {
     photos: [], // no topic images from backend at this moment
   });
 
-  getTopics = page => {
-    // Get a topic and a list of comments for this topic by topic id
+  getTopics = async page => {
+    const imageTempUrl = 'http://localhost:8888/api/securedPhoto/photoFromAlbum/';
     const { match } = this.props;
-    if (page === 1) {
-      queries.getTopic(match.params.topicId, 0, 10).then(({ topic, commentDto }) => {
-        this.setState({
-          topic,
-          page,
-          messages: commentDto ? commentDto.content : null,
-        });
-      });
-    } else {
-      queries.getTopic(match.params.topicId, page - 1, 10).then(({ topic, commentDto }) => {
-        this.setState({
-          topic,
-          page,
-          messages: commentDto ? commentDto.content : null,
-        });
-      });
-    }
+    const { topic, commentDto } = await queries.getTopic(match.params.topicId, page - 1, 10);
+    const photos = await queries.getPhotosFromAlbum(topic.photoAlbum.id);
+    const images = photos
+      .filter(image => !image.description)
+      .map(image => ({ ...image, src: `${imageTempUrl}${image.id}` }));
+    this.setState({
+      images,
+      topic,
+      page,
+      messages: commentDto ? commentDto.content : null,
+    });
   };
 
   changePageHandler = page => {
@@ -200,13 +209,52 @@ class TopicPage extends React.Component {
     }
   };
 
+  toggleLightbox = selectedIndex => {
+    this.setState(state => ({
+      lightboxIsOpen: !state.lightboxIsOpen,
+      selectedIndex,
+    }));
+  };
+
   render() {
-    const { messages, topic, page, reply, files, uploading } = this.state;
+    const {
+      messages,
+      topic,
+      page,
+      reply,
+      files,
+      uploading,
+      images,
+      lightboxIsOpen,
+      selectedIndex,
+    } = this.state;
     const { isLogin } = this.context;
+
+    const CustomHeader = ({ isModal, modalProps: { onClose } }) =>
+      isModal ? (
+        <div>
+          <CloseModalButton onClick={onClose} title="close">
+            <Icon type="close" />
+          </CloseModalButton>
+        </div>
+      ) : null;
+
     return (
       <div>
         {topic ? (
           <div>
+            <ModalGateway>
+              {lightboxIsOpen ? (
+                <Modal onClose={this.toggleLightbox}>
+                  <Carousel
+                    views={images}
+                    currentIndex={selectedIndex}
+                    components={{ Header: CustomHeader }}
+                  />
+                </Modal>
+              ) : null}
+            </ModalGateway>
+
             <Breadcrumb>
               <Breadcrumb.Item>
                 <Link to="/">Главная</Link>
@@ -221,7 +269,7 @@ class TopicPage extends React.Component {
                 <Link to={`/topic/${topic.id}`}>{topic.name}</Link>
               </Breadcrumb.Item>
             </Breadcrumb>
-            <TopicStartMessage topic={topic} />
+            <TopicStartMessage topic={topic} images={images} toggleLightbox={this.toggleLightbox} />
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}

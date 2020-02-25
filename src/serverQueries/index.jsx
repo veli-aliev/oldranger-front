@@ -243,6 +243,7 @@ class Queries {
     });
     return res.data;
   };
+
   getImage = async formData => {
     const res = await axios.post('/api/chat/image', formData, {
       headers: { 'content-type': 'multipart/form-data' },

@@ -11,7 +11,7 @@ import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
 import TopicCommentListItem from './TopicCommentListItem';
 import Context from '../Context';
-import userRoles from '../UserRoles';
+import userRoles from '../Constants';
 
 const IconText = ({ type, onHandleClick, title }) => (
   <Tooltip placement="topRight" title={title}>

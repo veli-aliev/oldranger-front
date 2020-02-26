@@ -3,6 +3,7 @@ import { Icon, Avatar } from 'antd';
 import { parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
+import { BASE_URL_IMG } from '../Constants';
 import PropTypesUser from './propTypes/userProps';
 import {
   TopicHeaderContainer,
@@ -34,7 +35,12 @@ const TopicStartMessage = ({ topic }) => {
       </TopicHeaderDate>
       <TopicHeaderAuthorWrapp>
         <TopicHeaderAuthorWrappCol>
-          <Avatar shape="square" size={64} icon="user" />
+          <Avatar
+            shape="square"
+            size={64}
+            icon="user"
+            src={`${BASE_URL_IMG}${topic.topicStarter.avatar.small}`}
+          />
         </TopicHeaderAuthorWrappCol>
         <TopicHeaderAuthorWrappCol>
           <TopicHeaderAuthorNickName>{topic.topicStarter.nickName}</TopicHeaderAuthorNickName>

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Button, Spin } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { BASE_URL_IMG } from '../Constants';
 
 import { withGetData } from '../hoc';
 
@@ -77,7 +78,7 @@ const MainProfile = ({ isLoading, data: user }) => {
   return (
     <StyledMainProfile>
       <div className="sidebar">
-        <img src={`http://localhost:8888/img/${user.avatar}`} alt="avatar" className="avatar" />
+        <img src={`${BASE_URL_IMG}${user.avatar}`} alt="avatar" className="avatar" />
         <h2 className="title">
           {user.firstName} {user.lastName}
         </h2>
@@ -176,7 +177,7 @@ const MainProfile = ({ isLoading, data: user }) => {
         </StyledCard>
         <StyledCard>
           <h3 className="title">Про меня</h3>
-          <div className="field">-</div>
+          <div className="field">{user.aboutMe}</div>
         </StyledCard>
       </div>
     </StyledMainProfile>

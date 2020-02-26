@@ -70,9 +70,9 @@ const validationSchema = Yup.object({
 
 const submitForm = (history, { changeLoadingState, changeUserState }) => async values => {
   changeLoadingState(true);
-  const indexT = [...values.birthday].findIndex(item => item === 'T');
-  const dateString = [...values.birthday].slice(0, indexT).join('');
+  const dateString = [...values.birthday].slice(0, 10).join('');
   const newValues = { ...values, birthday: dateString };
+  console.log('newValues: ', newValues);
   try {
     await queries.updateProfile({ ...newValues });
     const profile = await queries.getProfileData();

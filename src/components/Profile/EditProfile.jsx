@@ -65,7 +65,9 @@ const validationSchema = Yup.object({
   socialVk: Yup.string()
     .matches(regex.vk, 'Проверьте правильность ввода')
     .nullable(),
-  aboutMe: Yup.string().min(5, 'Сообщение о себе не менее 5 символов'),
+  aboutMe: Yup.string()
+    .min(5, 'Сообщение о себе не менее 5 символов')
+    .required('Это поле обязательно'),
 });
 
 const submitForm = (history, { changeLoadingState, changeUserState }) => async values => {

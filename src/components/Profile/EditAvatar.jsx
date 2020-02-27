@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import queries from '../../serverQueries';
+import Context from '../Context';
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -25,72 +26,6 @@ const StyledBtnWrapp = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
-// const validationSchema = Yup.object().shape({
-//   file: Yup.mixed().required(),
-// });
-
-// const submitForm = async (values, { changeLoadingState, changeUserState }) => {
-//   const formData = new FormData();
-//   formData.append('file', values.file);
-//   await queries.updateAvatar(formData);
-//   const profile = await queries.getProfileData();
-
-//   changeUserState(profile);
-//   changeLoadingState(false);
-//   return true;
-// };
-
-// const EditAvatar = () => {
-//   const [isLoading, changeLoadingState] = useState(false);
-//   const { user, changeUserState } = useContext(Context);
-//   console.log('user: ', user);
-//   return (
-//     <Formik
-//       initialValues={{ file: null }}
-//       validationSchema={validationSchema}
-//       onSubmit={values => {
-//         changeLoadingState(true);
-//         submitForm(values, { changeLoadingState, changeUserState });
-//       }}
-//     >
-//       {({ handleSubmit, setFieldValue }) => (
-//         <Form onSubmit={handleSubmit}>
-//           <StyledWrapper>
-//             <Upload
-//               disabled={isLoading}
-//               listType="picture-card"
-//               className="avatar-uploader"
-//               showUploadList
-//               customRequest={({ file }) => {
-//                 setFieldValue('file', file);
-//                 return handleSubmit();
-//               }}
-//             >
-//               <img
-//                 src={`http://localhost:8888/img/${user.avatar}`}
-//                 alt="avatar"
-//                 style={{ width: '100%' }}
-//               />
-//             </Upload>
-
-//             <Upload
-//               disabled={isLoading}
-//               customRequest={({ file }) => {
-//                 setFieldValue('file', file);
-//                 return handleSubmit();
-//               }}
-//             >
-//               <Button>
-//                 <Icon type="upload" /> Загрузить аватар
-//               </Button>
-//             </Upload>
-//           </StyledWrapper>
-//         </Form>
-//       )}
-//     </Formik>
-//   );
-// };
 
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -114,12 +49,16 @@ class EditAvatar extends React.Component {
 
   handleUpload = async () => {
     this.setState({ uploading: true });
+    const { changeUserState } = this.context;
     const { avatarFile } = this.state;
     const { history } = this.props;
     const formData = new FormData();
     formData.set('file', avatarFile, avatarFile.name);
     try {
       await queries.updateAvatar(formData);
+      const userAuth = queries.getProfileData();
+      localStorage.setItem('user', JSON.stringify(userAuth));
+      changeUserState(userAuth);
       this.setState({
         fileList: [],
         avatarThumbUrl: null,
@@ -193,6 +132,8 @@ class EditAvatar extends React.Component {
     );
   }
 }
+
+EditAvatar.contextType = Context;
 
 EditAvatar.propTypes = {
   history: PropTypes.shape({

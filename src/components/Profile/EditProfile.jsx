@@ -67,22 +67,21 @@ const validationSchema = Yup.object({
     .nullable(),
   aboutMe: Yup.string()
     .min(5, 'Сообщение о себе не менее 5 символов')
-    .required('Это поле обязательно'),
+    .nullable(),
 });
 
 const submitForm = (history, { changeLoadingState, changeUserState }) => async values => {
   changeLoadingState(true);
-  const dateString = [...values.birthday].slice(0, 10).join('');
+  const dateString = values.birthday ? [...values.birthday].slice(0, 10).join('') : null;
   const newValues = { ...values, birthday: dateString };
-  console.log('newValues: ', newValues);
   try {
     await queries.updateProfile({ ...newValues });
-    const profile = await queries.getProfileData();
+    const userAuth = await queries.getProfileData();
 
-    localStorage.setItem('user', JSON.stringify(profile));
+    localStorage.setItem('user', JSON.stringify(userAuth));
 
     message.success('Профиль успешно отредактирован');
-    changeUserState(profile);
+    changeUserState(userAuth);
     changeLoadingState(false);
     history.push('/profile');
   } catch {
@@ -118,7 +117,6 @@ class EditProfile extends React.Component {
     const { loading, userProfile } = this.state;
     const { changeLoadingState } = this;
     const { changeUserState } = this.context;
-    console.log('userProfile: ', userProfile);
     return (
       <>
         <Row type="flex" justify="center">

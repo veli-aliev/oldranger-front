@@ -4,13 +4,15 @@ import { Link, withRouter } from 'react-router-dom';
 import { Avatar, Breadcrumb, message, notification, Spin, Typography, Result, Button } from 'antd';
 import Comment from 'antd/es/comment';
 import { Markup } from 'interweave';
+import { BASE_URL_IMG } from '../Constants';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
-import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert } from './styled';
+import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert, TopicReplyWarning } from './styled';
 import TopicReplyForm from './TopicReplyForm';
 import TopicCommentItem from './TopicCommentItem';
 import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
+import withGetUserProfile from '../hoc/withGetUserProfile';
 
 const { Text } = Typography;
 
@@ -78,7 +80,6 @@ class TopicPage extends React.Component {
   };
 
   replyButtonHandler = () => {
-    console.log(this.replyForm);
     this.replyForm.focus();
   };
 
@@ -204,8 +205,11 @@ class TopicPage extends React.Component {
 
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
+    const { userProfile } = this.props;
     const { isLogin } = this.context;
-
+    const avatar = userProfile.avatar ? (
+      <Avatar src={`${BASE_URL_IMG}${userProfile.avatar}`} alt="User Avatar" />
+    ) : null;
     return error ? (
       <Result
         status="403"
@@ -272,25 +276,27 @@ class TopicPage extends React.Component {
             }
           />
         )}
-        <Comment
-          avatar={
-            <Avatar
-              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-              alt="Han Solo"
-            />
-          }
-          content={
-            <TopicReplyForm
-              replyRef={element => {
-                this.replyForm = element;
-              }}
-              handleSubmitComment={this.handleSubmitComment}
-              handleAddFile={this.handleAddFile}
-              files={files}
-              uploading={uploading}
-            />
-          }
-        />
+        {isLogin ? (
+          <Comment
+            avatar={avatar}
+            content={
+              <TopicReplyForm
+                replyRef={element => {
+                  this.replyForm = element;
+                }}
+                handleSubmitComment={this.handleSubmitComment}
+                handleAddFile={this.handleAddFile}
+                files={files}
+                uploading={uploading}
+              />
+            }
+          />
+        ) : (
+          <TopicReplyWarning>
+            Для возможности добавлять комментарии необходимо{' '}
+            <Link to="/login">авторизироваться</Link>.
+          </TopicReplyWarning>
+        )}
         <ReplyFloatButton
           type="primary"
           icon="message"
@@ -302,6 +308,10 @@ class TopicPage extends React.Component {
     );
   }
 }
+
+TopicPage.defaultProps = {
+  userProfile: {},
+};
 
 TopicPage.propTypes = {
   match: PropTypes.shape({
@@ -316,8 +326,32 @@ TopicPage.propTypes = {
       pathname: PropTypes.string,
     }),
   }).isRequired,
+  userProfile: PropTypes.shape({
+    userId: PropTypes.number,
+    nickName: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    city: PropTypes.string,
+    country: PropTypes.string,
+    birthday: PropTypes.string,
+    gender: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    socialFb: PropTypes.string,
+    socialTw: PropTypes.string,
+    socialVk: PropTypes.string,
+    aboutMe: PropTypes.string,
+    regDate: PropTypes.string,
+    messageCount: PropTypes.number,
+    topicStartCount: PropTypes.number,
+    lastComment: PropTypes.string,
+    lastVisit: PropTypes.string,
+    avatar: PropTypes.string,
+    owner: PropTypes.bool,
+    user: PropTypes.bool,
+  }),
 };
 
 TopicPage.contextType = Context;
 
-export default withRouter(TopicPage);
+export default withGetUserProfile(withRouter(TopicPage));

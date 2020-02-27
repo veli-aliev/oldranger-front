@@ -54,7 +54,6 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
 const Login = () => {
   const [loading, changeLoadingState] = useState(false);
   const { changeLoginState, changeUserState } = useContext(Context);
-
   return (
     <Formik
       initialValues={{

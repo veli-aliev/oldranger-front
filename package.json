@@ -39,11 +39,11 @@
     "lint": "./node_modules/.bin/eslint --ext js,jsx \"src/\"",
     "lint:fix": "./node_modules/.bin/eslint --fix --ext js,jsx \"src/\""
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
-  },
+  // "husky": {
+  //   "hooks": {
+  //     "pre-commit": "npm run lint"
+  //   }
+  // },
   "browserslist": {
     "production": [
       ">0.2%",

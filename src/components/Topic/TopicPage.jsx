@@ -31,6 +31,7 @@ class TopicPage extends React.Component {
     const { location } = this.props;
     const query = new URLSearchParams(location.search);
     this.state = {
+      images: [],
       topic: null,
       messages: [],
       page: query.get('page') || 1,
@@ -49,37 +50,23 @@ class TopicPage extends React.Component {
     this.getTopics(parseInt(page, 10));
   }
 
-  getTopics = page => {
+  getTopics = async page => {
     // Get a topic and a list of comments for this topic by topic id
     const { match } = this.props;
-    if (page === 1) {
-      queries
-        .getTopic(match.params.topicId, 0, 10)
-        .then(({ topic, commentDto }) => {
-          this.setState({
-            topic,
-            page,
-            messages: commentDto ? commentDto.content : null,
-            error: false,
-          });
-        })
-        .catch(() => {
-          this.setState({ error: true });
-        });
-    } else {
-      queries
-        .getTopic(match.params.topicId, page - 1, 10)
-        .then(({ topic, commentDto }) => {
-          this.setState({
-            topic,
-            page,
-            messages: commentDto ? commentDto.content : null,
-            error: false,
-          });
-        })
-        .catch(() => {
-          this.setState({ error: true });
-        });
+    try {
+      const { topic, commentDto } = await queries.getTopic(match.params.topicId, page - 1, 10);
+      const url = 'http://localhost:8888/api/securedPhoto/photoFromAlbum/';
+      const data = await queries.getPhotosFromAlbum(topic.photoAlbum.id);
+      const images = data.map(image => ({ ...image, src: `${url}${image.id}` }));
+      this.setState({
+        images,
+        topic,
+        page,
+        messages: commentDto ? commentDto.content : null,
+        error: false,
+      });
+    } catch (error) {
+      this.setState({ error: true });
     }
   };
 
@@ -220,7 +207,7 @@ class TopicPage extends React.Component {
   };
 
   render() {
-    const { messages, topic, page, reply, files, uploading, error } = this.state;
+    const { messages, topic, page, reply, files, uploading, error, images } = this.state;
     const { isLogin } = this.context;
 
     return error ? (
@@ -252,7 +239,7 @@ class TopicPage extends React.Component {
                 <Link to={`/topic/${topic.id}`}>{topic.name}</Link>
               </Breadcrumb.Item>
             </Breadcrumb>
-            <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
+            <TopicStartMessage images={images} topic={topic} toggleLightbox={this.toggleLightbox} />
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}

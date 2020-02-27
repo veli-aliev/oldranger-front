@@ -101,6 +101,10 @@ class TopicCreate extends React.Component {
   };
 
   setFileList = formData => {
+    const { imagesToUpload } = this.state;
+    imagesToUpload.forEach(image => {
+      formData.append('photoId', image);
+    });
     let count = 0;
     for (const field of formData) {
       count += 1;

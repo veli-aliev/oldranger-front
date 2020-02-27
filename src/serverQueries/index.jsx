@@ -58,7 +58,6 @@ class Queries {
 
   getTopic = async (topicId, page, limit) => {
     const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=${limit}`);
-    console.log('TopicAndTopicDTO: ', res.data);
     return res.data;
   };
 
@@ -243,6 +242,7 @@ class Queries {
     });
     return res.data;
   };
+
   getImage = async formData => {
     const res = await axios.post('/api/chat/image', formData, {
       headers: { 'content-type': 'multipart/form-data' },

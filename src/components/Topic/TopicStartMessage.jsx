@@ -3,6 +3,7 @@ import { Icon, Avatar } from 'antd';
 import { parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import PropTypesUser from './propTypes/userProps';
 import {
   TopicHeaderContainer,
@@ -17,7 +18,12 @@ import {
   TopicHeaderDefaultMessage,
 } from './TopicHeaderStyled';
 
-const TopicStartMessage = ({ topic }) => {
+const StyledImage = styled.img`
+  width: 300px;
+`;
+
+const TopicStartMessage = ({ topic, images }) => {
+  console.log(images);
   return (
     <TopicHeaderContainer>
       <TopicHeaderHeading>Топик</TopicHeaderHeading>
@@ -41,6 +47,13 @@ const TopicStartMessage = ({ topic }) => {
           <TopicHeaderAuthorAuthor>Автор</TopicHeaderAuthorAuthor>
         </TopicHeaderAuthorWrappCol>
       </TopicHeaderAuthorWrapp>
+      {images && images.length > 0 ? (
+        <div>
+          {images.map(image => (
+            <StyledImage src={image.src} title="User`s photo" alt="user-photo" />
+          ))}
+        </div>
+      ) : null}
       <TopicHeaderDefaultMessage>{topic.startMessage}</TopicHeaderDefaultMessage>
     </TopicHeaderContainer>
   );

@@ -7,7 +7,7 @@ const Articles = () => {
   return (
     <Container>
       <TagsMenu />
-      {/*<ArticlesByTag tag="1" />*/}
+      <ArticlesByTag tag="1" />
     </Container>
   );
 };

@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
 
+export const StyledMenu = styled.div`
+  width: 300px;
+  border: 3px solid red;
+`;
+
 export const Container = styled.div`
   display: flex;
   border: 1px solid red;

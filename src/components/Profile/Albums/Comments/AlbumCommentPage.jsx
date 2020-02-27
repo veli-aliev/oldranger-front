@@ -58,7 +58,7 @@ class AlbumCommentPage extends React.Component {
           <AlbumCommentPapeStyledImage src={`${photoTempUlr}${photoID}`} />
         </ImageSection>
         <CommentsSection>
-          <PhotoCommentsComponent photoId={photoID} commentPage />
+          <PhotoCommentsComponent photoId={photoID} commentpage="true" />
         </CommentsSection>
       </div>
     );
@@ -71,7 +71,6 @@ AlbumCommentPage.propTypes = {
       photoAlbumDto: PropTypes.shape({
         title: PropTypes.string.isRequired,
       }),
-      original: PropTypes.string.isRequired,
     }),
   }).isRequired,
 };

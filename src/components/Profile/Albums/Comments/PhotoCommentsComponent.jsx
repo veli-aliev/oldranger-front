@@ -15,18 +15,38 @@ const PhotoCommentsMain = styled.div`
   height: 100%;
 `;
 const PhotoCommentsCommentsWrapper = styled.div`
-  height: ${props => (props.commentPage ? 'auto' : '62%')};
-  overflow: ${props => (props.commentPage ? 'auto' : 'scroll')};
-  overflow-x: ${props => (props.commentPage ? 'auto' : 'hidden')};
+  height: ${props => (props.commentpage ? 'auto' : '62%')};
+  overflow: ${props => (props.commentpage ? 'auto' : 'scroll')};
+  overflow-x: ${props => (props.commentpage ? 'auto' : 'hidden')};
 `;
 const PhotoCommentsIputWrapper = styled.div`
-  height: ${props => (props.commentPage ? 'auto' : '38%')};
+  height: ${props => (props.commentpage ? 'auto' : '38%')};
 `;
 const CustomTextArea = styled(TextArea)`
-  max-height: ${props => (props.commentPage ? 'auto' : '85px')};
-  overflow: ${props => (props.commentPage ? 'auto' : 'scroll')};
-  overflow-x: ${props => (props.commentPage ? 'auto' : 'hidden')};
+  max-height: ${props => (props.commentpage ? 'auto' : '85px')};
+  overflow: ${props => (props.commentpage ? 'auto' : 'scroll')};
+  overflow-x: ${props => (props.commentpage ? 'auto' : 'hidden')};
 `;
+const CommentList = ({ comments }) => (
+  <List
+    dataSource={comments}
+    itemLayout="horizontal"
+    renderItem={props => <Comment {...props} />}
+  />
+);
+
+const Editor = ({ onChange, onSubmit, submitting, value, commentpage }) => (
+  <div>
+    <Form.Item>
+      <CustomTextArea rows={4} onChange={onChange} value={value} commentpage={commentpage} />
+    </Form.Item>
+    <Form.Item>
+      <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
+        Add Comment
+      </Button>
+    </Form.Item>
+  </div>
+);
 
 class PhotoCommentsComponent extends React.Component {
   constructor(props) {
@@ -120,35 +140,15 @@ class PhotoCommentsComponent extends React.Component {
   };
 
   render() {
-    const CommentList = ({ comments }) => (
-      <List
-        dataSource={comments}
-        itemLayout="horizontal"
-        renderItem={props => <Comment {...props} />}
-      />
-    );
-
-    const Editor = ({ onChange, onSubmit, submitting, value, commentPage }) => (
-      <div>
-        <Form.Item>
-          <CustomTextArea rows={4} onChange={onChange} value={value} commentPage={commentPage} />
-        </Form.Item>
-        <Form.Item>
-          <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
-            Add Comment
-          </Button>
-        </Form.Item>
-      </div>
-    );
     const { comments, submitting, value } = this.state;
-    const { commentPage } = this.props;
+    const { commentpage } = this.props;
     return (
-      <PhotoCommentsMain commentPage={commentPage}>
-        <PhotoCommentsCommentsWrapper commentPage={commentPage}>
+      <PhotoCommentsMain commentpage={commentpage}>
+        <PhotoCommentsCommentsWrapper commentpage={commentpage}>
           <PhotoCommentsHeader>Выведем сюда инфу о юзере?</PhotoCommentsHeader>
-          {comments.length > 0 && <CommentList data={comments} />}
+          {comments.length > 0 && <CommentList comments={comments} />}
         </PhotoCommentsCommentsWrapper>
-        <PhotoCommentsIputWrapper commentPage={commentPage}>
+        <PhotoCommentsIputWrapper commentpage={commentpage}>
           <Comment
             avatar={
               <Avatar
@@ -162,7 +162,7 @@ class PhotoCommentsComponent extends React.Component {
                 onSubmit={this.handleSubmitComment}
                 submitting={submitting}
                 value={value}
-                commentPage={commentPage}
+                commentPage={commentpage}
               />
             }
           />
@@ -171,16 +171,24 @@ class PhotoCommentsComponent extends React.Component {
     );
   }
 }
-
+PhotoCommentsComponent.defaultProps = {
+  commentpage: undefined,
+};
 PhotoCommentsComponent.propTypes = {
+  photoId: PropTypes.number.isRequired,
+  commentpage: PropTypes.string,
+};
+CommentList.propTypes = {
   comments: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+Editor.propTypes = {
   onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
   value: PropTypes.string.isRequired,
-  commentPage: PropTypes.bool.isRequired,
-  photoId: PropTypes.number.isRequired,
-  avatar: PropTypes.string.isRequired,
+  commentpage: PropTypes.string,
 };
-
+Editor.defaultProps = {
+  commentpage: undefined,
+};
 export default PhotoCommentsComponent;

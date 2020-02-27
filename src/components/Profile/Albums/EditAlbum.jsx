@@ -130,7 +130,7 @@ class EditAlbum extends React.Component {
       location: { state },
     } = this.props;
 
-    const albumId = state.id;
+    const albumId = state.photoAlbumId;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
@@ -171,7 +171,7 @@ class EditAlbum extends React.Component {
     const {
       location: { state },
     } = this.props;
-    const { title, id } = state;
+    const { title, photoAlbumId } = state;
     const { photoTempUlr, photos, photosToDelete, albumCoverUrl, visible } = this.state;
 
     const SortableItem = SortableElement(({ value }) => (
@@ -218,7 +218,7 @@ class EditAlbum extends React.Component {
           {'>'}
           <Link
             to={{
-              pathname: `/profile/albums/${id}`,
+              pathname: `/profile/albums/${photoAlbumId}`,
               state,
             }}
           >
@@ -255,7 +255,7 @@ class EditAlbum extends React.Component {
                 <h4>Альбом пуст</h4>
               </Row>
             )}
-            <CustomUploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+            <CustomUploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
           </Galery>
         </EditSection>
       </div>
@@ -268,7 +268,7 @@ EditAlbum.propTypes = {
   }).isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      photoAlbumId: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
       originalThumbImage: PropTypes.string.isRequired,
     }),

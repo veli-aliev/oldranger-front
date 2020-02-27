@@ -153,7 +153,7 @@ class Album extends React.Component {
     const {
       location: { state },
     } = this.props;
-    const albumId = state.id;
+    const albumId = state.photoAlbumId;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
@@ -170,7 +170,7 @@ class Album extends React.Component {
     try {
       await queries.deletePhotoFromAlbum(id);
       const newPhotos = photos.reduce((acc, item) => {
-        if (item.id !== id) {
+        if (item.photoID !== id) {
           acc.push(item);
         }
         return [...acc];
@@ -312,7 +312,7 @@ class Album extends React.Component {
         <DeletePhotoButton
           type="default"
           title="Удалить Фотографию"
-          onClick={this.deletePhoto(value.id)}
+          onClick={this.deletePhoto(value.photoID)}
         >
           <Icon type="delete" style={{ color: 'red' }} />
         </DeletePhotoButton>
@@ -365,7 +365,7 @@ Album.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     state: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      photoAlbumId: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
       fileList: PropTypes.shape({
         indexOf: PropTypes.func.isRequired,

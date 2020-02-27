@@ -56,7 +56,7 @@ class EditAvatar extends React.Component {
     formData.set('file', avatarFile, avatarFile.name);
     try {
       await queries.updateAvatar(formData);
-      const userAuth = queries.getProfileData();
+      const userAuth = await queries.getProfileData();
       localStorage.setItem('user', JSON.stringify(userAuth));
       changeUserState(userAuth);
       this.setState({

@@ -54,6 +54,7 @@ class App extends React.Component {
     const {
       isLogin,
       user: { role },
+      user,
     } = this.state;
     const { user } = this.state;
     return (

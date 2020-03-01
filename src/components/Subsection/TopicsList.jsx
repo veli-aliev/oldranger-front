@@ -4,13 +4,14 @@ import { List, Spin } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { StyledList, StyledTitle } from '../Main/styled';
 
-const TopicsList = ({ title, items, itemComponent, fetchMessages, hasMore }) => {
+const TopicsList = ({ title, items, itemComponent, fetchMessages, hasMore, hasChildren }) => {
   return items.length > 0 ? (
     <InfiniteScroll
       dataLength={items.length}
       next={fetchMessages}
       hasMore={hasMore}
       loader={<Spin />}
+      hasChildren={hasChildren}
       endMessage={
         fetchMessages !== null ? (
           <p style={{ textAlign: 'center' }}>
@@ -37,12 +38,14 @@ TopicsList.propTypes = {
   itemComponent: PropTypes.func.isRequired,
   fetchMessages: PropTypes.func,
   hasMore: PropTypes.bool,
+  hasChildren: PropTypes.bool,
 };
 
 TopicsList.defaultProps = {
   title: <h1>No Title</h1>,
   hasMore: false,
   fetchMessages: null,
+  hasChildren: true,
 };
 
 export default TopicsList;

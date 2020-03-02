@@ -169,8 +169,8 @@ const MainProfile = ({ isLoading, data: user }) => {
           <div className="field">
             <div className="field-name">Последний логин:</div>
             <div className="field-value">
-              {user.lastVizit
-                ? formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })
+              {user.lastVisit
+                ? formatDistanceToNow(new Date(user.lastVisit), { locale: ru, addSuffix: true })
                 : '-'}
             </div>
           </div>

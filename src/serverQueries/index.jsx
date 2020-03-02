@@ -71,6 +71,11 @@ class Queries {
     return data;
   };
 
+  getUserProfileData = async () => {
+    const { data } = await axios.get('/api/profile');
+    return data;
+  };
+
   getSubsectionTopics = async (subsectionId, page = 0) => {
     const res = await axios.get(
       `/api/subsection/${subsectionId}?dateTime=2099-01-01%2000%3A00%3A00&page=${page}`

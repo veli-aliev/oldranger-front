@@ -54,8 +54,8 @@ class App extends React.Component {
     const {
       isLogin,
       user: { role },
+      user,
     } = this.state;
-
     return (
       <Context.Provider
         value={{

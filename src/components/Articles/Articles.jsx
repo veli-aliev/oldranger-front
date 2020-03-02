@@ -15,7 +15,19 @@ const Articles = () => {
   useEffect(() => {
     if (query.get('tags') === null) {
       // TODO получение статей без тегов
-      console.log('Нужен апи для вывода статей без тегов');
+      const temp = [
+        {
+          articleTags: [],
+          commentCount: 0,
+          date: '2019-11-01T21:36:35',
+          draft: false,
+          id: 3,
+          likes: [],
+          text: 'Нужен апи для вывода статей без тегов',
+          title: 'Нужен апи для вывода статей без тегов',
+        },
+      ];
+      setArticles(temp);
     } else {
       const tags = query.get('tags').split('_');
       queries.getArticlesByTag(tags).then(el => {
@@ -23,7 +35,7 @@ const Articles = () => {
         setIsEmpty(el.empty);
       });
     }
-  }, null);
+  }, []);
 
   const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
   return (

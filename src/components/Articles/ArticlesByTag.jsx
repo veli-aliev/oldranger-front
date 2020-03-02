@@ -1,44 +1,40 @@
-// TODO скорее всего можно будет удалить это
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Spin } from 'antd';
-import { withRouter } from 'react-router-dom';
+import { withRouter, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
 import Article from './Article';
 
-class ArticlesByTag extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      articles: [],
-      isEmpty: false,
-    };
-  }
+const useQuery = () => new URLSearchParams(useLocation().search);
 
-  componentDidMount() {
-    const {
-      match: {
-        params: { articleTag },
-      },
-    } = this.props;
-    queries.getArticlesByTag(articleTag).then(el => {
-      this.setState({ articles: el.content, isEmpty: el.empty });
-    });
-  }
+const ArticlesByTag = () => {
+  const query = useQuery();
+  const [articles, setArticles] = useState([]);
+  const [isEmpty, setIsEmpty] = useState(false);
 
-  render() {
-    const { articles, isEmpty } = this.state;
-    const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
-    return (
-      <>
-        {articles.length === 0 ? LoadOrNotFound : null}
-        {articles.reverse().map(el => {
-          return <Article key={el.id} articleInfo={el} />;
-        })}
-      </>
-    );
-  }
-}
+  useEffect(() => {
+    if (query.get('tags') === null) {
+      // TODO получение статей без тегов
+      console.log('Нужен апи для вывода статей без тегов');
+    } else {
+      const tags = query.get('tags').split('_');
+      queries.getArticlesByTag(tags).then(el => {
+        setArticles(el.content);
+        setIsEmpty(el.empty);
+      });
+    }
+  }, null);
+
+  const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
+  return (
+    <>
+      {articles.length === 0 ? LoadOrNotFound : null}
+      {articles.reverse().map(el => {
+        return <Article key={el.id} articleInfo={el} />;
+      })}
+    </>
+  );
+};
 
 ArticlesByTag.propTypes = {
   match: PropTypes.shape({

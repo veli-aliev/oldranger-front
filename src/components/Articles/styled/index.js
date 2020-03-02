@@ -1,6 +1,23 @@
 import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
 
+export const StyledMenu = styled.div`
+  width: 300px;
+  box-shadow: 0px 0px 16px -2px rgba(0, 0, 0, 0.75);
+`;
+
+export const Column = styled.div`
+  display: flex;
+  margin-left: 20px;
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+`;
+
+export const Container = styled.div`
+  display: flex;
+`;
+
 export const Row = styled.div`
   display: flex;
   justify-content: center;
@@ -38,6 +55,7 @@ export const StyledArticle = styled.article`
   border: 1px solid #1890ff;
   border-radius: 5px;
   margin-bottom: 15px;
+  box-shadow: 0px 0px 16px -2px rgba(0, 0, 0, 0.75);
 `;
 
 export const StyledTitle = styled.h1`

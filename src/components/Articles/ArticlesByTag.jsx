@@ -3,6 +3,7 @@ import { Spin } from 'antd';
 import { withRouter, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
+import { Column } from './styled';
 import Article from './Article';
 
 const useQuery = () => new URLSearchParams(useLocation().search);
@@ -27,12 +28,12 @@ const ArticlesByTag = () => {
 
   const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
   return (
-    <>
+    <Column>
       {articles.length === 0 ? LoadOrNotFound : null}
       {articles.reverse().map(el => {
         return <Article key={el.id} articleInfo={el} />;
       })}
-    </>
+    </Column>
   );
 };
 

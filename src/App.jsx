@@ -85,6 +85,8 @@ class App extends React.Component {
         <SubsectionRoute />
         <SearchRoute />
         <ArticlesRoute isLogin={isLogin} />
+        {/* TODO delete eslint disable */}
+        {/* eslint-disable-next-line no-undef */}
         <ChatRoute path="/chat" isLogin={isLogin} user={user} component={ChatAuth} />
       </Context.Provider>
     );

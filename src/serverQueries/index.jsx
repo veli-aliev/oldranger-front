@@ -40,6 +40,22 @@ class Queries {
     return res.data;
   };
 
+  // TODO удалить после  проверки этого не бэке
+  createNode = async () => {
+    const res = await axios.post('/api/tags/node/add?parentId=0&position=0', {
+      id: 1,
+      name: 'Первый пункт',
+    });
+    return res.data;
+  };
+
+  getTagsDtoTree = async () => {
+    const res = await axios.get('/api/tags/node/tree', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   getData = async page => {
     const res = await axios.get(page);
     return res.data;
@@ -68,11 +84,6 @@ class Queries {
 
   getProfileData = async () => {
     const { data } = await axios.get('/api/currentUser');
-    return data;
-  };
-
-  getUserProfileData = async () => {
-    const { data } = await axios.get('/api/profile');
     return data;
   };
 

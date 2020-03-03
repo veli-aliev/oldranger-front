@@ -5,6 +5,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import { StyledTopicUserInfo, UserInfoLeft } from './styled';
 import userProps from './propTypes/userProps';
+import AdminMenu from '../AdminMenu';
 
 const TopicUserInfo = ({ user }) => {
   return (
@@ -27,6 +28,9 @@ const TopicUserInfo = ({ user }) => {
           {user.regDate
             ? `С нами ${formatDistanceToNow(parseISO(user.regDate), { locale: ru })}`
             : 'Неизвестно'}
+        </p>
+        <p>
+          <AdminMenu user={user} />
         </p>
       </Col>
     </StyledTopicUserInfo>

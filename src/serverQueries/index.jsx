@@ -213,10 +213,10 @@ class Queries {
   };
 
   blackListRequest = async (id, dateUnblock = new Date()) => {
-    const timezoneOffset = new Date().getTimezoneOffset() * 60000;
     const res = await axios.post('/api/admin/blocking', {
       id,
-      dateUnblock: new Date(new Date(dateUnblock) - timezoneOffset).toISOString(),
+      dateUnblock: new Date(dateUnblock).toISOString().slice(0, -1),
+      // Не работает, потому что на беке ещё не смержили ветку с dev
     });
     return res.data;
   };

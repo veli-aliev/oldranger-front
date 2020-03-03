@@ -143,7 +143,12 @@ class Chat extends React.Component {
               onChange={this.handleChangeMessage}
             />
             <Footer>
-              <input type="file" onChange={this.handleChangeFile} value={imagePath} />
+              <input
+                type="file"
+                onChange={this.handleChangeFile}
+                value={imagePath}
+                name="file-input"
+              />
               <Button type="primary" className="send-button" htmlType="submit">
                 Отправить
               </Button>

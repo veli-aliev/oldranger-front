@@ -30,7 +30,7 @@ const formLayoutSchema = {
 };
 
 const validationSchema = Yup.object({
-  Email: Yup.string()
+  mail: Yup.string()
     .email('Некорректный email адрес')
     .required('Это поле обязательно'),
 });
@@ -75,7 +75,7 @@ class Invite extends React.Component {
             <h4>Скопируйте ссылку и отправьте другу</h4>
           </Row>
           <Row type="flex" justify="center">
-            <Input value={`http://localhost:3000/registration/${token}`} />
+            <Input value={`http://localhost:3000/invite?key=${token}`} />
           </Row>
         </StyledWrapper>
 
@@ -83,7 +83,7 @@ class Invite extends React.Component {
 
         <Formik
           initialValues={{
-            Email: '',
+            mail: '',
           }}
           validationSchema={validationSchema}
           onSubmit={this.submitForm}
@@ -102,8 +102,8 @@ class Invite extends React.Component {
                 </Row>
               )}
 
-              <FormItem label="Email" name="Email">
-                <FormikInput name="Email" />
+              <FormItem label="Email" name="mail">
+                <FormikInput name="mail" />
               </FormItem>
 
               <Row type="flex" justify="center">

@@ -5,12 +5,13 @@ import { Popover, Tooltip, Icon } from 'antd';
 import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
+import { Markup } from 'interweave';
 import { ReplyTag } from './styled';
 import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
 import TopicCommentListItem from './TopicCommentListItem';
 import Context from '../Context';
-import userRoles from '../UserRoles';
+import userRoles from '../Constants';
 
 const IconText = ({ type, onHandleClick, title }) => (
   <Tooltip placement="topRight" title={title}>
@@ -27,7 +28,6 @@ class TopicCommentItem extends React.Component {
       toggleEdeting: false,
       withActions: true,
     };
-    this.edetingForm = React.createRef();
   }
 
   handleClickEditBtn = () => {
@@ -85,13 +85,11 @@ class TopicCommentItem extends React.Component {
     ];
 
     let contentCommentText = null;
+    let contentReplyText = null;
     const contentEditingForm = (
       <TopicEditingForm
         edetingText={comment.commentText}
         fileList={convertedImages}
-        replyRef={element => {
-          this.edetingForm = element;
-        }}
         handleCancel={this.handleCancel}
         idTopic={comment.topicId}
         idUser={comment.author.id}
@@ -101,32 +99,26 @@ class TopicCommentItem extends React.Component {
       />
     );
     if (comment.replyNick) {
-      contentCommentText = (
-        <p>
-          <Popover
-            content={comment.replyText}
-            title={`${comment.replyNick}, ${formatDistanceToNow(parseISO(comment.replyDateTime), {
-              locale: ru,
-              addSuffix: true,
-            })}`}
-            placement="topLeft"
-          >
-            <ReplyTag color="green">
-              (Ответ на комментарий <strong>{comment.replyNick}</strong>)
-            </ReplyTag>
-          </Popover>
-          {comment.commentText}
-        </p>
+      contentCommentText = <Markup content={comment.commentText} />;
+      contentReplyText = (
+        <Popover
+          content={<Markup content={comment.replyText} />}
+          title={`${comment.replyNick}, ${formatDistanceToNow(parseISO(comment.replyDateTime), {
+            locale: ru,
+            addSuffix: true,
+          })}`}
+          placement="topLeft"
+        >
+          <ReplyTag green>
+            ответил на комментарий <strong>{comment.replyNick}</strong>
+          </ReplyTag>
+        </Popover>
       );
     } else if (comment.rootDeleted) {
-      contentCommentText = (
-        <p>
-          <ReplyTag color="magenta">(Ответ на удаленный комментарий)</ReplyTag>
-          {comment.commentText}
-        </p>
-      );
+      contentCommentText = <Markup content={comment.commentText} />;
+      contentReplyText = <ReplyTag>ответил на удаленный комментарий</ReplyTag>;
     } else {
-      contentCommentText = <p>{comment.commentText}</p>;
+      contentCommentText = <Markup content={comment.commentText} />;
     }
 
     return (
@@ -138,6 +130,7 @@ class TopicCommentItem extends React.Component {
         commentActions={commentActions}
         contentCommentText={contentCommentText}
         contentEditingForm={contentEditingForm}
+        contentReplyText={contentReplyText}
       />
     );
   }

@@ -1,11 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, Form as AntForm } from 'antd';
 import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
-import { TopicReplyWarning } from './styled';
-import Context from '../Context';
 import TopicReplyEditor from './TopicReplyEditor';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
@@ -17,8 +14,7 @@ const validationSchema = Yup.object({
 });
 
 const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files, uploading }) => {
-  const { isLogin } = useContext(Context);
-  return isLogin ? (
+  return (
     <Formik
       initialValues={{
         message: '',
@@ -64,10 +60,6 @@ const TopicReplyForm = ({ replyRef, handleSubmitComment, handleAddFile, files, u
         );
       }}
     </Formik>
-  ) : (
-    <TopicReplyWarning ref={replyRef}>
-      Для возможности добавлять комментарии необходимо <Link to="/login">авторизироваться</Link>.
-    </TopicReplyWarning>
   );
 };
 

@@ -3,6 +3,7 @@ import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import { Avatar, Comment, Popover, Tooltip } from 'antd';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
+import { BASE_URL_IMG } from '../Constants';
 import { ListItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import TopicPhotoList from './TopicPhotoList';
@@ -17,12 +18,21 @@ const TopicCommentListItem = ({
   commentActions,
   contentEditingForm,
   contentCommentText,
+  contentReplyText,
 }) => {
   return (
     <ListItem id={comment.positionInTopic + 1}>
       <Comment
         actions={withActions ? commentActions : null}
-        author={comment.author.nickName}
+        author={
+          !contentReplyText ? (
+            comment.author.nickName
+          ) : (
+            <span>
+              {comment.author.nickName} {contentReplyText}
+            </span>
+          )
+        }
         avatar={
           <Popover
             content={
@@ -30,7 +40,7 @@ const TopicCommentListItem = ({
             }
             placement="right"
           >
-            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+            <Avatar src={`${BASE_URL_IMG}${comment.author.avatar.small}`} />
           </Popover>
         }
         content={toggleEdeting ? contentEditingForm : contentCommentText}
@@ -59,6 +69,7 @@ export default TopicCommentListItem;
 TopicCommentListItem.defaultProps = {
   withActions: false,
   convertedImages: null,
+  contentReplyText: null,
 };
 
 TopicCommentListItem.propTypes = {
@@ -69,4 +80,5 @@ TopicCommentListItem.propTypes = {
   contentCommentText: PropTypes.node.isRequired,
   convertedImages: PropTypes.arrayOf(fileProps),
   comment: commentProps.isRequired,
+  contentReplyText: PropTypes.node,
 };

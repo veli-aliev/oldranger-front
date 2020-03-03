@@ -11,6 +11,13 @@ const TopicsList = ({ title, items, itemComponent, fetchMessages, hasMore }) => 
       next={fetchMessages}
       hasMore={hasMore}
       loader={<Spin />}
+      endMessage={
+        fetchMessages !== null ? (
+          <p style={{ textAlign: 'center' }}>
+            <b>Вы все просмотрели!</b>
+          </p>
+        ) : null
+      }
     >
       <StyledList
         header={title.length > 0 && <StyledTitle>{title}</StyledTitle>}
@@ -35,7 +42,7 @@ TopicsList.propTypes = {
 TopicsList.defaultProps = {
   title: <h1>No Title</h1>,
   hasMore: false,
-  fetchMessages: () => {},
+  fetchMessages: null,
 };
 
 export default TopicsList;

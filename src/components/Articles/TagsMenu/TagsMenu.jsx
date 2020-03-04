@@ -10,7 +10,6 @@ const TagsMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const history = useHistory();
 
-  // TODO ждёмс реализации дерева на бэке
   useEffect(() => {
     queries.getTagsDtoTree().then(el => {
       setMenuItems(el);

@@ -6,6 +6,7 @@ import ru from 'date-fns/locale/ru';
 import { StyledTopicUserInfo, UserInfoLeft } from './styled';
 import userProps from './propTypes/userProps';
 import AdminMenu from '../AdminMenu';
+import { mapRoleToString } from '../../utils';
 
 const TopicUserInfo = ({ user }) => {
   return (
@@ -18,7 +19,7 @@ const TopicUserInfo = ({ user }) => {
       </UserInfoLeft>
       <Col>
         <p>
-          <Icon type="user" /> {user.role.role}
+          <Icon type="user" /> {mapRoleToString(user.role.role)}
         </p>
         <p>
           <Icon type="message" /> {user.messageCount}

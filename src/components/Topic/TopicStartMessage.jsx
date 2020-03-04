@@ -1,54 +1,47 @@
 import React from 'react';
-import { Icon, Avatar } from 'antd';
+import { Avatar } from 'antd';
 import { parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
 import { BASE_URL_IMG } from '../Constants';
 import PropTypesUser from './propTypes/userProps';
 import {
-  TopicHeaderContainer,
-  TopicHeaderHeading,
+  TopicContainer,
+  TopicHeaderWrapp,
   TopicHeaderTitle,
   TopicHeaderDate,
-  TopicHeaderSpan,
   TopicHeaderAuthorWrapp,
   TopicHeaderAuthorWrappCol,
   TopicHeaderAuthorNickName,
-  TopicHeaderAuthorAuthor,
   TopicHeaderDefaultMessage,
 } from './TopicHeaderStyled';
 
 const TopicStartMessage = ({ topic }) => {
   return (
-    <TopicHeaderContainer>
-      <TopicHeaderHeading>Топик</TopicHeaderHeading>
-      <TopicHeaderTitle>{topic.name}</TopicHeaderTitle>
-      <TopicHeaderDate>
-        <TopicHeaderSpan>
-          <Icon type="calendar" style={{ fontSize: '25px' }} theme="outlined" />
-        </TopicHeaderSpan>
-        <TopicHeaderSpan>
-          {format(parseISO(topic.startTime), "dd MMMM yyyy 'в' HH:mm", {
-            locale: ru,
-          })}
-        </TopicHeaderSpan>
-      </TopicHeaderDate>
-      <TopicHeaderAuthorWrapp>
-        <TopicHeaderAuthorWrappCol>
-          <Avatar
-            shape="square"
-            size={64}
-            icon="user"
-            src={`${BASE_URL_IMG}${topic.topicStarter.avatar.small}`}
-          />
-        </TopicHeaderAuthorWrappCol>
-        <TopicHeaderAuthorWrappCol>
-          <TopicHeaderAuthorNickName>{topic.topicStarter.nickName}</TopicHeaderAuthorNickName>
-          <TopicHeaderAuthorAuthor>Автор</TopicHeaderAuthorAuthor>
-        </TopicHeaderAuthorWrappCol>
-      </TopicHeaderAuthorWrapp>
+    <TopicContainer>
+      <TopicHeaderWrapp>
+        <TopicHeaderTitle>{topic.name}</TopicHeaderTitle>
+        <TopicHeaderAuthorWrapp>
+          <TopicHeaderAuthorWrappCol>
+            <Avatar
+              shape="square"
+              size={48}
+              icon="user"
+              src={`${BASE_URL_IMG}${topic.topicStarter.avatar.small}`}
+            />
+          </TopicHeaderAuthorWrappCol>
+          <TopicHeaderAuthorWrappCol>
+            <TopicHeaderAuthorNickName>{topic.topicStarter.nickName}</TopicHeaderAuthorNickName>
+            <TopicHeaderDate>
+              {format(parseISO(topic.startTime), "dd MMMM yyyy 'в' HH:mm", {
+                locale: ru,
+              })}
+            </TopicHeaderDate>
+          </TopicHeaderAuthorWrappCol>
+        </TopicHeaderAuthorWrapp>
+      </TopicHeaderWrapp>
       <TopicHeaderDefaultMessage>{topic.startMessage}</TopicHeaderDefaultMessage>
-    </TopicHeaderContainer>
+    </TopicContainer>
   );
 };
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
-import { Link } from 'react-router-dom';
 import serverQueries from '../../serverQueries';
 import { dateToDateDistance } from '../../utils';
+import LinkToUserPage from './LinkToUserPage';
 
 const AdminPanel = () => {
   const [usersList, setUsersList] = useState([]);
@@ -26,9 +26,7 @@ const AdminPanel = () => {
     {
       title: 'Nickname',
       dataIndex: 'nickName',
-      render: (text, { userStatisticId }) => (
-        <Link to={`/admin-panel/users/${userStatisticId}`}>{text}</Link>
-      ),
+      render: (text, { userStatisticId }) => <LinkToUserPage id={userStatisticId} />,
     },
     {
       title: 'Email',

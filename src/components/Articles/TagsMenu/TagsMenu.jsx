@@ -13,7 +13,6 @@ const TagsMenu = () => {
   // TODO ждёмс реализации дерева на бэке
   useEffect(() => {
     queries.getTagsDtoTree().then(el => {
-      console.log(el);
       setMenuItems(el);
     });
   }, []);

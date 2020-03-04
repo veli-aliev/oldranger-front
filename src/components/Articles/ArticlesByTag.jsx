@@ -8,7 +8,6 @@ import Article from './Article';
 const ArticlesByTag = ({ location: { search: tagsStr } }) => {
   const [articles, setArticles] = useState([]);
   const [isEmpty, setIsEmpty] = useState(false);
-  console.log(tagsStr);
 
   useEffect(() => {
     if (!tagsStr) {

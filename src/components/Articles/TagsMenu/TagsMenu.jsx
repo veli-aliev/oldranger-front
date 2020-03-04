@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, Spin } from 'antd';
+import { useHistory } from 'react-router-dom';
 import { StyledMenu } from '../styled';
 import queries from '../../../serverQueries/index';
 
@@ -11,21 +12,21 @@ const items = [
     parentId: -1,
     position: 0,
     tag: 'First tag',
-    tagsHierarchy: [0],
+    tagsHierarchy: [1],
   },
   {
     id: 1,
     parentId: -1,
     position: 0,
     tag: '1 tag',
-    tagsHierarchy: [0],
+    tagsHierarchy: [1, 2],
   },
   {
     id: 2,
     parentId: -1,
     position: 0,
     tag: '2 tag',
-    tagsHierarchy: [0],
+    tagsHierarchy: [1, 2, 3],
   },
   {
     id: 3,
@@ -115,6 +116,7 @@ const items = [
 
 const TagsMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const history = useHistory();
 
   // TODO ждёмс реализации дерева на бэке
   useEffect(() => {
@@ -122,6 +124,10 @@ const TagsMenu = () => {
     queries.createNode();
     queries.getTagsDtoTree();
   }, []);
+
+  const showArticles = tags => () => {
+    history.push(`articles?tags=${tags.join('_')}`);
+  };
 
   const buildTreeMenu = (tags, result = []) => {
     if (tags.length === 0) {
@@ -132,7 +138,7 @@ const TagsMenu = () => {
       return buildTreeMenu(rest, [
         ...result,
         <SubMenu
-          onTitleClick={() => console.log(first.tagsHierarchy)}
+          onTitleClick={showArticles(first.tagsHierarchy)}
           key={first.id}
           title={<span>{first.tag}</span>}
         >
@@ -142,7 +148,7 @@ const TagsMenu = () => {
     }
     return buildTreeMenu(rest, [
       ...result,
-      <Menu.Item onClick={() => console.log(first.tagsHierarchy)} key={first.id}>
+      <Menu.Item onClick={showArticles(first.tagsHierarchy)} key={first.id}>
         {first.tag}
       </Menu.Item>,
     ]);

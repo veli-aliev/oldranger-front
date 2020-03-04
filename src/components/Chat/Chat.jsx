@@ -65,10 +65,11 @@ class Chat extends React.Component {
   drawMessage = msg => {
     const { user } = this.props;
     if (msg.type === 'MESSAGE') {
+      // const urlAvatar = msg.senderAvatar === null ? default : `${msg.senderAvatar}`;
       return (
         <Message
           toMe={user.nickName === msg.replyTo}
-          key={`${msg.id}`}
+          key={`${msg.id}-${lodash.uniqueId()}`}
           onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
         >
           <MessageAvatar alt="avatar" src={`${url}img/${msg.senderAvatar}`} />
@@ -113,11 +114,13 @@ class Chat extends React.Component {
               <OnlineLED />
               <UserListTitle>Online:</UserListTitle>
               <UserList>
-                {Object.entries(usersOnline).map(user => (
-                  <User key={user}>
-                    <UserLink href={`/profile/${user[1]}`}>{user[0]}</UserLink>
-                  </User>
-                ))}
+                {Object.entries(usersOnline).map(user => {
+                  return (
+                    <User key={user}>
+                      <UserLink href={`/profile/${user[1]}`}>{user[0]}</UserLink>
+                    </User>
+                  );
+                })}
               </UserList>
             </div>
             <div style={{ width: '80%' }}>

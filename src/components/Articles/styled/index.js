@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
 
 export const StyledMenu = styled.div`
+  height: fit-content;
   width: 300px;
   box-shadow: 0px 0px 16px -2px rgba(0, 0, 0, 0.75);
 `;

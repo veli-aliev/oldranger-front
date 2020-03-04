@@ -35,22 +35,12 @@ class Queries {
   };
 
   getArticlesByTag = async tags => {
-    console.log(tags);
     if (!tags) {
       const res = await axios.get(`/api/article/tag`, {});
       return res.data;
     }
     const tagsString = tags.join('&tag_id=');
     const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {});
-    return res.data;
-  };
-
-  // TODO удалить после  проверки этого не бэке
-  createNode = async () => {
-    const res = await axios.post('/api/tags/node/add?parentId=0&position=0', {
-      id: 1,
-      name: 'Первый пункт',
-    });
     return res.data;
   };
 

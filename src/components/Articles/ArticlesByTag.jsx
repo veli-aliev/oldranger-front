@@ -8,6 +8,7 @@ import Article from './Article';
 const ArticlesByTag = ({ location: { search: tagsStr } }) => {
   const [articles, setArticles] = useState([]);
   const [isEmpty, setIsEmpty] = useState(false);
+  console.log(tagsStr);
 
   useEffect(() => {
     if (!tagsStr) {
@@ -37,7 +38,7 @@ const ArticlesByTag = ({ location: { search: tagsStr } }) => {
 
 ArticlesByTag.propTypes = {
   location: PropTypes.shape({
-    search: PropTypes.objectOf(PropTypes.string),
+    search: PropTypes.string,
   }).isRequired,
 };
 

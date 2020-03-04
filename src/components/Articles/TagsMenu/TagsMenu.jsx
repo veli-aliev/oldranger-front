@@ -6,123 +6,16 @@ import queries from '../../../serverQueries/index';
 
 const { SubMenu } = Menu;
 
-const items = [
-  {
-    id: 0,
-    parentId: -1,
-    position: 0,
-    tag: 'First tag',
-    tagsHierarchy: [1],
-  },
-  {
-    id: 1,
-    parentId: -1,
-    position: 0,
-    tag: '1 tag',
-    tagsHierarchy: [1, 2],
-  },
-  {
-    id: 2,
-    parentId: -1,
-    position: 0,
-    tag: '2 tag',
-    tagsHierarchy: [1, 2, 3],
-  },
-  {
-    id: 3,
-    parentId: -1,
-    position: 0,
-    tag: '3 tag',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 4,
-    parentId: -1,
-    position: 0,
-    tag: '4 tag',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 5,
-    parentId: -1,
-    position: 0,
-    tag: '5 tag',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 6,
-    parentId: -1,
-    position: 0,
-    tag: '6 tag',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 7,
-    parentId: 0,
-    position: 0,
-    tag: 'Under first',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 8,
-    parentId: 0,
-    position: 0,
-    tag: 'Under first',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 9,
-    parentId: 2,
-    position: 0,
-    tag: 'Under 2',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 10,
-    parentId: 2,
-    position: 0,
-    tag: 'Under 2, 10',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 11,
-    parentId: 10,
-    position: 0,
-    tag: 'Under 10',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 12,
-    parentId: 4,
-    position: 0,
-    tag: 'Under 4',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 13,
-    parentId: 11,
-    position: 0,
-    tag: 'Under 11',
-    tagsHierarchy: [0],
-  },
-  {
-    id: 14,
-    parentId: 13,
-    position: 0,
-    tag: 'Under 13',
-    tagsHierarchy: [0],
-  },
-];
-
 const TagsMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const history = useHistory();
 
   // TODO ждёмс реализации дерева на бэке
   useEffect(() => {
-    setMenuItems(items);
-    queries.createNode();
-    queries.getTagsDtoTree();
+    queries.getTagsDtoTree().then(el => {
+      console.log(el);
+      setMenuItems(el);
+    });
   }, []);
 
   const showArticles = tags => () => {
@@ -157,7 +50,7 @@ const TagsMenu = () => {
   return (
     <StyledMenu>
       {menuItems.length > 0 ? (
-        <Menu mode="inline">{buildTreeMenu(menuItems.filter(el => el.parentId === -1))}</Menu>
+        <Menu mode="inline">{buildTreeMenu(menuItems.filter(el => el.parentId === null))}</Menu>
       ) : (
         <Spin />
       )}

@@ -86,7 +86,7 @@ class EditAlbum extends React.Component {
     const { photoTempUlr } = this.state;
     this.setState({
       visible: false,
-      albumCoverUrl: `${photoTempUlr}${photo.id}`,
+      albumCoverUrl: `${photoTempUlr}${photo.photoID}`,
     });
   };
 
@@ -100,13 +100,10 @@ class EditAlbum extends React.Component {
     const { photoTempUlr } = this.state;
     const {
       location: {
-        state: { originalThumbImage },
+        state: { thumbImageId },
       },
     } = this.props;
-    const url =
-      originalThumbImage === 'thumb_image_placeholder'
-        ? `/defaultAlbumTheme.jpg`
-        : `${photoTempUlr}${originalThumbImage}`;
+    const url = thumbImageId ? `${photoTempUlr}${thumbImageId}` : `/defaultAlbumTheme.jpg`;
     this.setState({
       albumCoverUrl: url,
     });
@@ -128,25 +125,36 @@ class EditAlbum extends React.Component {
     }
   };
 
-  addPhotoToDeleteArray(photoId) {
+  handleDeletePhotos = async () => {
     const { photosToDelete } = this.state;
-    if (photosToDelete.indexOf(photoId) !== -1) {
-      photosToDelete.splice(photosToDelete.indexOf(photoId), 1);
-      this.setState({
-        photosToDelete: [...photosToDelete],
-      });
-    } else {
-      photosToDelete.push(photoId);
-      this.setState({
-        photosToDelete: [...photosToDelete],
-      });
+    try {
+      await Promise.all(photosToDelete.map(id => queries.deletePhotoFromAlbum(id)));
+      this.setState(({ photos }) => ({
+        photos: photos.filter(({ photoID }) => !photosToDelete.includes(photoID)),
+        photosToDelete: [],
+      }));
+    } catch (error) {
+      // message.error('что-то пошло не так');
+      await this.loadPhotos();
     }
+  };
+
+  addPhotoToDeleteArray(photoId) {
+    this.setState(({ photosToDelete }) => {
+      const isIncludes = photosToDelete.includes(photoId);
+      return {
+        photosToDelete: isIncludes
+          ? photosToDelete.filter(id => id !== photoId)
+          : [...photosToDelete, photoId],
+      };
+    });
   }
 
   render() {
     const {
       location: { state },
     } = this.props;
+    // TODO ???
     const { title, id } = state;
     const { photoTempUlr, photos, photosToDelete, albumCoverUrl, visible } = this.state;
     return (
@@ -159,8 +167,8 @@ class EditAlbum extends React.Component {
         >
           {photos.map(photo => (
             <ChooseNewCoverSectionImage
-              src={`${photoTempUlr}${photo.id}`}
-              key={photo.id}
+              src={`${photoTempUlr}${photo.photoID}`}
+              key={photo.photoID}
               onClick={this.handleOk(photo)}
             />
           ))}
@@ -191,7 +199,7 @@ class EditAlbum extends React.Component {
             <Input defaultValue={title} />
             <SaveChanges block>Сохранить изменения</SaveChanges>
             {photosToDelete.length > 0 ? (
-              <Button block type="danger">
+              <Button block type="danger" onClick={this.handleDeletePhotos}>
                 Удалить фотографии
               </Button>
             ) : null}
@@ -201,12 +209,12 @@ class EditAlbum extends React.Component {
             <GaleryTitle>Фотографии альбома</GaleryTitle>
             <GaleryImages>
               {photos.map(photo => (
-                <EditAlbumImageWrapper key={photo.id}>
-                  <StyledImage src={`${photoTempUlr}${photo.id}`} />
+                <EditAlbumImageWrapper key={photo.photoID}>
+                  <StyledImage src={`${photoTempUlr}${photo.photoID}`} />
                   <ChoosePhotoButton
                     shape="circle"
-                    icon={photosToDelete.includes(photo.id) ? 'check' : undefined}
-                    onClick={() => this.addPhotoToDeleteArray(photo.id)}
+                    icon={photosToDelete.includes(photo.photoID) ? 'check' : undefined}
+                    onClick={() => this.addPhotoToDeleteArray(photo.photoID)}
                   />
                 </EditAlbumImageWrapper>
               ))}
@@ -217,12 +225,13 @@ class EditAlbum extends React.Component {
     );
   }
 }
+
 EditAlbum.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
       id: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
-      originalThumbImage: PropTypes.string.isRequired,
+      thumbImageId: PropTypes.number,
     }),
   }).isRequired,
 };

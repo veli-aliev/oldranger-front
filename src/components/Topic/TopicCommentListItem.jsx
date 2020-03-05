@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import { Avatar, Comment, Popover, Tooltip } from 'antd';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
-import { BASE_URL_IMG } from '../Constants';
+import { BASE_URL_IMG, DEFAULT_AVATAR_PICTURE_URL } from '../Constants';
 import { ListItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
 import commentProps from './propTypes/commentProps';
+import Context from '../Context';
 
 const TopicCommentListItem = ({
   comment,
@@ -20,6 +21,7 @@ const TopicCommentListItem = ({
   contentCommentText,
   contentReplyText,
 }) => {
+  const { isLogin } = useContext(Context);
   return (
     <ListItem id={comment.positionInTopic + 1}>
       <Comment
@@ -40,7 +42,13 @@ const TopicCommentListItem = ({
             }
             placement="right"
           >
-            <Avatar src={`${BASE_URL_IMG}${comment.author.avatar.small}`} />
+            <Avatar
+              src={
+                isLogin
+                  ? `${BASE_URL_IMG}${comment.author.avatar.small}`
+                  : `${DEFAULT_AVATAR_PICTURE_URL}`
+              }
+            />
           </Popover>
         }
         content={toggleEdeting ? contentEditingForm : contentCommentText}

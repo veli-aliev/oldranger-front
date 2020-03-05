@@ -203,6 +203,11 @@ class Queries {
     return res.data;
   };
 
+  updateAlbum = async (id, params) => {
+    const res = await axios.put(`/api/albums/${id}`, null, { params });
+    return res.data;
+  };
+
   deleteAlbum = async id => {
     const res = await axios.delete(`/api/albums/${id}`);
     return res.data;

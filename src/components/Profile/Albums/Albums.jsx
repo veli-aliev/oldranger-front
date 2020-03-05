@@ -181,7 +181,7 @@ class Albums extends React.Component {
                 <AlbomBackgroundImage
                   src={
                     album.thumbImageId
-                      ? `http://localhost:8888/api/sequiredPhoto/photoFromAlbum/${album.thumbImageId}`
+                      ? `http://localhost:8888/api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
                       : `/defaultAlbumTheme.jpg`
                   }
                 />

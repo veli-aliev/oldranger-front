@@ -62,18 +62,21 @@ const ChoosePhotoButton = styled(Button)`
 class EditAlbum extends React.Component {
   constructor(props) {
     super(props);
+    // TODO: сделать нормально
+    const { title, id, thumbImageId } = props.location.state;
     this.state = {
       photos: [],
       photosToDelete: [],
       photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
       visible: false,
-      albumCoverUrl: '',
+      thumbImageId,
+      title,
+      id,
     };
   }
 
   componentDidMount() {
     this.loadPhotos();
-    this.getAlbumCover();
   }
 
   showModal = () => {
@@ -83,29 +86,15 @@ class EditAlbum extends React.Component {
   };
 
   handleOk = photo => () => {
-    const { photoTempUlr } = this.state;
     this.setState({
       visible: false,
-      albumCoverUrl: `${photoTempUlr}${photo.photoID}`,
+      thumbImageId: photo.photoID,
     });
   };
 
   handleCancel = () => {
     this.setState({
       visible: false,
-    });
-  };
-
-  getAlbumCover = () => {
-    const { photoTempUlr } = this.state;
-    const {
-      location: {
-        state: { thumbImageId },
-      },
-    } = this.props;
-    const url = thumbImageId ? `${photoTempUlr}${thumbImageId}` : `/defaultAlbumTheme.jpg`;
-    this.setState({
-      albumCoverUrl: url,
     });
   };
 
@@ -139,6 +128,15 @@ class EditAlbum extends React.Component {
     }
   };
 
+  handleSubmit = async () => {
+    try {
+      const { id, title, thumbImageId } = this.state;
+      await queries.updateAlbum(id, { title, photoId: thumbImageId });
+    } catch (err) {
+      message.error('что-то пошло не так');
+    }
+  };
+
   addPhotoToDeleteArray(photoId) {
     this.setState(({ photosToDelete }) => {
       const isIncludes = photosToDelete.includes(photoId);
@@ -154,9 +152,9 @@ class EditAlbum extends React.Component {
     const {
       location: { state },
     } = this.props;
-    // TODO ???
-    const { title, id } = state;
-    const { photoTempUlr, photos, photosToDelete, albumCoverUrl, visible } = this.state;
+    // TODO: сделать нормально
+    const { id } = state;
+    const { photoTempUlr, photos, photosToDelete, thumbImageId, visible, title } = this.state;
     return (
       <div>
         <Modal
@@ -191,13 +189,18 @@ class EditAlbum extends React.Component {
         <EditSection>
           <EditMenu>
             <div>Обложка альбома</div>
-            <StyledImage src={albumCoverUrl} alt="обложка альбома" />
+            <StyledImage
+              src={thumbImageId ? `${photoTempUlr}${thumbImageId}` : `/defaultAlbumTheme.jpg`}
+              alt="обложка альбома"
+            />
             <Button block onClick={this.showModal}>
               Изменить
             </Button>
             <EditSectionAlbumTitle>Название альбома</EditSectionAlbumTitle>
-            <Input defaultValue={title} />
-            <SaveChanges block>Сохранить изменения</SaveChanges>
+            <Input onChange={evt => this.setState({ title: evt.target.value })} value={title} />
+            <SaveChanges onClick={this.handleSubmit} block>
+              Сохранить изменения
+            </SaveChanges>
             {photosToDelete.length > 0 ? (
               <Button block type="danger" onClick={this.handleDeletePhotos}>
                 Удалить фотографии

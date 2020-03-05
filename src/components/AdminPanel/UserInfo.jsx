@@ -4,6 +4,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import serverQueries from '../../serverQueries';
 import AdminMenu from '../AdminMenu';
+import InvitedUsersTree from './InvitedUsersTree';
 
 const UserInfoBlock = styled.div`
   padding: 20px;
@@ -44,7 +45,7 @@ const UserInfo = () => {
           Статус бана: {accountNonLocked ? <Clear>Отсутствует</Clear> : <Banned>Забанен</Banned>}
         </p>
         <AdminMenu user={user} updateUser={setUser} />
-        <div>{JSON.stringify(tree, null, 2)}</div>
+        <InvitedUsersTree treeData={tree} />
       </UserInfoBlock>
     </div>
   );

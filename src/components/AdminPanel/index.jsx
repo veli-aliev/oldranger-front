@@ -24,7 +24,7 @@ const AdminPanel = () => {
 
   const columns = [
     {
-      title: 'Nickname',
+      title: 'Никнейм',
       dataIndex: 'nickName',
       render: (text, { userStatisticId }) => <LinkToUserPage id={userStatisticId} />,
     },
@@ -33,17 +33,17 @@ const AdminPanel = () => {
       dataIndex: 'email',
     },
     {
-      title: 'Registered',
+      title: 'Зарегистрирован',
       dataIndex: 'registered',
       render: dt => dateToDateDistance(dt),
     },
     {
-      title: 'Last visit',
+      title: 'Последний визит',
       dataIndex: 'lastVizit',
       render: dt => dateToDateDistance(dt),
     },
     {
-      title: 'Role',
+      title: 'Роль',
       dataIndex: 'role',
       render: roleName =>
         roleName

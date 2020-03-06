@@ -1,17 +1,21 @@
 import React, { useContext } from 'react';
 import { Avatar } from 'antd';
 import PropTypes from 'prop-types';
-import { BASE_URL_IMG, DEFAULT_AVATAR_PICTURE_URL } from '../Constants';
+import { BASE_IMG_URL, DEFAULT_AVATAR_PICTURE } from '../../constants';
 import Context from '../Context';
 
-const UserAvatar = ({ path, ...rest }) => {
+const UserAvatar = ({ src, ...rest }) => {
   const { isLogin } = useContext(Context);
-  const imgSrc = isLogin ? `${BASE_URL_IMG}${path}` : `${DEFAULT_AVATAR_PICTURE_URL}`;
+  const imgSrc = isLogin && src ? `${BASE_IMG_URL}${src}` : `${DEFAULT_AVATAR_PICTURE}`;
   return <Avatar src={imgSrc} {...rest} />;
 };
 
+UserAvatar.defaultProps = {
+  src: null,
+};
+
 UserAvatar.propTypes = {
-  path: PropTypes.string.isRequired,
+  src: PropTypes.string,
 };
 
 export default UserAvatar;

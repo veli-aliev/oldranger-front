@@ -202,7 +202,7 @@ class TopicAddFileModal extends React.Component {
                 <BGImage
                   src={
                     album.originalThumbImage === 'thumb_image_placeholder'
-                      ? '/defaultAlbumTheme.jpg'
+                      ? '/defaultAlbumPicture.jpg'
                       : `${url}img/chat/${album.originalThumbImage}`
                   }
                 />

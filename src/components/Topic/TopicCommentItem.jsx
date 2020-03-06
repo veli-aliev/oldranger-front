@@ -11,7 +11,7 @@ import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
 import TopicCommentListItem from './TopicCommentListItem';
 import Context from '../Context';
-import userRoles, { BASE_URL_SECURED_ALBUM, DEFAULT_COMMENT_PICTURE_URL } from '../Constants';
+import userRoles, { SECURED_ALBUM_URL, DEFAULT_COMMENT_PICTURE } from '../../constants';
 
 const IconText = ({ type, onHandleClick, title }) => (
   <Tooltip placement="topRight" title={title}>
@@ -54,8 +54,8 @@ class TopicCommentItem extends React.Component {
     const { isLogin } = this.context;
     const convertedImages = comment.photos.map(photo => {
       const url = isLogin
-        ? `${BASE_URL_SECURED_ALBUM}${photo.id}?type=small`
-        : `${DEFAULT_COMMENT_PICTURE_URL}`;
+        ? `${SECURED_ALBUM_URL}${photo.id}?type=small`
+        : `${DEFAULT_COMMENT_PICTURE}`;
       return {
         uid: `-${String(photo.id)}`,
         url,

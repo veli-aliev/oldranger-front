@@ -2,7 +2,8 @@ import axios from 'axios';
 
 class Queries {
   constructor() {
-    axios.defaults.baseURL = process.env.BASE_URL || 'http://localhost:8888/';
+    this.BASE_URL = process.env.BASE_URL || 'http://localhost:8888/';
+    axios.defaults.baseURL = this.BASE_URL;
     axios.defaults.withCredentials = true;
   }
 

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Button, Spin } from 'antd';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { BASE_URL_IMG } from '../Constants';
+import { BASE_IMG_URL } from '../../constants';
 
 import { withGetData } from '../hoc';
 
@@ -78,7 +78,7 @@ const MainProfile = ({ isLoading, data: user }) => {
   return (
     <StyledMainProfile>
       <div className="sidebar">
-        <img src={`${BASE_URL_IMG}${user.avatar}`} alt="avatar" className="avatar" />
+        <img src={`${BASE_IMG_URL}${user.avatar}`} alt="avatar" className="avatar" />
         <h2 className="title">
           {user.firstName} {user.lastName}
         </h2>

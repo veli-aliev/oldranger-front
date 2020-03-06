@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { Avatar, Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
+import { Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
 // import styled from 'styled-components';
 import Comment from 'antd/es/comment';
 import { Markup } from 'interweave';
-import { BASE_URL_IMG } from '../Constants';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert, TopicReplyWarning } from './styled';
@@ -14,6 +13,7 @@ import TopicCommentItem from './TopicCommentItem';
 import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 import withGetUserProfile from '../hoc/withGetUserProfile';
+import UserAvatar from '../commons/UserAvatar';
 
 const { Text } = Typography;
 
@@ -226,7 +226,7 @@ class TopicPage extends React.Component {
     const { userProfile } = this.props;
     const { isLogin } = this.context;
     const avatar = userProfile.avatar ? (
-      <Avatar src={`${BASE_URL_IMG}${userProfile.avatar}`} alt="User Avatar" />
+      <UserAvatar src={userProfile.avatar} alt="User Avatar" />
     ) : null;
     return error ? (
       <Result

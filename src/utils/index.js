@@ -14,3 +14,11 @@ export const mapRoleToString = role => {
   };
   return roles[role];
 };
+
+export const paramsSerializer = params =>
+  Object.entries(params)
+    .reduce((acc, [key, value]) => {
+      const str = Array.isArray(value) ? `&${key}=${value.join(`&${key}=`)}` : `&${key}=${value}`;
+      return `${acc}${str}`;
+    }, '')
+    .slice(1);

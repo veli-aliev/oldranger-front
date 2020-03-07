@@ -1,14 +1,14 @@
 import React from 'react';
 import { parseISO, format, formatDistanceToNow } from 'date-fns';
-import { Avatar, Comment, Popover, Tooltip } from 'antd';
+import { Comment, Popover, Tooltip } from 'antd';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
-import { BASE_URL_IMG } from '../Constants';
 import { ListItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
 import commentProps from './propTypes/commentProps';
+import UserAvatar from '../commons/UserAvatar';
 
 const TopicCommentListItem = ({
   comment,
@@ -40,7 +40,7 @@ const TopicCommentListItem = ({
             }
             placement="right"
           >
-            <Avatar src={`${BASE_URL_IMG}${comment.author.avatar.small}`} />
+            <UserAvatar path={comment.author.avatar.small} />
           </Popover>
         }
         content={toggleEdeting ? contentEditingForm : contentCommentText}

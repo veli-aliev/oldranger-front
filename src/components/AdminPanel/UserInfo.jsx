@@ -3,6 +3,8 @@ import { Button } from 'antd';
 import { useParams, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import serverQueries from '../../serverQueries';
+import AdminMenu from '../AdminMenu';
+import InvitedUsersTree from './InvitedUsersTree';
 
 const UserInfoBlock = styled.div`
   padding: 20px;
@@ -19,17 +21,14 @@ const Banned = styled.span`
 
 const UserInfo = () => {
   const [user, setUser] = useState({});
+  const [tree, setTree] = useState([]);
   const { id } = useParams();
   const history = useHistory();
 
   useEffect(() => {
+    serverQueries.getUsersTree(id, 5).then(setTree);
     serverQueries.getUserById(id).then(setUser);
-  }, []);
-
-  const handleBan = dt => () =>
-    serverQueries
-      .blackListRequest(id, dt)
-      .then(({ id: userId }) => serverQueries.getUserById(userId).then(setUser));
+  }, [id]);
 
   const { nickName, accountNonLocked } = user;
 
@@ -45,16 +44,8 @@ const UserInfo = () => {
         <p>
           Статус бана: {accountNonLocked ? <Clear>Отсутствует</Clear> : <Banned>Забанен</Banned>}
         </p>
-        {accountNonLocked && (
-          <Button type="danger" onClick={handleBan(Date.now() + 60 * 1000)}>
-            Забанить
-          </Button>
-        )}
-        {!accountNonLocked && (
-          <Button type="primary" onClick={handleBan(Date.now())}>
-            Разбанить
-          </Button>
-        )}
+        <AdminMenu user={user} updateUser={setUser} />
+        <InvitedUsersTree treeData={tree} />
       </UserInfoBlock>
     </div>
   );

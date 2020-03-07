@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
-import { Link } from 'react-router-dom';
 import serverQueries from '../../serverQueries';
 import { dateToDateDistance } from '../../utils';
+import LinkToUserPage from './LinkToUserPage';
 
 const AdminPanel = () => {
   const [usersList, setUsersList] = useState([]);
@@ -24,28 +24,26 @@ const AdminPanel = () => {
 
   const columns = [
     {
-      title: 'Nickname',
+      title: 'Никнейм',
       dataIndex: 'nickName',
-      render: (text, { userStatisticId }) => (
-        <Link to={`/admin-panel/users/${userStatisticId}`}>{text}</Link>
-      ),
+      render: (text, { userStatisticId }) => <LinkToUserPage id={userStatisticId} />,
     },
     {
       title: 'Email',
       dataIndex: 'email',
     },
     {
-      title: 'Registered',
+      title: 'Зарегистрирован',
       dataIndex: 'registered',
       render: dt => dateToDateDistance(dt),
     },
     {
-      title: 'Last visit',
+      title: 'Последний визит',
       dataIndex: 'lastVizit',
       render: dt => dateToDateDistance(dt),
     },
     {
-      title: 'Role',
+      title: 'Роль',
       dataIndex: 'role',
       render: roleName =>
         roleName

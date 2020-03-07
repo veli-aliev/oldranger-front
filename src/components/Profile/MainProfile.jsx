@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button, Spin } from 'antd';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { BASE_URL_IMG } from '../Constants';
+import { BASE_IMG_URL } from '../../constants';
 
 import { withGetData } from '../hoc';
 
@@ -78,7 +78,7 @@ const MainProfile = ({ isLoading, data: user }) => {
   return (
     <StyledMainProfile>
       <div className="sidebar">
-        <img src={`${BASE_URL_IMG}${user.avatar}`} alt="avatar" className="avatar" />
+        <img src={`${BASE_IMG_URL}${user.avatar}`} alt="avatar" className="avatar" />
         <h2 className="title">
           {user.firstName} {user.lastName}
         </h2>
@@ -152,7 +152,9 @@ const MainProfile = ({ isLoading, data: user }) => {
           <h3 className="title">Статистика</h3>
           <div className="field">
             <div className="field-name">Зарегистрирован:</div>
-            <div className="field-value">{user.regDate || '-'}</div>
+            <div className="field-value">
+              {user.regDate ? format(new Date(user.regDate), 'dd.MM.yyyy HH:mm') : '-'}
+            </div>
           </div>
           <div className="field">
             <div className="field-name">Сообщений:</div>
@@ -160,13 +162,15 @@ const MainProfile = ({ isLoading, data: user }) => {
           </div>
           <div className="field">
             <div className="field-name">Последнее сообщение:</div>
-            <div className="field-value">{user.lastComment || '-'}</div>
+            <div className="field-value">
+              {user.lastComment ? format(new Date(user.lastComment), 'dd.MM.yyyy HH:mm') : '-'}
+            </div>
           </div>
           <div className="field">
             <div className="field-name">Последний логин:</div>
             <div className="field-value">
-              {user.lastVizit
-                ? formatDistanceToNow(new Date(user.lastVizit), { locale: ru, addSuffix: true })
+              {user.lastVisit
+                ? formatDistanceToNow(new Date(user.lastVisit), { locale: ru, addSuffix: true })
                 : '-'}
             </div>
           </div>

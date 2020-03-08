@@ -49,7 +49,14 @@ class TopicCommentItem extends React.Component {
   }
 
   render() {
-    const { comment, handleQuoteComment, deleteComment, getTopics, page } = this.props;
+    const {
+      comment,
+      handleQuoteComment,
+      deleteComment,
+      getTopics,
+      page,
+      updateComments,
+    } = this.props;
     const { withActions, toggleEdeting } = this.state;
     const { isLogin } = this.context;
     const convertedImages = comment.photos.map(photo => {
@@ -100,6 +107,7 @@ class TopicCommentItem extends React.Component {
         idUser={comment.author.id}
         commentId={comment.commentId}
         getTopics={getTopics}
+        updateComments={updateComments}
         page={page}
       />
     );
@@ -155,11 +163,13 @@ TopicCommentItem.propTypes = {
   deleteComment: PropTypes.func,
   getTopics: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
+  updateComments: PropTypes.func,
 };
 
 TopicCommentItem.defaultProps = {
   handleQuoteComment: () => {},
   deleteComment: () => {},
+  updateComments: undefined,
 };
 
 export default TopicCommentItem;

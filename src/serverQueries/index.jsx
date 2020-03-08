@@ -168,9 +168,11 @@ class Queries {
       formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
     }
 
-    const res = await axios.put('/api/comment/update', formData, { params: { commentId } });
+    const res = await axios.put('/api/comment/update', formData, {
+      params: { commentID: commentId },
+    });
 
-    return res.status;
+    return res.data;
   };
 
   deleteComment = async commentId => {

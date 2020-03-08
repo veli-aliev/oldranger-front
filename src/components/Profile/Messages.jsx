@@ -22,7 +22,6 @@ class Messages extends React.Component {
   loadMessages = async () => {
     const { page: oldPage } = this.state;
     const newMessages = await queries.getProfileComments(oldPage);
-
     if (newMessages.length === 0) {
       return this.setState({ hasMore: false });
     }
@@ -31,6 +30,15 @@ class Messages extends React.Component {
       messages: [...messages, ...newMessages],
       page: page + 1,
     }));
+  };
+
+  updateMessages = updatedComment => {
+    this.setState(({ messages }) => {
+      const updatedComments = messages.map(mes =>
+        mes.commentId === updatedComment.commentId ? updatedComment : mes
+      );
+      return { messages: updatedComments };
+    });
   };
 
   render() {
@@ -46,7 +54,9 @@ class Messages extends React.Component {
 
     return (
       <TopicCommentsList
-        itemComponent={item => <TopicCommentItem comment={item} />}
+        itemComponent={item => (
+          <TopicCommentItem comment={item} updateComments={this.updateMessages} />
+        )}
         messages={messages}
         title=""
         fetchMessages={this.loadMessages}

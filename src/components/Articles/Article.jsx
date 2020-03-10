@@ -20,11 +20,13 @@ const Article = props => {
       <StyledArticleBody>{articleInfo.text}</StyledArticleBody>
       <StyledMeta>
         <StyledTags>
-          {articleInfo.articleTags.map(tag => (
-            <Tag key={tag.id} color="geekblue">
-              {tag.name}
-            </Tag>
-          ))}
+          {articleInfo.articleTags.map(tag => {
+            return (
+              <Tag key={tag.id} color="geekblue">
+                {tag.name}
+              </Tag>
+            );
+          })}
         </StyledTags>
         <div>
           <StyledUserInfo>{articleInfo.user ? articleInfo.user.username : null}</StyledUserInfo>

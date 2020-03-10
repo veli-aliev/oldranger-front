@@ -32,6 +32,23 @@ class Queries {
     return res.data;
   };
 
+  getArticlesByTag = async tags => {
+    if (!tags) {
+      const res = await axios.get(`/api/article/tag`, {});
+      return res.data;
+    }
+    const tagsString = tags.join('&tag_id=');
+    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {});
+    return res.data;
+  };
+
+  getTagsDtoTree = async () => {
+    const res = await axios.get('/api/tags/node/tree', {
+      withCredentials: true,
+    });
+    return res.data;
+  };
+
   updateArticle = async (id, data, params) => {
     const res = await axios.put(`/api/article/update/${id}`, data, { params });
     return res.data;
@@ -54,12 +71,6 @@ class Queries {
 
   deleteArticleComment = async id => {
     const res = await axios.delete(`/api/article/comment/delete/${id}`);
-    return res.data;
-  };
-
-  getArticlesByTag = async (tagId, page) => {
-    // eslint-disable-next-line
-    const res = await axios.get(`/api/article/tag`, { params: { tag_id: tagId, page } });
     return res.data;
   };
 

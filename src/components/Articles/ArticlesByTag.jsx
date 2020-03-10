@@ -1,51 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Spin } from 'antd';
-import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
+import { Column } from './styled';
 import Article from './Article';
 
-class ArticlesByTag extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      articles: [],
-      isEmpty: false,
-    };
-  }
+const ArticlesByTag = ({ location: { search: tagsStr } }) => {
+  const [articles, setArticles] = useState([]);
+  const [isEmpty, setIsEmpty] = useState(false);
 
-  componentDidMount() {
-    const {
-      match: {
-        params: { articleTag },
-      },
-    } = this.props;
-    queries.getArticlesByTag(articleTag).then(el => {
-      this.setState({ articles: el.content, isEmpty: el.empty });
-    });
-  }
+  useEffect(() => {
+    if (!tagsStr) {
+      queries.getArticlesByTag().then(el => {
+        setArticles(el.content);
+        setIsEmpty(el.empty);
+      });
+    } else {
+      const tagsArr = tagsStr.split('=')[1].split('_');
+      queries.getArticlesByTag(tagsArr).then(el => {
+        setArticles(el.content);
+        setIsEmpty(el.empty);
+      });
+    }
+  }, [tagsStr]);
 
-  render() {
-    const { articles, isEmpty } = this.state;
-    const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
-    return (
-      <>
-        {articles.length === 0 ? LoadOrNotFound : null}
-        {articles
-          // .filter(el => el.hideToAnon !== true)
-          .reverse()
-          .map(el => {
-            return <Article key={el.id} articleInfo={el} />;
-          })}
-      </>
-    );
-  }
-}
+  const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
+  return (
+    <Column>
+      {articles.length === 0 ? LoadOrNotFound : null}
+      {articles.reverse().map(el => {
+        return <Article key={el.id} articleInfo={el} />;
+      })}
+    </Column>
+  );
+};
 
 ArticlesByTag.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.objectOf(PropTypes.string),
+  location: PropTypes.shape({
+    search: PropTypes.string,
   }).isRequired,
 };
 
-export default withRouter(ArticlesByTag);
+export default ArticlesByTag;

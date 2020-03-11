@@ -40,7 +40,7 @@ const TopicCommentListItem = ({
             }
             placement="right"
           >
-            <UserAvatar path={comment.author.avatar.small} />
+            <UserAvatar src={comment.author.avatar.small} />
           </Popover>
         }
         content={toggleEdeting ? contentEditingForm : contentCommentText}

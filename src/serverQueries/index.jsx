@@ -34,11 +34,11 @@ class Queries {
 
   getArticlesByTag = async tags => {
     if (!tags) {
-      const res = await axios.get(`/api/article/tag`, {});
+      const res = await axios.get(`/api/article/withoutTag`, {});
       return res.data;
     }
     const tagsString = tags.join('&tag_id=');
-    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {});
+    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}&page=0`, {});
     return res.data;
   };
 

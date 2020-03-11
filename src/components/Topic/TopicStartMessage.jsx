@@ -1,10 +1,9 @@
 import React from 'react';
-import { Avatar } from 'antd';
 import { parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
-import { BASE_URL_IMG } from '../Constants';
 import PropTypesUser from './propTypes/userProps';
+import UserAvatar from '../commons/UserAvatar';
 import {
   TopicContainer,
   TopicHeaderWrapp,
@@ -23,11 +22,11 @@ const TopicStartMessage = ({ topic }) => {
         <TopicHeaderTitle>{topic.name}</TopicHeaderTitle>
         <TopicHeaderAuthorWrapp>
           <TopicHeaderAuthorWrappCol>
-            <Avatar
+            <UserAvatar
               shape="square"
               size={48}
               icon="user"
-              src={`${BASE_URL_IMG}${topic.topicStarter.avatar.small}`}
+              src={topic.topicStarter.avatar.small}
             />
           </TopicHeaderAuthorWrappCol>
           <TopicHeaderAuthorWrappCol>

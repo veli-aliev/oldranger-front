@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button, Row } from 'antd';
 import PropTypes from 'prop-types';
-import queries from '../serverQueries/index';
+import queries from '../serverQueries';
 
 class RegistrationAccept extends React.Component {
   constructor(props) {

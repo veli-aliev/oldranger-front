@@ -1,15 +1,16 @@
 import axios from 'axios';
+import { BASE_URL } from '../constants';
+import { paramsSerializer } from '../utils';
 
 class Queries {
   constructor() {
-    axios.defaults.baseURL = process.env.BASE_URL || 'http://localhost:8888/';
+    axios.defaults.baseURL = BASE_URL;
     axios.defaults.withCredentials = true;
+    axios.defaults.paramsSerializer = paramsSerializer;
   }
 
   logIn = async formData => {
-    await axios.post('login', formData, {
-      headers: { 'content-type': 'multipart/form-data' },
-    });
+    await axios.post('login', formData);
   };
 
   logOut = async () => {
@@ -21,23 +22,55 @@ class Queries {
     return res.data;
   };
 
-  updateAvatar = async values => {
-    const res = await axios.post('/api/avatar/set', values);
+  updateAvatar = async data => {
+    const res = await axios.post('/api/avatar/set', data);
     return res.data;
   };
 
-  createArticle = async ({ title, text, tagsId, isHideToAnon }) => {
-    const tags = tagsId.length > 0 ? `&tagsId=${tagsId.join('&tagsId=')}` : '';
-    const res = await axios.post(
-      `/api/article/add?title=${title}&text=${text}&isHideToAnon=${isHideToAnon.toString()}${tags}`
-    );
+  createArticle = async (data, params) => {
+    const res = await axios.post('/api/article/add', data, { params });
     return res.data;
   };
 
-  getArticlesByTag = async tag => {
-    const res = await axios.get(`/api/article/tag?tag_id=${tag}&page=1`, {
+  getArticlesByTag = async tags => {
+    if (!tags) {
+      const res = await axios.get(`/api/article/tag`, {});
+      return res.data;
+    }
+    const tagsString = tags.join('&tag_id=');
+    const res = await axios.get(`/api/article/tag?tag_id=${tagsString}`, {});
+    return res.data;
+  };
+
+  getTagsDtoTree = async () => {
+    const res = await axios.get('/api/tags/node/tree', {
       withCredentials: true,
     });
+    return res.data;
+  };
+
+  updateArticle = async (id, data, params) => {
+    const res = await axios.put(`/api/article/update/${id}`, data, { params });
+    return res.data;
+  };
+
+  getArticleById = async params => {
+    const res = await axios.get(`/api/article/comments`, { params });
+    return res.data;
+  };
+
+  createArticleComment = async (data, params) => {
+    const res = await axios.post('/api/article/comment/add', data, { params });
+    return res.data;
+  };
+
+  updateArticleComment = async (data, params) => {
+    const res = await axios.post('/api/article/comment/add', data, { params });
+    return res.data;
+  };
+
+  deleteArticleComment = async id => {
+    const res = await axios.delete(`/api/article/comment/delete/${id}`);
     return res.data;
   };
 
@@ -47,23 +80,22 @@ class Queries {
   };
 
   getProfileTopics = async page => {
-    const res = await axios.get(`/api/topics/?page=${page}`);
+    const res = await axios.get(`/api/topics/`, { params: { page } });
     return res.data;
   };
 
   getProfileComments = async page => {
-    const res = await axios.get(`/api/comments/?page=${page}`);
+    const res = await axios.get(`/api/comments/`, { params: { page } });
     return res.data;
   };
 
-  getTopic = async (topicId, page, limit) => {
-    const res = await axios.get(`/api/topic/${topicId}?page=${page}&limit=${limit}`);
-    console.log('TopicAndTopicDTO: ', res.data);
+  getTopic = async (id, page, limit) => {
+    const res = await axios.get(`/api/topic/${id}`, { params: { page, limit } });
     return res.data;
   };
 
   getProfileSubscriptions = async page => {
-    const res = await axios.get(`/api/subscriptions/?page=${page}`);
+    const res = await axios.get(`/api/subscriptions`, { params: { page } });
     return res.data;
   };
 
@@ -77,10 +109,11 @@ class Queries {
     return data;
   };
 
-  getSubsectionTopics = async (subsectionId, page = 0) => {
-    const res = await axios.get(
-      `/api/subsection/${subsectionId}?dateTime=2099-01-01%2000%3A00%3A00&page=${page}`
-    );
+  getSubsectionTopics = async (id, page = 0) => {
+    // TODO dateTime ???
+    const res = await axios.get(`/api/subsection/${id}`, {
+      params: { dateTime: '2099-01-01%2000%3A00%3A00', page },
+    });
     return res.data;
   };
 
@@ -94,17 +127,21 @@ class Queries {
     return res.data;
   };
 
-  searchByComments = async (searchQuery, page) => {
-    const res = await axios.get(`/api/searchComments?finderTag=${searchQuery}&page=${page}`);
+  searchByComments = async (finderTag, page) => {
+    const res = await axios.get(`/api/searchComments`, { params: { finderTag, page } });
     return res.data;
   };
 
-  searchByTopics = async searchQuery => {
-    const res = await axios.get(`/api/searchTopics?finderTag=${searchQuery}&node=0&nodeValue=0`);
+  searchByTopics = async finderTag => {
+    // TODO node nodeValue ???
+    const res = await axios.get(`/api/searchTopics`, {
+      params: { finderTag, node: 0, nodeValue: 0 },
+    });
     return res.data;
   };
 
   addComment = async newComment => {
+    // TODO Перенести в компонент
     const formData = new FormData();
     formData.set('idTopic', newComment.idTopic);
     formData.set('idUser', newComment.idUser);
@@ -127,8 +164,8 @@ class Queries {
   };
 
   updateComment = async editingComment => {
+    // TODO Перенести в компонент
     const { commentId } = editingComment;
-    const url = `/api/comment/update?commentID=${commentId}`;
     const formData = new FormData();
     formData.set('idTopic', editingComment.idTopic);
     formData.set('idUser', editingComment.idUser);
@@ -142,7 +179,7 @@ class Queries {
       formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
     }
 
-    const res = await axios.put(url, formData);
+    const res = await axios.put('/api/comment/update', formData, { params: { commentId } });
 
     return res.status;
   };
@@ -157,25 +194,13 @@ class Queries {
     return res.data;
   };
 
-  sendInviteCode = async values => {
-    const res = await axios.post(
-      `/api/token/invite/bymail?mail=${values.mail}`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+  sendInviteCode = async ({ mail }) => {
+    const res = await axios.post(`/api/token/invite/bymail`, {}, { params: { mail } });
     return res.data;
   };
 
   registrationUserAdd = async key => {
-    const res = await axios.post(
-      `/api/registration?key=${key}`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+    const res = await axios.post(`/api/registration`, {}, { params: { key } });
     return res.data;
   };
 
@@ -255,20 +280,17 @@ class Queries {
   };
 
   getImage = async formData => {
-    const res = await axios.post('/api/chat/image', formData, {
-      headers: { 'content-type': 'multipart/form-data' },
-      withCredentials: true,
-    });
+    const res = await axios.post('/api/chat/image', formData);
     return res.data;
   };
 
   isForbidden = async () => {
-    const res = await axios.get('/api/chat/isForbidden', { withCredentials: true });
+    const res = await axios.get('/api/chat/isForbidden');
     return res.data;
   };
 
   getCurrentUser = async () => {
-    const res = await axios.get('/api/chat/user', { withCredentials: true });
+    const res = await axios.get('/api/chat/user');
     return res.data;
   };
 
@@ -283,10 +305,7 @@ class Queries {
   };
 
   createNewTopic = async formData => {
-    const res = await axios.post('/api/topic/new', formData, {
-      headers: { 'content-type': 'multipart/form-data' },
-      withCredentials: true,
-    });
+    const res = await axios.post('/api/topic/new', formData);
     return res;
   };
 }

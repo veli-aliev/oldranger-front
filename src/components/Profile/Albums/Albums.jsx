@@ -114,9 +114,9 @@ class Albums extends React.Component {
     const doDeleteAlbum = async () => {
       const { albums } = this.state;
       try {
-        await queries.deleteAlbum(album.id);
+        await queries.deleteAlbum(album.photoAlbumId);
         const newAlbums = albums.reduce((acc, item) => {
-          if (item.id !== album.id) {
+          if (item.photoAlbumId !== album.photoAlbumId) {
             acc.push(item);
           }
           return [...acc];
@@ -151,7 +151,7 @@ class Albums extends React.Component {
       history,
       location: { pathname },
     } = this.props;
-    const url = `${pathname}/editAlbum/${album.id}`;
+    const url = `${pathname}/editAlbum/${album.photoAlbumId}`;
     history.push({
       pathname: url,
       state: album,
@@ -163,7 +163,7 @@ class Albums extends React.Component {
       history,
       location: { pathname },
     } = this.props;
-    const url = `${pathname}/${album.id}`;
+    const url = `${pathname}/${album.photoAlbumId}`;
     history.push({
       pathname: url,
       state: album,
@@ -177,7 +177,7 @@ class Albums extends React.Component {
         {albums.length > 0 ? (
           <StyledAlbumWrapper>
             {albums.map(album => (
-              <StyledAlbumCard onClick={this.openAlbum(album)} key={album.id}>
+              <StyledAlbumCard onClick={this.openAlbum(album)} key={album.photoAlbumId}>
                 <AlbomBackgroundImage
                   src={
                     album.thumbImageId

@@ -100,7 +100,7 @@ class Album extends React.Component {
       location: { state },
     } = this.props;
 
-    const albumId = state.id;
+    const albumId = state.photoAlbumId;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
@@ -141,7 +141,7 @@ class Album extends React.Component {
     const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
       location: {
-        state: { id, title },
+        state: { photoAlbumId, title },
       },
     } = this.props;
     const images = photos.reduce((acc, photo) => {
@@ -210,7 +210,7 @@ class Album extends React.Component {
               </StyledRow>
             )}
           </AlbumWrapper>
-          <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+          <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
         </>
       );
     }
@@ -261,7 +261,7 @@ class Album extends React.Component {
             <h4>Альбом пуст</h4>
           </StyledRow>
         )}
-        <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+        <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
       </>
     );
   }
@@ -270,7 +270,7 @@ class Album extends React.Component {
 Album.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      photoAlbumId: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
       fileList: PropTypes.shape({
         indexOf: PropTypes.func.isRequired,

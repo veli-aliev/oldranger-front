@@ -63,7 +63,7 @@ class EditAlbum extends React.Component {
   constructor(props) {
     super(props);
     // TODO: сделать нормально
-    const { title, id, thumbImageId } = props.location.state;
+    const { title, photoAlbumId, thumbImageId } = props.location.state;
     this.state = {
       photos: [],
       photosToDelete: [],
@@ -71,7 +71,7 @@ class EditAlbum extends React.Component {
       visible: false,
       thumbImageId,
       title,
-      id,
+      photoAlbumId,
     };
   }
 
@@ -103,7 +103,7 @@ class EditAlbum extends React.Component {
       location: { state },
     } = this.props;
 
-    const albumId = state.id;
+    const albumId = state.photoAlbumId;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
@@ -130,8 +130,8 @@ class EditAlbum extends React.Component {
 
   handleSubmit = async () => {
     try {
-      const { id, title, thumbImageId } = this.state;
-      await queries.updateAlbum(id, { title, photoId: thumbImageId });
+      const { photoAlbumId, title, thumbImageId } = this.state;
+      await queries.updateAlbum(photoAlbumId, { title, photoId: thumbImageId });
     } catch (err) {
       message.error('что-то пошло не так');
     }
@@ -153,7 +153,7 @@ class EditAlbum extends React.Component {
       location: { state },
     } = this.props;
     // TODO: сделать нормально
-    const { id } = state;
+    const { photoAlbumId } = state;
     const { photoTempUlr, photos, photosToDelete, thumbImageId, visible, title } = this.state;
     return (
       <div>
@@ -177,7 +177,7 @@ class EditAlbum extends React.Component {
           {'>'}
           <Link
             to={{
-              pathname: `/profile/albums/${id}`,
+              pathname: `/profile/albums/${photoAlbumId}`,
               state,
             }}
           >
@@ -232,7 +232,7 @@ class EditAlbum extends React.Component {
 EditAlbum.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      photoAlbumId: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
       thumbImageId: PropTypes.number,
     }),

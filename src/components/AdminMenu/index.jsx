@@ -10,9 +10,13 @@ const AdminMenu = ({ user, updateUser }) => {
     user: { role },
   } = useContext(context);
 
+  if (!isLogin || role !== 'ROLE_ADMIN') {
+    return null;
+  }
+
   const handleBan = dt => () =>
     serverQueries
-      .blackListRequest(user.id, dt)
+      .blackListRequest(user.id, Date.now() + dt)
       .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
 
   const openConfirm = (action, content) => () => {
@@ -31,23 +35,17 @@ const AdminMenu = ({ user, updateUser }) => {
 
   const menu = (
     <Menu>
-      <Menu.Item onClick={openConfirm(handleBan(Date.now() + 24 * oneHour), 'ban 24 hours')}>
-        ban 24 hours
+      <Menu.Item onClick={openConfirm(handleBan(24 * oneHour), 'бан на 24 часа')}>
+        бан на 24 часа
       </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleBan(Date.now() + 7 * 24 * oneHour), 'ban 7 days')}>
-        ban 7 days
+      <Menu.Item onClick={openConfirm(handleBan(7 * 24 * oneHour), 'бан на 7 дней')}>
+        бан на 7 дней
       </Menu.Item>
-      <Menu.Item
-        onClick={openConfirm(handleBan(Date.now() + 9999 * 24 * oneHour), 'ban permanent')}
-      >
-        ban permanent
+      <Menu.Item onClick={openConfirm(handleBan(9999 * 24 * oneHour), 'перманентный бан')}>
+        перманентный бан
       </Menu.Item>
     </Menu>
   );
-
-  if (!isLogin || role !== 'ROLE_ADMIN') {
-    return null;
-  }
 
   return user.accountNonLocked ? (
     <Dropdown overlay={menu} trigger={['click']}>

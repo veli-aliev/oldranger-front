@@ -5,6 +5,7 @@ import queries from '../../serverQueries';
 import { StyledMainPage } from './styled';
 import TopicsList from '../Subsection/TopicsList';
 import TopicsListItem from '../Subsection/TopicsListItem';
+import Albums from '../Profile/Albums/Albums';
 
 class MainPage extends React.Component {
   constructor(props) {
@@ -44,6 +45,7 @@ class MainPage extends React.Component {
         ) : (
           <Spin />
         )}
+        <Albums isMainPage />
       </StyledMainPage>
     );
   }

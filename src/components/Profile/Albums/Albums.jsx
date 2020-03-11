@@ -162,7 +162,15 @@ class Albums extends React.Component {
     const {
       history,
       location: { pathname },
+      isMainPage,
     } = this.props;
+    if (isMainPage) {
+      history.push({
+        pathname: `/profile/albums/${album.photoAlbumId}`,
+        state: album,
+      });
+      return;
+    }
     const url = `${pathname}/${album.photoAlbumId}`;
     history.push({
       pathname: url,
@@ -172,8 +180,14 @@ class Albums extends React.Component {
 
   render() {
     const { albums } = this.state;
+    const { isMainPage } = this.props;
     return (
       <>
+        {isMainPage ? (
+          <Row type="flex" justify="center">
+            <h2>Альбомы</h2>
+          </Row>
+        ) : null}
         {albums.length > 0 ? (
           <StyledAlbumWrapper>
             {albums.map(album => (
@@ -212,12 +226,13 @@ class Albums extends React.Component {
             <h4>Пока альбомов нет</h4>
           </Row>
         )}
-
-        <Row type="flex" justify="center">
-          <Button type="primary" onClick={this.createNewAlbum}>
-            Создать новый альбом
-          </Button>
-        </Row>
+        {isMainPage ? null : (
+          <Row type="flex" justify="center">
+            <Button type="primary" onClick={this.createNewAlbum}>
+              Создать новый альбом
+            </Button>
+          </Row>
+        )}
       </>
     );
   }
@@ -227,6 +242,7 @@ Albums.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
   }).isRequired,
+  isMainPage: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,

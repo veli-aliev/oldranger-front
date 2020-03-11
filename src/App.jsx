@@ -18,7 +18,6 @@ import Profile from './components/Profile';
 import SearchForm from './components/Main/SearchForm';
 import ChatAuth from './components/Chat/ChatAuth';
 import AdminPanel from './components/AdminPanel';
-import UserInfo from './components/AdminPanel/UserInfo';
 
 class App extends React.Component {
   constructor(props) {
@@ -72,13 +71,7 @@ class App extends React.Component {
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
           isLogin={isLogin && role === 'ROLE_ADMIN'}
-          path="/admin-panel/users/:id"
-          component={UserInfo}
-        />
-        <PrivateRoute
-          isLogin={isLogin && role === 'ROLE_ADMIN'}
           path="/admin-panel"
-          exact
           component={AdminPanel}
         />
         <TopicRoute />

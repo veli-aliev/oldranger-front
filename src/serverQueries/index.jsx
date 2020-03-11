@@ -225,7 +225,7 @@ class Queries {
 
   getUsersList = async (page, query) => {
     const res = await axios.get('/api/admin/users', {
-      params: { page: Number(page), query },
+      params: { page: Number(page), ...(query ? { query } : {}) },
     });
     return res.data;
   };
@@ -243,9 +243,14 @@ class Queries {
   blackListRequest = async (id, dateUnblock = new Date()) => {
     const res = await axios.post('/api/admin/blocking', {
       id,
-      dateUnblock: new Date(dateUnblock).toISOString().slice(0, -1),
+      dateUnblock: new Date(dateUnblock).toISOString(),
       // Не работает, потому что на беке ещё не смержили ветку с dev
     });
+    return res.data;
+  };
+
+  sendMailToAllUsers = async params => {
+    const res = await axios.post('/api/admin/sendMail', params);
     return res.data;
   };
 

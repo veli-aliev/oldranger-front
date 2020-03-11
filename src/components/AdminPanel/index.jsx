@@ -1,68 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { Table } from 'antd';
-import serverQueries from '../../serverQueries';
-import { dateToDateDistance } from '../../utils';
-import LinkToUserPage from './LinkToUserPage';
+import React, { useState } from 'react';
+import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import { Radio } from 'antd';
+import styled from 'styled-components';
+import UsersList from './UsersList';
+import UserInfo from './UserInfo';
+import MailingLetters from './MailingLetters';
+
+const AdminPanelHeader = styled.div`
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`;
 
 const AdminPanel = () => {
-  const [usersList, setUsersList] = useState([]);
-  const [pageParams, setPageParams] = useState({ total: 0, pageSize: 5, currentPage: 0 });
+  const { path } = useRouteMatch();
+  const history = useHistory();
+  const [selectedUrl, setUrl] = useState('');
 
-  useEffect(() => {
-    serverQueries.getUsersList(0).then(({ users, usersCount }) => {
-      setUsersList(users);
-      setPageParams({ total: usersCount });
-    });
-  }, []);
-
-  const handlepageChange = ({ current }) => {
-    serverQueries.getUsersList(current - 1).then(({ users }) => {
-      setUsersList(users);
-    });
-    setPageParams({ currentPage: current });
+  const changeUrl = ({ target: { value } }) => {
+    history.push(`${path}/${value}`);
+    setUrl(value);
   };
-
-  const columns = [
-    {
-      title: 'Никнейм',
-      dataIndex: 'nickName',
-      render: (text, { userStatisticId }) => <LinkToUserPage id={userStatisticId} />,
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-    },
-    {
-      title: 'Зарегистрирован',
-      dataIndex: 'registered',
-      render: dt => dateToDateDistance(dt),
-    },
-    {
-      title: 'Последний визит',
-      dataIndex: 'lastVizit',
-      render: dt => dateToDateDistance(dt),
-    },
-    {
-      title: 'Роль',
-      dataIndex: 'role',
-      render: roleName =>
-        roleName
-          .split('ROLE_')
-          .join('')
-          .toLowerCase(),
-    },
-  ];
 
   return (
     <div>
-      <h2>Панель управления</h2>
-      <Table
-        rowKey="email"
-        columns={columns}
-        dataSource={usersList}
-        pagination={pageParams}
-        onChange={handlepageChange}
-      />
+      <AdminPanelHeader>
+        <h1>Панель управления</h1>
+        <Radio.Group value={selectedUrl} onChange={changeUrl}>
+          <Radio.Button value="">Список пользователей</Radio.Button>
+          <Radio.Button value="mail">Рассылка сообщений</Radio.Button>
+        </Radio.Group>
+      </AdminPanelHeader>
+      <Switch>
+        <Route path={`${path}/`} exact component={UsersList} />
+        <Route path={`${path}/users/:id`} exact component={UserInfo} />
+        <Route path={`${path}/mail`} exact component={MailingLetters} />
+      </Switch>
     </div>
   );
 };

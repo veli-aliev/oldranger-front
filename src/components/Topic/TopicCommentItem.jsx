@@ -55,7 +55,7 @@ class TopicCommentItem extends React.Component {
       deleteComment,
       getTopics,
       page,
-      updateComments,
+      updateComment,
     } = this.props;
     const { withActions, toggleEdeting } = this.state;
     const { isLogin } = this.context;
@@ -107,7 +107,7 @@ class TopicCommentItem extends React.Component {
         idUser={comment.author.id}
         commentId={comment.commentId}
         getTopics={getTopics}
-        updateComments={updateComments}
+        updateComment={updateComment}
         page={page}
       />
     );
@@ -163,13 +163,13 @@ TopicCommentItem.propTypes = {
   deleteComment: PropTypes.func,
   getTopics: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
-  updateComments: PropTypes.func,
+  updateComment: PropTypes.func,
 };
 
 TopicCommentItem.defaultProps = {
   handleQuoteComment: () => {},
   deleteComment: () => {},
-  updateComments: undefined,
+  updateComment: undefined,
 };
 
 export default TopicCommentItem;

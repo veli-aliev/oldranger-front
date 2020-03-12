@@ -39,7 +39,7 @@ class TopicEditingForm extends React.Component {
       page,
       history,
       handleCancel,
-      updateComments,
+      updateComment,
     } = this.props;
 
     if (!commentId) {
@@ -67,8 +67,8 @@ class TopicEditingForm extends React.Component {
         if (getTopics) {
           getTopics(page);
         }
-        if (updateComments) {
-          updateComments(comment);
+        if (updateComment) {
+          updateComment(comment);
         }
         message.success('Сообщение сохранено');
         handleCancel();
@@ -144,7 +144,7 @@ export default withRouter(TopicEditingForm);
 
 TopicEditingForm.defaultProps = {
   commentId: null,
-  updateComments: undefined,
+  updateComment: undefined,
   getTopics: undefined,
   page: undefined,
 };
@@ -158,7 +158,7 @@ TopicEditingForm.propTypes = {
   commentId: PropTypes.number,
   getTopics: PropTypes.func,
   page: PropTypes.number,
-  updateComments: PropTypes.func,
+  updateComment: PropTypes.func,
   history: PropTypes.shape({
     push: PropTypes.func,
     location: PropTypes.shape({

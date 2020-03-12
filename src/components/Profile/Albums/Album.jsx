@@ -100,7 +100,7 @@ class Album extends React.Component {
       location: { state },
     } = this.props;
 
-    const albumId = state.id;
+    const albumId = state.photoAlbumId;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
@@ -117,7 +117,7 @@ class Album extends React.Component {
     try {
       await queries.deletePhotoFromAlbum(id);
       const newPhotos = photos.reduce((acc, item) => {
-        if (item.id !== id) {
+        if (item.photoID !== id) {
           acc.push(item);
         }
         return [...acc];
@@ -141,11 +141,11 @@ class Album extends React.Component {
     const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
     const {
       location: {
-        state: { id, title },
+        state: { photoAlbumId, title },
       },
     } = this.props;
     const images = photos.reduce((acc, photo) => {
-      return [...acc, { src: `${photoTempUlr}${photo.id}?type=original` }];
+      return [...acc, { src: `${photoTempUlr}${photo.photoID}?type=original` }];
     }, []);
 
     const CustomHeader = ({ currentIndex, isModal, modalProps: { onClose } }) =>
@@ -157,7 +157,7 @@ class Album extends React.Component {
           <DeletePhotoModalButton
             title="delete"
             onClick={event => {
-              this.deletePhoto(photos[currentIndex].id)(event);
+              this.deletePhoto(photos[currentIndex].photoID)(event);
               onClose();
             }}
           >
@@ -177,16 +177,16 @@ class Album extends React.Component {
             {photos.length > 0 ? (
               <>
                 {photos.map((photo, index) => (
-                  <ImageWrapper onClick={() => this.toggleLightbox(index)} key={photo.id}>
+                  <ImageWrapper onClick={() => this.toggleLightbox(index)} key={photo.photoID}>
                     <StyledImage
                       title={photo.title}
                       alt="userPhoto"
-                      src={`${photoTempUlr}${photo.original}`}
+                      src={`${photoTempUlr}${photo.photoID}?type=original`}
                     />
                     <DeletePhotoButton
                       type="default"
                       title="Удалить Фотографию"
-                      onClick={this.deletePhoto(photo.id)}
+                      onClick={this.deletePhoto(photo.photoID)}
                     >
                       <Icon type="delete" style={{ color: 'red' }} />
                     </DeletePhotoButton>
@@ -210,22 +210,18 @@ class Album extends React.Component {
               </StyledRow>
             )}
           </AlbumWrapper>
-          <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+          <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
         </>
       );
     }
 
     const SortableItem = SortableElement(({ value, photoNum }) => (
       <ImageWrapper onClick={() => this.toggleLightbox(photoNum)}>
-        <StyledImage
-          title={value.title}
-          alt="userPhoto"
-          src={`http://localhost:8888/api/securedPhoto/photoFromAlbum/${value.id}`}
-        />
+        <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.photoID}`} />
         <DeletePhotoButton
           type="default"
           title="Удалить Фотографию"
-          onClick={this.deletePhoto(value.id)}
+          onClick={this.deletePhoto(value.photoID)}
         >
           <Icon type="delete" style={{ color: 'red' }} />
         </DeletePhotoButton>
@@ -235,7 +231,7 @@ class Album extends React.Component {
     const SortableList = SortableContainer(({ items }) => (
       <AlbumWrapper>
         {items.map((photo, index) => (
-          <SortableItem key={photo.id} index={index} value={photo} photoNum={index} />
+          <SortableItem key={photo.photoID} index={index} value={photo} photoNum={index} />
         ))}
       </AlbumWrapper>
     ));
@@ -265,7 +261,7 @@ class Album extends React.Component {
             <h4>Альбом пуст</h4>
           </StyledRow>
         )}
-        <UploadPhoto albumId={id} loadPhotos={this.loadPhotos} />
+        <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
       </>
     );
   }
@@ -274,7 +270,7 @@ class Album extends React.Component {
 Album.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      photoAlbumId: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
       fileList: PropTypes.shape({
         indexOf: PropTypes.func.isRequired,

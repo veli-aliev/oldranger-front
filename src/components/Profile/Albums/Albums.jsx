@@ -88,8 +88,6 @@ class Albums extends React.Component {
 
   loadAlbums = async () => {
     const allAlbums = await queries.getAlbums();
-    const albumsToShow = [];
-    allAlbums.map(album => albumsToShow.push(album));
     this.setState({ albums: allAlbums });
   };
 
@@ -116,9 +114,9 @@ class Albums extends React.Component {
     const doDeleteAlbum = async () => {
       const { albums } = this.state;
       try {
-        await queries.deleteAlbum(album.id);
+        await queries.deleteAlbum(album.photoAlbumId);
         const newAlbums = albums.reduce((acc, item) => {
-          if (item.id !== album.id) {
+          if (item.photoAlbumId !== album.photoAlbumId) {
             acc.push(item);
           }
           return [...acc];
@@ -153,7 +151,7 @@ class Albums extends React.Component {
       history,
       location: { pathname },
     } = this.props;
-    const url = `${pathname}/editAlbum/${album.id}`;
+    const url = `${pathname}/editAlbum/${album.photoAlbumId}`;
     history.push({
       pathname: url,
       state: album,
@@ -164,8 +162,16 @@ class Albums extends React.Component {
     const {
       history,
       location: { pathname },
+      isMainPage,
     } = this.props;
-    const url = `${pathname}/${album.id}`;
+    if (isMainPage) {
+      history.push({
+        pathname: `/profile/albums/${album.photoAlbumId}`,
+        state: album,
+      });
+      return;
+    }
+    const url = `${pathname}/${album.photoAlbumId}`;
     history.push({
       pathname: url,
       state: album,
@@ -174,18 +180,23 @@ class Albums extends React.Component {
 
   render() {
     const { albums } = this.state;
+    const { isMainPage } = this.props;
     return (
       <>
+        {isMainPage ? (
+          <Row type="flex" justify="center">
+            <h2>Альбомы</h2>
+          </Row>
+        ) : null}
         {albums.length > 0 ? (
           <StyledAlbumWrapper>
             {albums.map(album => (
-              <StyledAlbumCard onClick={this.openAlbum(album)} key={album.id}>
+              <StyledAlbumCard onClick={this.openAlbum(album)} key={album.photoAlbumId}>
                 <AlbomBackgroundImage
                   src={
-                    album.originalThumbImage === 'thumb_image_placeholder' ||
-                    album.originalThumbImage === 'photo_album_placeholder'
-                      ? `/defaultAlbumTheme.jpg`
-                      : `http://localhost:8888/img/chat/${album.originalThumbImage}`
+                    album.thumbImageId
+                      ? `http://localhost:8888/api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
+                      : `/defaultAlbumTheme.jpg`
                   }
                 />
                 <AlbomShadow>
@@ -215,12 +226,13 @@ class Albums extends React.Component {
             <h4>Пока альбомов нет</h4>
           </Row>
         )}
-
-        <Row type="flex" justify="center">
-          <Button type="primary" onClick={this.createNewAlbum}>
-            Создать новый альбом
-          </Button>
-        </Row>
+        {isMainPage ? null : (
+          <Row type="flex" justify="center">
+            <Button type="primary" onClick={this.createNewAlbum}>
+              Создать новый альбом
+            </Button>
+          </Row>
+        )}
       </>
     );
   }
@@ -230,6 +242,7 @@ Albums.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
   }).isRequired,
+  isMainPage: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,

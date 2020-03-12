@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row } from 'antd';
+import { Row, message } from 'antd';
 
 import queries from '../../serverQueries';
 import TopicCommentsList from '../Topic/TopicCommentsList';
@@ -32,13 +32,28 @@ class Messages extends React.Component {
     }));
   };
 
-  updateMessages = updatedComment => {
+  handleUpdateMessage = updatedComment => {
     this.setState(({ messages }) => {
       const updatedComments = messages.map(mes =>
         mes.commentId === updatedComment.commentId ? updatedComment : mes
       );
       return { messages: updatedComments };
     });
+  };
+
+  handleDeleteMessage = commentId => {
+    queries
+      .deleteComment(commentId)
+      .then(() => {
+        this.setState(({ messages }) => {
+          const updatedComments = messages.filter(mes => mes.commentId !== commentId);
+          return { messages: updatedComments };
+        });
+        message.success('Сообщение удалено');
+      })
+      .catch(() => {
+        message.error('Похоже, что-то не так. Сообщение удалить не удалось.');
+      });
   };
 
   render() {
@@ -55,7 +70,11 @@ class Messages extends React.Component {
     return (
       <TopicCommentsList
         itemComponent={item => (
-          <TopicCommentItem comment={item} updateComments={this.updateMessages} />
+          <TopicCommentItem
+            comment={item}
+            updateComment={this.handleUpdateMessage}
+            deleteComment={this.handleDeleteMessage}
+          />
         )}
         messages={messages}
         title=""

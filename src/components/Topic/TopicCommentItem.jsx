@@ -11,7 +11,7 @@ import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
 import TopicCommentListItem from './TopicCommentListItem';
 import Context from '../Context';
-import userRoles, { SECURED_ALBUM_URL, DEFAULT_COMMENT_PICTURE } from '../../constants';
+import { userRoles, SECURED_ALBUM_URL, DEFAULT_COMMENT_PICTURE } from '../../constants';
 
 const IconText = ({ type, onHandleClick, title }) => (
   <Tooltip placement="topRight" title={title}>

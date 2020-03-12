@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tag } from 'antd';
+import { Button, Tag, Icon } from 'antd';
+import { Link } from 'react-router-dom';
 import {
   StyledArticle,
   StyledTitle,
@@ -12,11 +13,24 @@ import {
 } from './styled/index';
 import { dateToDateDistance } from '../../utils/index';
 
+const { EditOutlined } = Icon;
+
 const Article = props => {
   const { articleInfo } = props;
   return (
     <StyledArticle>
-      <StyledTitle>{articleInfo.title}</StyledTitle>
+      <StyledTitle>
+        {
+          <Link style={{ color: 'black' }} to={`/article/${articleInfo.id}`}>
+            {articleInfo.title}
+          </Link>
+        }
+        {
+          <Link to={`/article/${articleInfo.id}/update`}>
+            <Button type="primary" icon={<EditOutlined />} />
+          </Link>
+        }
+      </StyledTitle>
       <StyledArticleBody>{articleInfo.text}</StyledArticleBody>
       <StyledMeta>
         <StyledTags>

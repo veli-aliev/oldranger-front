@@ -1,7 +1,7 @@
+// тут мы избавляемся от смешения при появлении полосы прокрутки
 html {
   overflow-x: hidden;
-  width: auto !important;
-  margin-right: calc(-1 * (100vw - 100%));
+  width: 100vw !important;
 }
 
 body {

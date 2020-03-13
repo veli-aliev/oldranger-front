@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import './quill.snow.css';
-import './EditorField.css';
+import './EditorField.scss';
 import { useField } from 'formik';
 
 const wrapperHandler = (fn, value) => () => fn(value);

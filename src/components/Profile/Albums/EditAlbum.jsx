@@ -190,7 +190,7 @@ class EditAlbum extends React.Component {
           <EditMenu>
             <div>Обложка альбома</div>
             <StyledImage
-              src={thumbImageId ? `${photoTempUlr}${thumbImageId}` : `/defaultAlbumTheme.jpg`}
+              src={thumbImageId ? `${photoTempUlr}${thumbImageId}` : `/defaultAlbumPicture.jpg`}
               alt="обложка альбома"
             />
             <Button block onClick={this.showModal}>

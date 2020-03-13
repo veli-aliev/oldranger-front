@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
 import TopicsList from './TopicsList';
 import TopicsListItem from './TopicsListItem';
+import SearchForm from '../Main/SearchForm';
 
 class Subsection extends React.Component {
   constructor(props) {
@@ -45,6 +46,7 @@ class Subsection extends React.Component {
     const { topics, name, hasMore, hasChildren } = this.state;
     return (
       <>
+        <SearchForm />
         {topics.length > 0 && (
           <Breadcrumb>
             <Breadcrumb.Item>

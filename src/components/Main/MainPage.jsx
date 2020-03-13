@@ -6,6 +6,7 @@ import { StyledMainPage } from './styled';
 import TopicsList from '../Subsection/TopicsList';
 import TopicsListItem from '../Subsection/TopicsListItem';
 import Albums from '../Profile/Albums/Albums';
+import SearchForm from './SearchForm';
 
 class MainPage extends React.Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class MainPage extends React.Component {
     const { rootSections, actualTopics } = this.state;
     return (
       <StyledMainPage>
+        <SearchForm />
         {actualTopics.length > 0 ? (
           <TopicsList
             itemComponent={item => <TopicsListItem topicData={item} />}

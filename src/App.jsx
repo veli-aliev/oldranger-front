@@ -15,7 +15,6 @@ import {
 import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
-import SearchForm from './components/Main/SearchForm';
 import ChatAuth from './components/Chat/ChatAuth';
 import AdminPanel from './components/AdminPanel';
 
@@ -65,7 +64,6 @@ class App extends React.Component {
         }}
       >
         <Header />
-        <SearchForm />
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />

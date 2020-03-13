@@ -75,3 +75,17 @@ export const StyledArticleBody = styled.div`
   font-size: 20px;
   border-bottom: 1px solid #1890ff;
 `;
+
+export const StyledCenteredContainer = styled.div`
+  display: flex;
+  min-height: 500px;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const StyledHeader = styled.h1`
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
+`;

@@ -1,16 +1,39 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Articles from '../components/Articles/Articles';
-import Login from '../components/Login';
+import ArticlesByTag from '../components/Articles/ArticlesByTag';
 import ArticleCreate from '../components/Articles/ArticleCreate';
+import AdminRoute from './AdminRoute';
+import ArticleUpdate from '../components/Articles/ArticleUpdate';
+import ArticlePage from '../components/Articles/ArticlePage';
 
 const ArticlesRoute = ({ isLogin }) => {
-  const isLoginArticlesComponent = isLogin ? Articles : Login;
   return (
     <>
-      <Route exact path="/articles" component={isLoginArticlesComponent} />
-      <Route path="/articleCreate">{isLogin ? <ArticleCreate /> : <Redirect to="/login" />}</Route>
+      <Route>
+        {isLogin ? (
+          <Switch>
+            <Route exact path="/articles">
+              <Articles />
+            </Route>
+            <AdminRoute exact path="/article/create">
+              <ArticleCreate />
+            </AdminRoute>
+            <Route exact path="/article/:articleId">
+              <ArticlePage />
+            </Route>
+            <AdminRoute exact path="/article/:articleId/update">
+              <ArticleUpdate />
+            </AdminRoute>
+            <Route exact path="/articles/:articleTag">
+              <ArticlesByTag />
+            </Route>
+          </Switch>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
     </>
   );
 };

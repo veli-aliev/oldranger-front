@@ -74,6 +74,11 @@ class Queries {
     return res.data;
   };
 
+  getArticleTags = async () => {
+    const res = await axios.get('/api/articleTag');
+    return res.data;
+  };
+
   getData = async page => {
     const res = await axios.get(page);
     return res.data;

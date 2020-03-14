@@ -175,6 +175,7 @@ class Queries {
     formData.set('idTopic', editingComment.idTopic);
     formData.set('idUser', editingComment.idUser);
     formData.set('text', editingComment.text);
+    formData.set('photoIdList', JSON.stringify(editingComment.photoIdList));
 
     if (editingComment.image1) {
       formData.set('image1', editingComment.image1.originFileObj, editingComment.image1.name);

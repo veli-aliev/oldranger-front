@@ -14,6 +14,7 @@ import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 import withGetUserProfile from '../hoc/withGetUserProfile';
 import UserAvatar from '../commons/UserAvatar';
+import SubscribeButton from '../commons/SubscribeButton';
 
 const { Text } = Typography;
 
@@ -221,6 +222,15 @@ class TopicPage extends React.Component {
     }));
   };
 
+  setSubscribeState = () => {
+    this.setState(({ topic }) => ({
+      topic: {
+        ...topic,
+        isSubscribed: !topic.isSubscribed,
+      },
+    }));
+  };
+
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
     const { userProfile } = this.props;
@@ -258,6 +268,11 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
+            <SubscribeButton
+              topicId={topic.id}
+              isSubscribed={topic.isSubscribed}
+              setSubscribeState={this.setSubscribeState}
+            />
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}

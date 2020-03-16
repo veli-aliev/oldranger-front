@@ -104,6 +104,16 @@ class Queries {
     return res.data;
   };
 
+  addTopicToSubscriptions = async topicId => {
+    const res = await axios.post(`/api/subscriptions`, {}, { params: { topicId } });
+    return res.data;
+  };
+
+  deleteTopicFromSubscriptions = async topicId => {
+    const res = await axios.delete('/api/subscriptions', { params: { topicId } });
+    return res.data;
+  };
+
   getProfileData = async () => {
     const { data } = await axios.get('/api/currentUser');
     return data;

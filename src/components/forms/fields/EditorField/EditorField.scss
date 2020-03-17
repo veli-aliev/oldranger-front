@@ -1,12 +1,32 @@
-import styled from 'styled-components';
+.ql-toolbar, .ql-container {
+  transition: border-color, box-shadow 0.3s;
+}
 
-export const ArticleTitle = styled.h1`
-  font-size: 32px;
-  line-height: 40px;
-  color: #24292e;
-`;
+.ql-toolbar {
+  border-radius: 5px 5px 0 0;
+}
 
-export const ArticleContentView = styled.div`
+.ql-container {
+  border-radius: 0 0 5px 5px;
+}
+
+.quill--focus .ql-container.ql-snow {
+  border-right: 1px solid #37A3FF;
+  border-left: 1px solid #37A3FF;
+  border-bottom: 1px solid #37A3FF;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.quill--focus .ql-toolbar.ql-snow {
+  border: 1px solid #37A3FF;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.article-editor .ql-editor {
+  min-height: 480px;
+}
+
+.article-editor .ql-container {
   font-size: 16px;
   line-height: 1.56;
   color: #24292e;
@@ -33,9 +53,9 @@ export const ArticleContentView = styled.div`
     margin-bottom: 28px;
     position: relative;
     &:before {
-      content: '';
+      content: "";
       height: 28px;
-      width: 4px;
+      width: 6px;
       position: absolute;
       top: 0;
       left: 0;
@@ -49,8 +69,7 @@ export const ArticleContentView = styled.div`
     }
   }
 
-  & ul,
-  ol {
+  & ul, ol {
     margin: 0 0 0 34px;
     padding: 0;
     & li {
@@ -65,10 +84,4 @@ export const ArticleContentView = styled.div`
   & ul {
     list-style-type: disc;
   }
-`;
-
-export const CommentContentView = styled.div`
-  & p {
-    margin-bottom: 1em;
-  }
-`;
+}

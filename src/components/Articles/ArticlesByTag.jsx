@@ -29,7 +29,7 @@ const ArticlesByTag = ({ location: { search: tagsStr } }) => {
     <Column>
       {articles.length === 0 ? LoadOrNotFound : null}
       {articles.reverse().map(el => {
-        return <Article key={el.id} articleInfo={el} />;
+        return <Article key={el.id} articleInfo={el} isPreview />;
       })}
     </Column>
   );

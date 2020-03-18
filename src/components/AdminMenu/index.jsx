@@ -19,6 +19,11 @@ const AdminMenu = ({ user, updateUser }) => {
       .blackListRequest(user.id, Date.now() + dt)
       .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
 
+  const handleUnban = () =>
+    serverQueries
+      .unblockUser(user.id)
+      .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
+
   const openConfirm = (action, content) => () => {
     Modal.confirm({
       title: 'Confirmation',
@@ -55,7 +60,7 @@ const AdminMenu = ({ user, updateUser }) => {
       </Button>
     </Dropdown>
   ) : (
-    <Button onClick={openConfirm(handleBan(Date.now()), 'unban')}>Раблокировать</Button>
+    <Button onClick={openConfirm(handleUnban, 'unban')}>Раблокировать</Button>
   );
 };
 

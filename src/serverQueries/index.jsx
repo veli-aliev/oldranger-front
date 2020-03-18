@@ -286,6 +286,11 @@ class Queries {
     return res.data;
   };
 
+  unblockUser = async id => {
+    const res = await axios.post('/api/admin/unblocking', { id });
+    return res.data;
+  };
+
   sendMailToAllUsers = async params => {
     const res = await axios.post('/api/admin/sendMail', params);
     return res.data;

@@ -6,6 +6,7 @@ import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
 import { Markup } from 'interweave';
+import { dateToDateDistance } from '../../utils';
 import { ReplyTag } from './styled';
 import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
@@ -96,7 +97,15 @@ class TopicCommentItem extends React.Component {
       ) : null,
     ];
 
-    let contentCommentText = null;
+    const commentEditiedText = (
+      <div>Отредактированно {dateToDateDistance(comment.commentUpdateTime)}</div>
+    );
+    const contentCommentText = (
+      <>
+        <Markup content={comment.commentText} />
+        {comment.commentUpdateTime ? commentEditiedText : null}
+      </>
+    );
     let contentReplyText = null;
     const contentEditingForm = (
       <TopicEditingForm
@@ -112,7 +121,6 @@ class TopicCommentItem extends React.Component {
       />
     );
     if (comment.replyNick) {
-      contentCommentText = <Markup content={comment.commentText} />;
       contentReplyText = (
         <Popover
           content={<Markup content={comment.replyText} />}
@@ -128,10 +136,7 @@ class TopicCommentItem extends React.Component {
         </Popover>
       );
     } else if (comment.rootDeleted) {
-      contentCommentText = <Markup content={comment.commentText} />;
       contentReplyText = <ReplyTag>ответил на удаленный комментарий</ReplyTag>;
-    } else {
-      contentCommentText = <Markup content={comment.commentText} />;
     }
 
     return (

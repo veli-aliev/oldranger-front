@@ -22,3 +22,20 @@ export const paramsSerializer = params =>
       return `${acc}${str}`;
     }, '')
     .slice(1);
+
+export const createTreeBuildFunction = (childKey = 'id', parentKey = 'parentId') => flatArr => {
+  const hashTable = Object.create(null);
+  flatArr.forEach(node => {
+    hashTable[node[childKey]] = { ...node, nested: [] };
+  });
+
+  const tree = [];
+  flatArr.forEach(node => {
+    if (node[parentKey] && node[parentKey] !== -1) {
+      hashTable[node[parentKey]].nested.push(hashTable[node[childKey]]);
+    } else {
+      tree.push(hashTable[node[[childKey]]]);
+    }
+  });
+  return tree;
+};

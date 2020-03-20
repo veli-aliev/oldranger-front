@@ -6,6 +6,7 @@ export default PropTypes.shape({
   topicId: PropTypes.number,
   author: userProps,
   commentDateTime: PropTypes.string,
+  commentUpdateTime: PropTypes.string,
   messageCount: PropTypes.number,
   replyDateTime: PropTypes.string,
   replyNick: PropTypes.string,

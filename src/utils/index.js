@@ -1,9 +1,15 @@
-import { formatDistance, parseISO } from 'date-fns';
+import { formatDistance, parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 
 // eslint-disable-next-line import/prefer-default-export
-export const dateToDateDistance = isoDate =>
-  isoDate && formatDistance(parseISO(isoDate), new Date(), { locale: ru });
+export const dateToDateDistance = (isoDate, addSuffix = false) =>
+  isoDate && formatDistance(parseISO(isoDate), new Date(), { locale: ru, addSuffix });
+
+export const dataToFormatedDate = isoDate =>
+  isoDate &&
+  format(parseISO(isoDate), "dd MMMM yyyy 'в' HH:mm", {
+    locale: ru,
+  });
 
 export const mapRoleToString = role => {
   const roles = {

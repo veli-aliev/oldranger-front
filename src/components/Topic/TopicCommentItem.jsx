@@ -6,7 +6,6 @@ import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
 import { Markup } from 'interweave';
-import { dateToDateDistance } from '../../utils';
 import { ReplyTag } from './styled';
 import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
@@ -97,15 +96,7 @@ class TopicCommentItem extends React.Component {
       ) : null,
     ];
 
-    const commentEditiedText = (
-      <div>Отредактированно {dateToDateDistance(comment.commentUpdateTime)}</div>
-    );
-    const contentCommentText = (
-      <>
-        <Markup content={comment.commentText} />
-        {comment.commentUpdateTime ? commentEditiedText : null}
-      </>
-    );
+    const contentCommentText = <Markup content={comment.commentText} />;
     let contentReplyText = null;
     const contentEditingForm = (
       <TopicEditingForm

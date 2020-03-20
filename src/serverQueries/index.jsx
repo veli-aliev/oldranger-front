@@ -301,7 +301,7 @@ class Queries {
     return res.data;
   };
 
-  getImage = async formData => {
+  postFile = async formData => {
     const res = await axios.post('/api/chat/image', formData);
     return res.data;
   };

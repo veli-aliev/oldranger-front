@@ -19,9 +19,7 @@ const ArticlesRoute = ({ isLogin }) => {
             <AdminRoute exact path="/article/create">
               <ArticleCreate />
             </AdminRoute>
-            <Route exact path="/article/:articleId">
-              <ArticlePage />
-            </Route>
+            <Route exact path="/article/:articleId" component={ArticlePage} />
             <AdminRoute exact path="/article/:articleId/update">
               <ArticleUpdate />
             </AdminRoute>

@@ -60,12 +60,22 @@ class Queries {
   };
 
   createArticleComment = async (data, params) => {
-    const res = await axios.post('/api/article/comment/add', data, { params });
+    const res = await axios.post('/api/article/comment/add', data, {
+      params,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
     return res.data;
   };
 
   updateArticleComment = async (data, params) => {
-    const res = await axios.post('/api/article/comment/add', data, { params });
+    const res = await axios.put('/api/article/comment/update', data, {
+      params,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
     return res.data;
   };
 

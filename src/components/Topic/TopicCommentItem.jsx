@@ -96,7 +96,7 @@ class TopicCommentItem extends React.Component {
       ) : null,
     ];
 
-    let contentCommentText = null;
+    const contentCommentText = <Markup content={comment.commentText} />;
     let contentReplyText = null;
     const contentEditingForm = (
       <TopicEditingForm
@@ -112,7 +112,6 @@ class TopicCommentItem extends React.Component {
       />
     );
     if (comment.replyNick) {
-      contentCommentText = <Markup content={comment.commentText} />;
       contentReplyText = (
         <Popover
           content={<Markup content={comment.replyText} />}
@@ -128,10 +127,7 @@ class TopicCommentItem extends React.Component {
         </Popover>
       );
     } else if (comment.rootDeleted) {
-      contentCommentText = <Markup content={comment.commentText} />;
       contentReplyText = <ReplyTag>ответил на удаленный комментарий</ReplyTag>;
-    } else {
-      contentCommentText = <Markup content={comment.commentText} />;
     }
 
     return (

@@ -58,9 +58,9 @@ class TopicPage extends React.Component {
     if (page === 1) {
       queries
         .getTopic(match.params.topicId, 0, 10)
-        .then(({ topic, commentDto }) => {
+        .then(({ topic, commentDto, subscribed }) => {
           this.setState({
-            topic,
+            topic: { ...topic, isSubscribed: subscribed },
             page,
             messages: commentDto ? commentDto.content : null,
             error: false,
@@ -72,9 +72,9 @@ class TopicPage extends React.Component {
     } else {
       queries
         .getTopic(match.params.topicId, page - 1, 10)
-        .then(({ topic, commentDto }) => {
+        .then(({ topic, commentDto, subscribed }) => {
           this.setState({
-            topic,
+            topic: { ...topic, isSubscribed: subscribed },
             page,
             messages: commentDto ? commentDto.content : null,
             error: false,

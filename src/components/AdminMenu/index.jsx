@@ -60,7 +60,7 @@ const AdminMenu = ({ user, updateUser }) => {
       </Button>
     </Dropdown>
   ) : (
-    <Button onClick={openConfirm(handleUnban, 'unban')}>Раблокировать</Button>
+    <Button onClick={openConfirm(handleUnban, 'unban')}>Разблокировать</Button>
   );
 };
 

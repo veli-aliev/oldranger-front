@@ -11,7 +11,7 @@ class Subscriptions extends React.Component {
     this.state = {
       topics: [],
       hasMore: true,
-      page: 0,
+      page: 1,
     };
   }
 

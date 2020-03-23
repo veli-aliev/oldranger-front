@@ -18,7 +18,7 @@ const ArticlesByTag = ({ location: { search: tagsStr } }) => {
     } else {
       const tagsArr = tagsStr.split('=')[1].split('_');
       queries.getArticlesByTag(tagsArr).then(el => {
-        setArticles(el.content);
+        setArticles(el.content.reverse());
         setIsEmpty(el.empty);
       });
     }
@@ -28,7 +28,7 @@ const ArticlesByTag = ({ location: { search: tagsStr } }) => {
   return (
     <Column>
       {articles.length === 0 ? LoadOrNotFound : null}
-      {articles.reverse().map(el => {
+      {articles.map(el => {
         return <Article key={el.id} articleInfo={el} isPreview />;
       })}
     </Column>

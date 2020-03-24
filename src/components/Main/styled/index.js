@@ -40,5 +40,5 @@ export const StyledForm = styled(AntForm)`
 `;
 
 export const StyledMainPage = styled.div`
-  padding: 20px 0;
+  padding-bottom: 20px;
 `;

@@ -1,6 +1,24 @@
 import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
 
+export const StyledMenu = styled.div`
+  height: fit-content;
+  width: 300px;
+  box-shadow: 0px 0px 16px -2px rgba(0, 0, 0, 0.2);
+`;
+
+export const Column = styled.div`
+  display: flex;
+  margin-left: 20px;
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+`;
+
+export const Container = styled.div`
+  display: flex;
+`;
+
 export const Row = styled.div`
   display: flex;
   justify-content: center;
@@ -34,10 +52,10 @@ export const StyledMeta = styled.div`
 `;
 
 export const StyledArticle = styled.article`
-  padding: 5px 5px;
-  border: 1px solid #1890ff;
-  border-radius: 5px;
-  margin-bottom: 15px;
+  padding: 32px 24px 24px 24px;
+  border-radius: 2px;
+  margin-bottom: 24px;
+  box-shadow: 0px 0px 16px -2px rgba(0, 0, 0, 0.2);
 `;
 
 export const StyledTitle = styled.h1`
@@ -49,10 +67,16 @@ export const StyledTitle = styled.h1`
   margin: 0;
 `;
 
-export const StyledArticleBody = styled.div`
-  width: 100%;
-  padding: 5px;
+export const StyledCenteredContainer = styled.div`
+  display: flex;
+  min-height: 500px;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const StyledHeader = styled.h1`
   text-align: center;
-  font-size: 20px;
-  border-bottom: 1px solid #1890ff;
+  font-weight: 600;
+  font-size: 24px;
 `;

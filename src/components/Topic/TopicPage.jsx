@@ -14,7 +14,6 @@ import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 import withGetUserProfile from '../hoc/withGetUserProfile';
 import UserAvatar from '../commons/UserAvatar';
-import SubscribeButton from '../commons/SubscribeButton';
 
 const { Text } = Typography;
 
@@ -222,13 +221,36 @@ class TopicPage extends React.Component {
     }));
   };
 
-  setSubscribeState = () => {
-    this.setState(({ topic }) => ({
-      topic: {
-        ...topic,
-        isSubscribed: !topic.isSubscribed,
-      },
-    }));
+  toggleSubscriptionStatus = () => {
+    const {
+      topic: { id: topicId, isSubscribed },
+    } = this.state;
+    const setSubscriptionState = newSubscriptionState => {
+      this.setState(({ topic }) => ({
+        topic: {
+          ...topic,
+          isSubscribed: newSubscriptionState,
+        },
+      }));
+    };
+    const addSubscription = () => {
+      queries.addTopicToSubscriptions(topicId).catch(() => {
+        setSubscriptionState(false);
+        message.error('Что-то пошло не так, топик не добавлен');
+      });
+    };
+    const deleteSubscription = () => {
+      queries.deleteTopicFromSubscriptions(topicId).catch(() => {
+        setSubscriptionState(true);
+        message.error('Что-то пошло не так, топик не удален');
+      });
+    };
+    setSubscriptionState(!isSubscribed);
+    if (!isSubscribed) {
+      addSubscription();
+    } else {
+      deleteSubscription();
+    }
   };
 
   render() {
@@ -268,11 +290,9 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
-            <SubscribeButton
-              topicId={topic.id}
-              isSubscribed={topic.isSubscribed}
-              setSubscribeState={this.setSubscribeState}
-            />
+            <Button onClick={this.toggleSubscriptionStatus}>
+              {topic.isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+            </Button>
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}

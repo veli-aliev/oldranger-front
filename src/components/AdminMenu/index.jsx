@@ -19,10 +19,17 @@ const AdminMenu = ({ user, updateUser }) => {
       .blackListRequest(user.id, Date.now() + dt)
       .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
 
-  const handleUnban = () =>
+  const handleUnban = () => {
+    console.log('!!!!!user=', { ...user, accountNonLocked: true });
+    updateUser({ ...user, accountNonLocked: true });
     serverQueries
       .unblockUser(user.id)
-      .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
+      // .then(({ id: userId }) => serverQueries.getUserById(userId))
+      .catch(updateUser({ ...user, accountNonLocked: false }));
+  };
+  // serverQueries
+  //   .unblockUser(user.id)
+  //   .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
 
   const openConfirm = (action, content) => () => {
     Modal.confirm({

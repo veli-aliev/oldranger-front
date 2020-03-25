@@ -6,7 +6,7 @@ import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
 import { Markup } from 'interweave';
-import { ReplyTag } from './styled';
+import { ReplyTag, DeletedMessageText } from './styled';
 import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
 import TopicCommentListItem from './TopicCommentListItem';
@@ -137,9 +137,12 @@ class TopicCommentItem extends React.Component {
           </ReplyTag>
         </Popover>
       );
-    } else if (comment.rootDeleted) {
-      contentCommentText = <Markup content={comment.commentText} />;
-      contentReplyText = <ReplyTag>ответил на удаленный комментарий</ReplyTag>;
+    } else if (comment.deleted) {
+      contentCommentText = (
+        <DeletedMessageText type="secondary">
+          <Markup content={comment.commentText} />
+        </DeletedMessageText>
+      );
     } else {
       contentCommentText = <Markup content={comment.commentText} />;
     }

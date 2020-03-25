@@ -60,12 +60,22 @@ class Queries {
   };
 
   createArticleComment = async (data, params) => {
-    const res = await axios.post('/api/article/comment/add', data, { params });
+    const res = await axios.post('/api/article/comment/add', data, {
+      params,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
     return res.data;
   };
 
   updateArticleComment = async (data, params) => {
-    const res = await axios.post('/api/article/comment/add', data, { params });
+    const res = await axios.put('/api/article/comment/update', data, {
+      params,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
     return res.data;
   };
 
@@ -101,6 +111,16 @@ class Queries {
 
   getProfileSubscriptions = async page => {
     const res = await axios.get(`/api/subscriptions`, { params: { page } });
+    return res.data;
+  };
+
+  addTopicToSubscriptions = async topicId => {
+    const res = await axios.post(`/api/subscriptions`, {}, { params: { topicId } });
+    return res.data;
+  };
+
+  deleteTopicFromSubscriptions = async topicId => {
+    const res = await axios.delete('/api/subscriptions', { params: { topicId } });
     return res.data;
   };
 
@@ -175,6 +195,7 @@ class Queries {
     formData.set('idTopic', editingComment.idTopic);
     formData.set('idUser', editingComment.idUser);
     formData.set('text', editingComment.text);
+    formData.set('photoIdList', JSON.stringify(editingComment.photoIdList));
 
     if (editingComment.image1) {
       formData.set('image1', editingComment.image1.originFileObj, editingComment.image1.name);
@@ -291,7 +312,7 @@ class Queries {
     return res.data;
   };
 
-  getImage = async formData => {
+  postFile = async formData => {
     const res = await axios.post('/api/chat/image', formData);
     return res.data;
   };

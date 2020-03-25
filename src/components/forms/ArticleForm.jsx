@@ -19,7 +19,7 @@ const validationSchema = Yup.object({
 
 const editorModules = {
   toolbar: [
-    [{ header: [1, 2, 3, 4, 5, false] }],
+    [{ header: [2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
     [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
     [{ list: 'ordered' }, { list: 'bullet' }],

@@ -21,9 +21,11 @@ const TopicUserInfo = ({ user }) => {
         <p>
           <Icon type="user" /> {mapRoleToString(user.role.role)}
         </p>
-        <p>
-          <Icon type="message" /> {user.messageCount}
-        </p>
+        {user.messageCount && (
+          <p>
+            <Icon type="message" /> {user.messageCount}
+          </p>
+        )}
         <p>
           <Icon type="clock-circle" />{' '}
           {user.regDate

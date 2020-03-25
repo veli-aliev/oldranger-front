@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-
+import uniqueId from 'lodash/uniqueId';
 import React from 'react';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
@@ -86,17 +86,16 @@ class ChatAuth extends React.Component {
     }
   };
 
-  sendMessage = (msg, img, replyTo = null) => {
-    if (msg || img) {
+  sendMessage = (msg, file, replyTo = null) => {
+    if (msg || file) {
       const { user } = this.props;
       const message = {
         sender: user.nickName,
         text: msg,
         senderAvatar: user.avatar,
-        originalImg: img ? img.originalImg : null,
-        thumbnailImg: img ? img.thumbnailImg : null,
         replyTo,
         type: 'MESSAGE',
+        ...file,
       };
       this.stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
     }
@@ -104,7 +103,16 @@ class ChatAuth extends React.Component {
 
   onMessageRecieved = payload => {
     const message = JSON.parse(payload.body);
-    this.setState(state => ({ messages: [...state.messages, message] }));
+
+    // fakeId - это костыль, чтобы избежать постоянного перерендера
+    // т.к. уникального ключа для событий c type JOIN/LEAVE нет
+    if (!message.id) {
+      message.id = uniqueId('fakeId-');
+    }
+
+    this.setState(state => ({
+      messages: [...state.messages, message],
+    }));
     this.getUsersOnline();
     setTimeout(() => {
       const lastMessage = document.querySelector('.message-list li:last-of-type');

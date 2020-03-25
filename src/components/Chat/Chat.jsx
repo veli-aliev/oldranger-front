@@ -1,5 +1,4 @@
 import React from 'react';
-import lodash from 'lodash';
 import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
 import queries from '../../serverQueries';
@@ -32,7 +31,7 @@ const url = process.env.BASE_URL || 'http://localhost:8888/';
 class Chat extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { message: '', image: null, imagePath: '', replyTo: null, isFull: false };
+    this.state = { message: '', file: null, filePath: '', replyTo: null, isFull: false };
   }
 
   handleChangeMessage = event => {
@@ -40,20 +39,30 @@ class Chat extends React.Component {
   };
 
   handleChangeFile = async event => {
-    this.setState({ imagePath: event.target.value });
+    this.setState({ filePath: event.target.value });
+  };
+
+  uploadFile = async () => {
+    const { filePath } = this.state;
+    if (!filePath) return;
 
     const form = document.querySelector('.message-form');
     const formData = new FormData(form);
-    const image = await queries.getImage(formData);
-    this.setState({ image });
+    const file = await queries.postFile(formData);
+    this.setState({ file });
   };
 
-  handleSubmit = event => {
+  resetForm = () => {
+    this.setState({ message: '', file: null, filePath: '' });
+  };
+
+  handleSubmit = async event => {
     event.preventDefault();
+    await this.uploadFile();
     const { sendMessage } = this.props;
-    const { message, image, replyTo } = this.state;
-    sendMessage(message, image, replyTo);
-    this.setState({ message: '', image: null, imagePath: '' });
+    const { message, file, replyTo } = this.state;
+    sendMessage(message, file, replyTo);
+    this.resetForm();
   };
 
   handleShowFull = () => {
@@ -69,7 +78,7 @@ class Chat extends React.Component {
       return (
         <Message
           toMe={user.nickName === msg.replyTo}
-          key={`${msg.id}-${lodash.uniqueId()}`}
+          key={msg.id}
           onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
         >
           <MessageAvatar alt="avatar" src={`${url}img/${msg.senderAvatar}`} />
@@ -86,6 +95,15 @@ class Chat extends React.Component {
             ) : (
               ''
             )}
+            {msg.filePath ? (
+              <div>
+                <a href={`${url}img/chat/${msg.filePath}`} download>
+                  {msg.fileName}
+                </a>
+              </div>
+            ) : (
+              ''
+            )}
             <MessageText className="message-text">{msg.text}</MessageText>
           </div>
           <MessageDate className="message-date">{msg.messageDate}</MessageDate>
@@ -93,7 +111,7 @@ class Chat extends React.Component {
       );
     }
     return (
-      <EventMessage className="event-message" key={lodash.uniqueId()}>
+      <EventMessage className="event-message" key={msg.id}>
         {`${msg.sender} ${msg.type === 'LEAVE' ? 'покинул чат' : 'присоединился'}`}
       </EventMessage>
     );
@@ -101,7 +119,7 @@ class Chat extends React.Component {
 
   render() {
     const { handleDisconnect, messages, usersOnline } = this.props;
-    const { message, imagePath, isFull } = this.state;
+    const { message, filePath, isFull } = this.state;
     return (
       <section>
         <ChatContainer>
@@ -115,9 +133,10 @@ class Chat extends React.Component {
               <UserListTitle>Online:</UserListTitle>
               <UserList>
                 {Object.entries(usersOnline).map(user => {
+                  const [username, id] = user;
                   return (
                     <User key={user}>
-                      <UserLink href={`/profile/${user[1]}`}>{user[0]}</UserLink>
+                      <UserLink href={`/profile/${id}`}>{username}</UserLink>
                     </User>
                   );
                 })}
@@ -149,7 +168,7 @@ class Chat extends React.Component {
               <input
                 type="file"
                 onChange={this.handleChangeFile}
-                value={imagePath}
+                value={filePath}
                 name="file-input"
               />
               <Button type="primary" className="send-button" htmlType="submit">

@@ -1,8 +1,7 @@
 import React from 'react';
-import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import { Comment, Popover, Tooltip } from 'antd';
-import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
+import { dataToFormatedDate, dateToDateDistance } from '../../utils';
 import { ListItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import TopicPhotoList from './TopicPhotoList';
@@ -20,6 +19,17 @@ const TopicCommentListItem = ({
   contentCommentText,
   contentReplyText,
 }) => {
+  const commentDateTooltipString = comment.commentUpdateTime
+    ? `Создан ${dataToFormatedDate(comment.commentDateTime)}, отредактирован ${dataToFormatedDate(
+        comment.commentUpdateTime
+      )}`
+    : `Создан ${dataToFormatedDate(comment.commentDateTime)}`;
+  const commentDateString = comment.commentUpdateTime
+    ? `Создан ${dateToDateDistance(
+        comment.commentDateTime,
+        true
+      )}, отредактирован ${dateToDateDistance(comment.commentUpdateTime, true)}`
+    : `Создан ${dateToDateDistance(comment.commentDateTime, true)}`;
   return (
     <ListItem id={comment.positionInTopic + 1}>
       <Comment
@@ -45,17 +55,8 @@ const TopicCommentListItem = ({
         }
         content={toggleEdeting ? contentEditingForm : contentCommentText}
         datetime={
-          <Tooltip
-            title={format(parseISO(comment.commentDateTime), "dd MMMM yyyy 'в' HH:mm", {
-              locale: ru,
-            })}
-          >
-            <span>
-              {formatDistanceToNow(parseISO(comment.commentDateTime), {
-                locale: ru,
-                addSuffix: true,
-              })}
-            </span>
+          <Tooltip title={commentDateTooltipString}>
+            <span>{commentDateString}</span>
           </Tooltip>
         }
       />

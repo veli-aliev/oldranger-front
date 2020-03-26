@@ -1,30 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tag } from 'antd';
-import {
-  StyledArticle,
-  StyledTitle,
-  StyledArticleBody,
-  StyledMeta,
-  StyledTags,
-  StyledUserInfo,
-  StyledDate,
-} from './styled/index';
+import { Tag, Icon } from 'antd';
+import { Link } from 'react-router-dom';
+import { ArticleContentView, ArticleTitle } from '../commons/HTMLContentViews';
+import { StyledArticle, StyledMeta, StyledTags, StyledUserInfo, StyledDate } from './styled/index';
 import { dateToDateDistance } from '../../utils/index';
 
 const Article = props => {
-  const { articleInfo } = props;
+  const { articleInfo, isPreview } = props;
   return (
     <StyledArticle>
-      <StyledTitle>{articleInfo.title}</StyledTitle>
-      <StyledArticleBody>{articleInfo.text}</StyledArticleBody>
+      <ArticleTitle>
+        {isPreview ? (
+          <Link style={{ color: 'black' }} to={`/article/${articleInfo.id}`}>
+            {articleInfo.title}
+          </Link>
+        ) : (
+          articleInfo.title
+        )}
+        {
+          <Link
+            style={{
+              fontSize: '16px',
+              'margin-left': '6px',
+              color: '#24292e',
+              'line-height': '40px',
+            }}
+            to={`/article/${articleInfo.id}/update`}
+          >
+            <Icon type="edit" theme="outlined" />
+          </Link>
+        }
+      </ArticleTitle>
+      <ArticleContentView dangerouslySetInnerHTML={{ __html: articleInfo.text }} />
       <StyledMeta>
         <StyledTags>
-          {articleInfo.articleTags.map(tag => (
-            <Tag key={tag.id} color="geekblue">
-              {tag.name}
-            </Tag>
-          ))}
+          {articleInfo.articleTags.map(tag => {
+            return (
+              <Tag key={tag.id} color="geekblue">
+                {tag.name}
+              </Tag>
+            );
+          })}
         </StyledTags>
         <div>
           <StyledUserInfo>{articleInfo.user ? articleInfo.user.username : null}</StyledUserInfo>
@@ -37,7 +54,12 @@ const Article = props => {
 
 export default Article;
 
+Article.defaultProps = {
+  isPreview: false,
+};
+
 Article.propTypes = {
+  isPreview: PropTypes.bool,
   articleInfo: PropTypes.shape({
     text: PropTypes.string,
     date: PropTypes.string,

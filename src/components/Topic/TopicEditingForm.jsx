@@ -31,7 +31,16 @@ class TopicEditingForm extends React.Component {
   };
 
   handleSubmitForm = text => {
-    const { idTopic, idUser, commentId, getTopics, page, history, handleCancel } = this.props;
+    const {
+      idTopic,
+      idUser,
+      commentId,
+      getTopics,
+      page,
+      history,
+      handleCancel,
+      updateComment,
+    } = this.props;
 
     if (!commentId) {
       message.error('Вы не выбрали какой комментарий редактировать!');
@@ -44,18 +53,26 @@ class TopicEditingForm extends React.Component {
       idUser,
       commentId,
       text,
+      photoIdList: [],
     };
 
     files.forEach((file, index) => {
       if (file.originFileObj) {
         editingComment[`image${index + 1}`] = file;
+      } else {
+        editingComment.photoIdList.push(file.uid * -1);
       }
     });
     queries
       .updateComment(editingComment)
-      .then(() => {
+      .then(comment => {
         history.push(`${history.location.pathname}?page=${page}`);
-        getTopics(page);
+        if (getTopics) {
+          getTopics(page);
+        }
+        if (updateComment) {
+          updateComment(comment);
+        }
         message.success('Сообщение сохранено');
         handleCancel();
       })
@@ -130,6 +147,9 @@ export default withRouter(TopicEditingForm);
 
 TopicEditingForm.defaultProps = {
   commentId: null,
+  updateComment: undefined,
+  getTopics: undefined,
+  page: undefined,
 };
 
 TopicEditingForm.propTypes = {
@@ -139,8 +159,9 @@ TopicEditingForm.propTypes = {
   idTopic: PropTypes.number.isRequired,
   idUser: PropTypes.number.isRequired,
   commentId: PropTypes.number,
-  getTopics: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
+  getTopics: PropTypes.func,
+  page: PropTypes.number,
+  updateComment: PropTypes.func,
   history: PropTypes.shape({
     push: PropTypes.func,
     location: PropTypes.shape({

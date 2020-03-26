@@ -114,6 +114,7 @@ export const OnlineLED = styled.span`
 
 export const UserList = styled(Ul)`
   border: none;
+  height: 80%;
   width: 100%;
 `;
 

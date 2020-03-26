@@ -47,6 +47,7 @@ class TopicCreate extends React.Component {
       subsection: '',
       isModal: false,
       imagesToUpload: [],
+      fileList: [],
     };
   }
 

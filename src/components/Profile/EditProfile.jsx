@@ -42,9 +42,6 @@ const validationSchema = Yup.object({
   nickName: Yup.string().required('Это поле обязательно'),
   firstName: Yup.string().required('Это поле обязательно'),
   lastName: Yup.string().required('Это поле обязательно'),
-  email: Yup.string()
-    .email()
-    .required('Это поле обязательно'),
   phoneNumber: Yup.string()
     .test({
       name: 'phoneNumber',
@@ -127,7 +124,6 @@ class EditProfile extends React.Component {
             initialValues={{
               firstName: userProfile.firstName,
               lastName: userProfile.lastName,
-              email: userProfile.email,
               nickName: userProfile.nickName,
               city: userProfile.city,
               country: userProfile.country,
@@ -153,9 +149,6 @@ class EditProfile extends React.Component {
                   </FormItem>
                   <FormItem label="Фамилия" name="lastName">
                     <Input name="lastName" />
-                  </FormItem>
-                  <FormItem label="Почта" name="email">
-                    <Input name="email" />
                   </FormItem>
 
                   <FormItem label="Город" name="city">

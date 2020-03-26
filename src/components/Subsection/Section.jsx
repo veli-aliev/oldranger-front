@@ -4,6 +4,7 @@ import { Spin, Breadcrumb } from 'antd';
 import PropTypes from 'prop-types';
 import SubSectionsList from '../Main/SubSectionsList';
 import queries from '../../serverQueries';
+import SearchForm from '../Main/SearchForm';
 
 class Section extends React.Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class Section extends React.Component {
     const { section } = this.state;
     return section ? (
       <>
+        <SearchForm />
         <Breadcrumb>
           <Breadcrumb.Item>
             <Link to="/">Главная</Link>

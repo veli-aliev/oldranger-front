@@ -1,14 +1,13 @@
 import React from 'react';
-import { parseISO, format, formatDistanceToNow } from 'date-fns';
-import { Avatar, Comment, Popover, Tooltip } from 'antd';
-import ru from 'date-fns/locale/ru';
+import { Comment, Popover, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import { BASE_URL_IMG } from '../Constants';
+import { dataToFormatedDate, dateToDateDistance } from '../../utils';
 import { ListItem } from './styled';
 import TopicUserInfo from './TopicUserInfo';
 import TopicPhotoList from './TopicPhotoList';
 import fileProps from './propTypes/fileProps';
 import commentProps from './propTypes/commentProps';
+import UserAvatar from '../commons/UserAvatar';
 
 const TopicCommentListItem = ({
   comment,
@@ -20,6 +19,17 @@ const TopicCommentListItem = ({
   contentCommentText,
   contentReplyText,
 }) => {
+  const commentDateTooltipString = comment.commentUpdateTime
+    ? `Создан ${dataToFormatedDate(comment.commentDateTime)}, отредактирован ${dataToFormatedDate(
+        comment.commentUpdateTime
+      )}`
+    : `Создан ${dataToFormatedDate(comment.commentDateTime)}`;
+  const commentDateString = comment.commentUpdateTime
+    ? `Создан ${dateToDateDistance(
+        comment.commentDateTime,
+        true
+      )}, отредактирован ${dateToDateDistance(comment.commentUpdateTime, true)}`
+    : `Создан ${dateToDateDistance(comment.commentDateTime, true)}`;
   return (
     <ListItem id={comment.positionInTopic + 1}>
       <Comment
@@ -40,22 +50,13 @@ const TopicCommentListItem = ({
             }
             placement="right"
           >
-            <Avatar src={`${BASE_URL_IMG}${comment.author.avatar.small}`} />
+            <UserAvatar src={comment.author.avatar.small} />
           </Popover>
         }
         content={toggleEdeting ? contentEditingForm : contentCommentText}
         datetime={
-          <Tooltip
-            title={format(parseISO(comment.commentDateTime), "dd MMMM yyyy 'в' HH:mm", {
-              locale: ru,
-            })}
-          >
-            <span>
-              {formatDistanceToNow(parseISO(comment.commentDateTime), {
-                locale: ru,
-                addSuffix: true,
-              })}
-            </span>
+          <Tooltip title={commentDateTooltipString}>
+            <span>{commentDateString}</span>
           </Tooltip>
         }
       />

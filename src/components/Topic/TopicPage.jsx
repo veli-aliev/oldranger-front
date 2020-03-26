@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { Avatar, Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
+import { Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
 // import styled from 'styled-components';
 import Comment from 'antd/es/comment';
 import { Markup } from 'interweave';
-import { BASE_URL_IMG } from '../Constants';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert, TopicReplyWarning } from './styled';
@@ -14,6 +13,7 @@ import TopicCommentItem from './TopicCommentItem';
 import TopicStartMessage from './TopicStartMessage';
 import Context from '../Context';
 import withGetUserProfile from '../hoc/withGetUserProfile';
+import UserAvatar from '../commons/UserAvatar';
 
 const { Text } = Typography;
 
@@ -57,9 +57,9 @@ class TopicPage extends React.Component {
     if (page === 1) {
       queries
         .getTopic(match.params.topicId, 0, 10)
-        .then(({ topic, commentDto }) => {
+        .then(({ topic, commentDto, subscribed }) => {
           this.setState({
-            topic,
+            topic: { ...topic, isSubscribed: subscribed },
             page,
             messages: commentDto ? commentDto.content : null,
             error: false,
@@ -71,9 +71,9 @@ class TopicPage extends React.Component {
     } else {
       queries
         .getTopic(match.params.topicId, page - 1, 10)
-        .then(({ topic, commentDto }) => {
+        .then(({ topic, commentDto, subscribed }) => {
           this.setState({
-            topic,
+            topic: { ...topic, isSubscribed: subscribed },
             page,
             messages: commentDto ? commentDto.content : null,
             error: false,
@@ -221,12 +221,44 @@ class TopicPage extends React.Component {
     }));
   };
 
+  toggleSubscriptionStatus = () => {
+    const {
+      topic: { id: topicId, isSubscribed },
+    } = this.state;
+    const setSubscriptionState = newSubscriptionState => {
+      this.setState(({ topic }) => ({
+        topic: {
+          ...topic,
+          isSubscribed: newSubscriptionState,
+        },
+      }));
+    };
+    const addSubscription = () => {
+      queries.addTopicToSubscriptions(topicId).catch(() => {
+        setSubscriptionState(false);
+        message.error('Что-то пошло не так, топик не добавлен');
+      });
+    };
+    const deleteSubscription = () => {
+      queries.deleteTopicFromSubscriptions(topicId).catch(() => {
+        setSubscriptionState(true);
+        message.error('Что-то пошло не так, топик не удален');
+      });
+    };
+    setSubscriptionState(!isSubscribed);
+    if (!isSubscribed) {
+      addSubscription();
+    } else {
+      deleteSubscription();
+    }
+  };
+
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
     const { userProfile } = this.props;
     const { isLogin } = this.context;
     const avatar = userProfile.avatar ? (
-      <Avatar src={`${BASE_URL_IMG}${userProfile.avatar}`} alt="User Avatar" />
+      <UserAvatar src={userProfile.avatar} alt="User Avatar" />
     ) : null;
     return error ? (
       <Result
@@ -258,6 +290,9 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
+            <Button onClick={this.toggleSubscriptionStatus}>
+              {topic.isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+            </Button>
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}

@@ -23,15 +23,12 @@ class Subscriptions extends React.Component {
     const { page: oldPage } = this.state;
     const newTopics = await queries.getProfileSubscriptions(oldPage);
 
-    // console.log('Subscriptions!!! = ', newTopics);
-
     if (newTopics.length === 0) {
       return this.setState({ hasMore: false });
     }
 
     const badApiAdaptationTopicsFixMePlease = newTopics.map(topic => ({
       topic,
-      totalMessages: 0,
       isSubscribed: false,
       hasNewMessages: false,
       newMessagesCount: 0,
@@ -53,8 +50,6 @@ class Subscriptions extends React.Component {
         </Row>
       );
     }
-
-    // return <h1>Subsctiption list here</h1>;
 
     return (
       <TopicsList

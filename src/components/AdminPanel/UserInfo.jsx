@@ -29,8 +29,7 @@ const UserInfo = () => {
     serverQueries.getUsersTree(id, 5).then(setTree);
     serverQueries.getUserById(id).then(setUser);
   }, [id]);
-  useEffect(() => console.log('user from userInfo', user), [user]);
-  // console.log('user in userinfo', user);
+
   const { nickName, accountNonLocked } = user;
 
   return (

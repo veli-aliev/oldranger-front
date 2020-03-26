@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Menu, Dropdown, Icon, Modal, Button } from 'antd';
+import { Menu, Dropdown, Icon, Modal, Button, message } from 'antd';
 import context from '../Context';
 import serverQueries from '../../serverQueries';
 
@@ -17,19 +17,21 @@ const AdminMenu = ({ user, updateUser }) => {
   const handleBan = dt => () =>
     serverQueries
       .blackListRequest(user.id, Date.now() + dt)
-      .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Заблокировать не удалось.'));
 
   const handleUnban = () => {
-    console.log('!!!!!user=', { ...user, accountNonLocked: true });
-    updateUser({ ...user, accountNonLocked: true });
     serverQueries
       .unblockUser(user.id)
-      // .then(({ id: userId }) => serverQueries.getUserById(userId))
-      .catch(updateUser({ ...user, accountNonLocked: false }));
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Разблокировать не удалось.'));
   };
-  // serverQueries
-  //   .unblockUser(user.id)
-  //   .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
 
   const openConfirm = (action, content) => () => {
     Modal.confirm({

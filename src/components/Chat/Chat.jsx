@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button } from 'antd';
+import { Input, Button, message as systemMessage } from 'antd';
 import queries from '../../serverQueries';
 import {
   ChatContainer,
@@ -39,6 +39,11 @@ class Chat extends React.Component {
   };
 
   handleChangeFile = async event => {
+    const { size } = event.target.files[0];
+    if (size / 1024 / 1024 > 20) {
+      systemMessage.error('Отправляемый файл не может быть больше 20 Мб');
+      return;
+    }
     this.setState({ filePath: event.target.value });
   };
 

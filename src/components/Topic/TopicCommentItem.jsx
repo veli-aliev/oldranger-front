@@ -6,7 +6,7 @@ import { parseISO, formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
 import { Markup } from 'interweave';
-import { ReplyTag } from './styled';
+import { ReplyTag, DeletedMessageText } from './styled';
 import TopicEditingForm from './TopicEditingForm';
 import commentProps from './propTypes/commentProps';
 import TopicCommentListItem from './TopicCommentListItem';
@@ -41,11 +41,19 @@ class TopicCommentItem extends React.Component {
   showFieldOrNot() {
     const { user } = this.context;
     const { comment } = this.props;
+    if (comment.deleted) {
+      return false;
+    }
     return (
       (user.id === comment.author.id && comment.updatable === true) ||
       user.role === userRoles.admin ||
       user.role === userRoles.moderator
     );
+  }
+
+  showReplyLinkOrNot() {
+    const { comment } = this.props;
+    return !comment.deleted;
   }
 
   render() {
@@ -73,15 +81,17 @@ class TopicCommentItem extends React.Component {
 
     const commentActions = [
       <span key="comment-basic-position">#{comment.positionInTopic}</span>,
-      <span
-        key="comment-basic-reply-to"
-        onClick={handleQuoteComment(comment)}
-        onKeyPress={handleQuoteComment(comment)}
-        role="button"
-        tabIndex="0"
-      >
-        Ответить на сообщение {comment.author.nickName}
-      </span>,
+      this.showReplyLinkOrNot() ? (
+        <span
+          key="comment-basic-reply-to"
+          onClick={handleQuoteComment(comment)}
+          onKeyPress={handleQuoteComment(comment)}
+          role="button"
+          tabIndex="0"
+        >
+          Ответить на сообщение {comment.author.nickName}
+        </span>
+      ) : null,
       this.showFieldOrNot() ? (
         <IconText type="edit" onHandleClick={this.handleClickEditBtn} title="Редактировать" />
       ) : null,
@@ -126,8 +136,14 @@ class TopicCommentItem extends React.Component {
           </ReplyTag>
         </Popover>
       );
-    } else if (comment.rootDeleted) {
-      contentReplyText = <ReplyTag>ответил на удаленный комментарий</ReplyTag>;
+    } else if (comment.deleted) {
+      contentCommentText = (
+        <DeletedMessageText type="secondary">
+          <Markup content={comment.commentText} />
+        </DeletedMessageText>
+      );
+    } else {
+      contentCommentText = <Markup content={comment.commentText} />;
     }
 
     return (

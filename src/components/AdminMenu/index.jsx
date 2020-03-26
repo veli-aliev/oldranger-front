@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Menu, Dropdown, Icon, Modal, Button } from 'antd';
+import { Menu, Dropdown, Icon, Modal, Button, message } from 'antd';
 import context from '../Context';
 import serverQueries from '../../serverQueries';
 
@@ -17,7 +17,21 @@ const AdminMenu = ({ user, updateUser }) => {
   const handleBan = dt => () =>
     serverQueries
       .blackListRequest(user.id, Date.now() + dt)
-      .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Заблокировать не удалось.'));
+
+  const handleUnban = () => {
+    serverQueries
+      .unblockUser(user.id)
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Разблокировать не удалось.'));
+  };
 
   const openConfirm = (action, content) => () => {
     Modal.confirm({
@@ -55,7 +69,7 @@ const AdminMenu = ({ user, updateUser }) => {
       </Button>
     </Dropdown>
   ) : (
-    <Button onClick={openConfirm(handleBan(Date.now()), 'unban')}>Раблокировать</Button>
+    <Button onClick={openConfirm(handleUnban, 'unban')}>Разблокировать</Button>
   );
 };
 

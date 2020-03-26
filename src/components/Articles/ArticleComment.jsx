@@ -19,7 +19,15 @@ const ArticleComment = props => {
     onDeleteComment,
   } = props;
 
-  const { id: commentId, commentText: text, commentDateTime: date, author, nested } = comment;
+  const {
+    id: commentId,
+    parentId,
+    commentText: text,
+    commentDateTime: date,
+    author,
+    nested,
+    deleted,
+  } = comment;
   const { user } = useContext(Context);
 
   const actionsArr = [];
@@ -55,8 +63,8 @@ const ArticleComment = props => {
         key="delete"
         role="button"
         tabIndex="0"
-        onKeyPress={onDeleteComment(commentId)}
-        onClick={onDeleteComment(commentId)}
+        onKeyPress={onDeleteComment(commentId, parentId)}
+        onClick={onDeleteComment(commentId, parentId)}
       >
         Удалить
       </span>
@@ -76,7 +84,7 @@ const ArticleComment = props => {
 
   return (
     <Comment
-      actions={actionsArr}
+      actions={deleted ? null : actionsArr}
       author={author.nickName}
       datetime={
         <Tooltip
@@ -118,6 +126,8 @@ ArticleComment.propTypes = {
     author: PropTypes.object.isRequired,
     commentDateTime: PropTypes.string,
     commentText: PropTypes.string,
+    deleted: PropTypes.bool,
+    parentId: PropTypes.number,
   }).isRequired,
   // eslint-disable-next-line react/require-default-props
   commentWithOpenEditor: PropTypes.number,

@@ -116,11 +116,67 @@ class ArticlePage extends React.Component {
     this.setState({ commentWithOpenEditor: id });
   };
 
-  handleDeleteComment = commentId => async () => {
+  handleDeleteComment = (commentId, parentId) => async () => {
     await queries.deleteArticleComment(commentId);
+
+    /* после отправки запроса на удаление комента в ответе не приходят обновленные коменты 
+    поэтому для обновления ui проходимся по массиву коментов
+    смотрим если на комент ссылаются другие мы меняем ему статус на deleted:true, и содержание на Комментарий был удален 
+    дублирую работу на сервере без отправления запроса
+    */
+    // вспомошательная функция проверки наличия  подкоментов
+    const hasChildrenComments = (comments, id) => {
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i].parentId === id) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const createNewCommentsList = ar => {
+      return ar.reduce((acc, comment) => {
+        if (comment.id !== commentId) {
+          return [...acc, comment];
+        }
+        if (comment.id === commentId && hasChildrenComments(ar, commentId)) {
+          return [...acc, { ...comment, deleted: true, commentText: 'Комментарий был удален' }];
+        }
+        return acc;
+      }, []);
+    };
+
+    const clearComments = comments => {
+      if (parentId === -1) {
+        return comments;
+      }
+      /*
+      функция для проверки вложенных коментов если: 
+      комент удален 
+        комент удален 
+          КОМЕНТ -------------> нажимаем удалить то вся ветка больше не показывается 
+      */
+      const iter = (ar, id) => {
+        const index = ar.findIndex(el => el.id === id);
+        // если у комента нет подкоментов и этот комент со статусом deleted
+        if (!hasChildrenComments(ar, id) && ar[index].deleted) {
+          // если у комента не родителей то возвращаем обновленный лист коментов
+          if (ar[index].parentId === -1) {
+            return [...ar.slice(0, index), ...ar.slice(index + 1)];
+          }
+          return iter([...ar.slice(0, index), ...ar.slice(index + 1)], ar[index].parentId); // если родители есть рекурсивно проверяем на пустые коменты
+        }
+        return ar;
+      };
+      return iter(comments, parentId);
+    };
+
     this.setState(
-      ({ flatComments }) => ({ flatComments: flatComments.filter(({ id }) => id !== commentId) }),
-      this.rebuildTree
+      ({ flatComments }) => ({ flatComments: clearComments(createNewCommentsList(flatComments)) }),
+      () => {
+        this.handleOpenEditorClick(null)(); // убираем окно редактирования коментария
+        this.rebuildTree(); // перестраиваем дерево коментов
+      }
     );
   };
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Col, Row, Icon, Alert, Upload } from 'antd';
+import { Button, Col, Row, Icon, Alert, Upload, Typography } from 'antd';
 
 export const StyledTopicUserInfo = styled(Row)`
   min-height: 120px;
@@ -46,4 +46,8 @@ export const UploadViewOnly = styled(Upload)`
 export const ListItem = styled.li`
   padding: 5px 0;
   border-bottom: 1px solid #e8e8e8;
+`;
+
+export const DeletedMessageText = styled(Typography.Text)`
+  font-size: 12px;
 `;

@@ -106,7 +106,7 @@ class TopicCommentItem extends React.Component {
       ) : null,
     ];
 
-    const contentCommentText = <Markup content={comment.commentText} />;
+    let contentCommentText = null;
     let contentReplyText = null;
     const contentEditingForm = (
       <TopicEditingForm

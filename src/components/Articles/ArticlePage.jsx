@@ -21,6 +21,7 @@ class ArticlePage extends React.Component {
       commentsTree: [],
       flatComments: [],
       commentWithOpenEditor: null,
+      eventType: 'reply',
     };
   }
 
@@ -51,7 +52,8 @@ class ArticlePage extends React.Component {
     }
   };
 
-  handleCommentFormSubmit = (commentId, eventType = 'reply') => async ({ text }) => {
+  handleCommentFormSubmit = commentId => async ({ text }) => {
+    const { eventType } = this.state;
     try {
       const fn = eventType === 'edit' ? this.editComment : this.postComment;
       await fn(commentId, text);
@@ -79,7 +81,10 @@ class ArticlePage extends React.Component {
       ({ flatComments }) => ({
         flatComments: [...flatComments, comment],
       }),
-      this.rebuildTree
+      () => {
+        this.handleOpenEditorClick(null)(); // убираем окно редактирования коментария
+        this.rebuildTree(); // перестраиваем дерево коментов
+      }
     );
   };
 
@@ -97,12 +102,22 @@ class ArticlePage extends React.Component {
       idUser,
       commentID: commentId,
     });
-    this.setState(({ flatComments }) => {
-      const comments = flatComments.filter(({ id }) => id !== commentId);
-      return {
-        flatComments: [...comments, updatedComment],
-      };
-    }, this.rebuildTree);
+    this.setState(
+      ({ flatComments }) => {
+        const comments = flatComments.reduce(
+          (acc, comment) =>
+            comment.id === commentId ? [...acc, updatedComment] : [...acc, comment],
+          []
+        );
+        return {
+          flatComments: comments,
+        };
+      },
+      () => {
+        this.handleOpenEditorClick(null)(); // убираем окно редактирования коментария
+        this.rebuildTree(); // перестраиваем дерево коментов
+      }
+    );
   };
 
   // TODO был другой способ, но там вылез баг, не было времени сделать нормально
@@ -112,8 +127,8 @@ class ArticlePage extends React.Component {
     }));
   };
 
-  handleOpenEditorClick = id => () => {
-    this.setState({ commentWithOpenEditor: id });
+  handleOpenEditorClick = (id, eventType) => () => {
+    this.setState({ commentWithOpenEditor: id, eventType });
   };
 
   handleDeleteComment = (commentId, parentId) => async () => {
@@ -208,7 +223,7 @@ class ArticlePage extends React.Component {
     }
 
     const commentsCount = flatComments ? flatComments.length : 0;
-
+    const { eventType } = this.state;
     return (
       <>
         <Article articleInfo={article} />
@@ -221,6 +236,7 @@ class ArticlePage extends React.Component {
             onOpenEditorClick={this.handleOpenEditorClick}
             onSubmitCommentForm={this.handleCommentFormSubmit}
             onDeleteComment={this.handleDeleteComment}
+            eventType={eventType}
           />
         ))}
         {this.renderCommentForm()}

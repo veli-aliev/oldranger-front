@@ -9,7 +9,9 @@ import RegistrationAccept from '../components/RegistrationAccept';
 const AuthRoute = ({ isLogin }) => {
   return (
     <>
-      <Route path="/invite">{isLogin ? <Redirect to="/" /> : <Registration />}</Route>
+      <Route path="/invite">
+        <Registration />
+      </Route>
       <Route path="/registration-accept" component={RegistrationAccept} />
       <Route path="/login">{isLogin ? <Redirect to="/" /> : <Login />}</Route>
     </>

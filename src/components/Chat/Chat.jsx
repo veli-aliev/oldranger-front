@@ -129,7 +129,7 @@ class Chat extends React.Component {
       <section>
         <ChatContainer>
           <Header>
-            <h2>Chat</h2>
+            <h2>Общий чат</h2>
             <CloseButton onClick={handleDisconnect} />
           </Header>
           <Main>

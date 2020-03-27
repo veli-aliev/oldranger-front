@@ -106,8 +106,29 @@ class TopicCommentItem extends React.Component {
       ) : null,
     ];
 
-    let contentCommentText = <Markup content={comment.commentText} />;
-    let contentReplyText = null;
+    const contentCommentText = comment.deleted ? (
+      <DeletedMessageText type="secondary">
+        <Markup content={comment.commentText} />
+      </DeletedMessageText>
+    ) : (
+      <Markup content={comment.commentText} />
+    );
+
+    const contentReplyText = comment.replyNick ? (
+      <Popover
+        content={<Markup content={comment.replyText} />}
+        title={`${comment.replyNick}, ${formatDistanceToNow(parseISO(comment.replyDateTime), {
+          locale: ru,
+          addSuffix: true,
+        })}`}
+        placement="topLeft"
+      >
+        <ReplyTag green>
+          ответил на комментарий <strong>{comment.replyNick}</strong>
+        </ReplyTag>
+      </Popover>
+    ) : null;
+
     const contentEditingForm = (
       <TopicEditingForm
         edetingText={comment.commentText}
@@ -121,30 +142,6 @@ class TopicCommentItem extends React.Component {
         page={page}
       />
     );
-    if (comment.replyNick) {
-      contentReplyText = (
-        <Popover
-          content={<Markup content={comment.replyText} />}
-          title={`${comment.replyNick}, ${formatDistanceToNow(parseISO(comment.replyDateTime), {
-            locale: ru,
-            addSuffix: true,
-          })}`}
-          placement="topLeft"
-        >
-          <ReplyTag green>
-            ответил на комментарий <strong>{comment.replyNick}</strong>
-          </ReplyTag>
-        </Popover>
-      );
-    } else if (comment.deleted) {
-      contentCommentText = (
-        <DeletedMessageText type="secondary">
-          <Markup content={comment.commentText} />
-        </DeletedMessageText>
-      );
-    } else {
-      contentCommentText = <Markup content={comment.commentText} />;
-    }
 
     return (
       <TopicCommentListItem

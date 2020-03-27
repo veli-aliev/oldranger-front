@@ -17,6 +17,7 @@ const ArticleComment = props => {
     onOpenEditorClick,
     onSubmitCommentForm,
     onDeleteComment,
+    eventType,
   } = props;
 
   const {
@@ -79,6 +80,7 @@ const ArticleComment = props => {
       onOpenEditorClick={onOpenEditorClick}
       onSubmitCommentForm={onSubmitCommentForm}
       onDeleteComment={onDeleteComment}
+      eventType={eventType}
     />
   ));
 
@@ -107,8 +109,11 @@ const ArticleComment = props => {
       }
       content={<CommentContentView dangerouslySetInnerHTML={{ __html: text }} />}
     >
-      {commentId === commentWithOpenEditor && (
-        <CommentForm onSubmit={onSubmitCommentForm(commentId)} />
+      {commentId === commentWithOpenEditor && eventType === 'edit' && (
+        <CommentForm startText={text} onSubmit={onSubmitCommentForm(commentId)} />
+      )}
+      {commentId === commentWithOpenEditor && eventType === 'reply' && (
+        <CommentForm startText="" onSubmit={onSubmitCommentForm(commentId)} />
       )}
       {nestedComments}
     </Comment>
@@ -134,6 +139,7 @@ ArticleComment.propTypes = {
   onOpenEditorClick: PropTypes.func.isRequired,
   onSubmitCommentForm: PropTypes.func.isRequired,
   onDeleteComment: PropTypes.func.isRequired,
+  eventType: PropTypes.string.isRequired,
 };
 
 export default ArticleComment;

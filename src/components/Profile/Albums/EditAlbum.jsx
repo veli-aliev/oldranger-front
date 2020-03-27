@@ -118,10 +118,20 @@ class EditAlbum extends React.Component {
     const { photosToDelete } = this.state;
     try {
       await Promise.all(photosToDelete.map(id => queries.deletePhotoFromAlbum(id)));
-      this.setState(({ photos }) => ({
-        photos: photos.filter(({ photoID }) => !photosToDelete.includes(photoID)),
-        photosToDelete: [],
-      }));
+      this.setState(({ photos, thumbImageId }) => {
+        const updatedPhotos = photos.filter(({ photoID }) => !photosToDelete.includes(photoID));
+        const updatedThumbImageId = () => {
+          if (updatedPhotos.length === 0) {
+            return '';
+          }
+          return updatedPhotos.includes(thumbImageId) ? thumbImageId : updatedPhotos[0].photoID;
+        };
+        return {
+          photos: updatedPhotos,
+          photosToDelete: [],
+          thumbImageId: updatedThumbImageId(),
+        };
+      });
     } catch (error) {
       // message.error('что-то пошло не так');
       await this.loadPhotos();

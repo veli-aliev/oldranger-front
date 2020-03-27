@@ -37,40 +37,40 @@ const Header = () => {
         <StyledHeader>
           <LeftWrapper>
             <Button type="primary">
-              <Link to="/">Home</Link>
+              <Link to="/">Главная</Link>
             </Button>
             <Button type="primary">
-              <Link to="/chat">Chat</Link>
+              <Link to="/chat">Чат</Link>
             </Button>
             {isLogin && user.role === 'ROLE_ADMIN' && (
               <Button>
-                <Link to="/article/create">Create article</Link>
+                <Link to="/article/create">Написать статью</Link>
               </Button>
             )}
             {isLogin && (
               <Button>
-                <Link to="/articles">Articles</Link>
+                <Link to="/articles">Статьи</Link>
               </Button>
             )}
           </LeftWrapper>
           <RightWrapper>
             {isLogin && user.role === 'ROLE_ADMIN' && (
               <Button>
-                <Link to="/admin-panel">Admin panel</Link>
+                <Link to="/admin-panel">Панель администратора</Link>
               </Button>
             )}
             {isLogin ? (
               <>
                 <Button>
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/profile">Профиль</Link>
                 </Button>
                 <Button type="danger" onClick={logOut}>
-                  Exit
+                  Выйти
                 </Button>
               </>
             ) : (
               <Button type="link">
-                <Link to="/login">log in</Link>
+                <Link to="/login">Войти</Link>
               </Button>
             )}
           </RightWrapper>

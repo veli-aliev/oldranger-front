@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { message, Button, Input, Modal } from 'antd';
 import styled from 'styled-components';
@@ -129,9 +129,11 @@ class EditAlbum extends React.Component {
   };
 
   handleSubmit = async () => {
+    const { history } = this.props;
     try {
       const { photoAlbumId, title, thumbImageId } = this.state;
       await queries.updateAlbum(photoAlbumId, { title, photoId: thumbImageId });
+      history.push('/profile/albums');
     } catch (err) {
       message.error('что-то пошло не так');
     }
@@ -230,6 +232,9 @@ class EditAlbum extends React.Component {
 }
 
 EditAlbum.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
       photoAlbumId: PropTypes.number.isRequired,
@@ -239,4 +244,4 @@ EditAlbum.propTypes = {
   }).isRequired,
 };
 
-export default EditAlbum;
+export default withRouter(EditAlbum);

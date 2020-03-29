@@ -90,7 +90,11 @@ class Chat extends React.Component {
           <div>
             <MessageAuthor>{msg.sender}</MessageAuthor>
             {msg.originalImg ? (
-              <a href={`${url}img/chat/${msg.originalImg}`}>
+              <a
+                rel="noopener noreferrer"
+                href={`${url}img/chat/${msg.originalImg}`}
+                target="_blank"
+              >
                 <MessageImage
                   alt="picture"
                   className="message-image"

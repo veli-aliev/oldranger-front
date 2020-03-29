@@ -281,6 +281,10 @@ class Queries {
     return res.data;
   };
 
+  deletePhotosFromAlbum = async photoIds => {
+    await axios.delete('api/photos/deleteMultiplePhoto', { data: photoIds });
+  };
+
   getUsersList = async (page, query) => {
     const res = await axios.get('/api/admin/users', {
       params: { page: Number(page), ...(query ? { query } : {}) },

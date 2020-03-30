@@ -117,7 +117,8 @@ class EditAlbum extends React.Component {
   handleDeletePhotos = async () => {
     const { photosToDelete } = this.state;
     try {
-      await Promise.all(photosToDelete.map(id => queries.deletePhotoFromAlbum(id)));
+      // await Promise.all(photosToDelete.map(id => queries.deletePhotoFromAlbum(id)));
+      await queries.deletePhotosFromAlbum(photosToDelete);
       this.setState(({ photos, thumbImageId }) => {
         const updatedPhotos = photos.filter(({ photoID }) => !photosToDelete.includes(photoID));
         const updatedThumbImageId = () => {

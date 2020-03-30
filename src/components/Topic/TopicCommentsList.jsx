@@ -13,6 +13,7 @@ const TopicCommentsList = ({
   page,
   replyButtonHandler,
   openNotification,
+  title,
 }) => {
   const { isLogin } = useContext(Context);
   if (!messages) {
@@ -24,7 +25,7 @@ const TopicCommentsList = ({
     return (
       <StyledList
         className="comment-list"
-        header={<StyledTitle>Комментарии ({total})</StyledTitle>}
+        header={<StyledTitle>{title ? `${title}` : `Комментарии (${total})`}</StyledTitle>}
         itemLayout="horizontal"
         dataSource={messages}
         renderItem={itemComponent}
@@ -60,12 +61,14 @@ TopicCommentsList.propTypes = {
   page: PropTypes.number,
   replyButtonHandler: PropTypes.func.isRequired,
   openNotification: PropTypes.func.isRequired,
+  title: PropTypes.string,
 };
 
 TopicCommentsList.defaultProps = {
   total: 1,
   page: 1,
   changePageHandler: () => {},
+  title: null,
 };
 
 export default TopicCommentsList;

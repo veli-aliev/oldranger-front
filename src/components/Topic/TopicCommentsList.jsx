@@ -25,7 +25,7 @@ const TopicCommentsList = ({
     return (
       <StyledList
         className="comment-list"
-        header={<StyledTitle>{title ? `${title}` : `Комментарии (${total})`}</StyledTitle>}
+        header={<StyledTitle>{title || `Комментарии (${total})`}</StyledTitle>}
         itemLayout="horizontal"
         dataSource={messages}
         renderItem={itemComponent}

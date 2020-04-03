@@ -66,16 +66,16 @@ class App extends React.Component {
         <Header />
         <CommonRoute />
         <AuthRoute isLogin={isLogin} />
-        <PrivateRoute isLogin={isLogin} path="/profile" component={Profile} />
+        <PrivateRoute isAllowed={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
-          isLogin={isLogin && role === 'ROLE_ADMIN'}
+          isAllowed={isLogin && role === 'ROLE_ADMIN'}
           path="/admin-panel"
           component={AdminPanel}
         />
         <TopicRoute />
         <SubsectionRoute />
         <SearchRoute />
-        <ArticlesRoute isLogin={isLogin} />
+        <ArticlesRoute isLogin={isLogin} role={role} />
         {/* TODO delete eslint disable */}
         {/* eslint-disable-next-line no-undef */}
         <ChatRoute path="/chat" isLogin={isLogin} user={user} component={ChatAuth} />

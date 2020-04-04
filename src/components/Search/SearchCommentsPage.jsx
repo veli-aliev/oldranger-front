@@ -19,7 +19,7 @@ class SearchCommentsPage extends React.Component {
   }
 
   componentDidMount() {
-    this.getTopics(0);
+    this.getTopics(1);
   }
 
   getTopics = async page => {

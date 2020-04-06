@@ -80,3 +80,19 @@ export const StyledHeader = styled.h1`
   font-weight: 600;
   font-size: 24px;
 `;
+export const MyTagsItem = styled.p`
+  cursor: pointer;
+  margin: 0;
+  display: flex;
+  height: 40px;
+  flex-direction: row;
+  align-items: center;
+  transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    border-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    padding 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+  padding-left: ${props => `${props.pad * 20}px`};
+  color: ${props => (props.active === props.activeId ? '#1890ff' : 'black')};
+  background-color: ${props => (props.active === props.activeId ? '#e6f7ff' : 'white')};
+  border-right: 3px solid ${props => (props.active === props.activeId ? '#1890ff' : 'white')};
+`;

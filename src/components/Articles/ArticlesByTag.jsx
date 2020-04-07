@@ -16,11 +16,15 @@ const ArticlesByTag = ({ location: { search: tagsStr } }) => {
         setIsEmpty(el.empty);
       });
     } else {
-      const tagsArr = tagsStr.split('=')[1].split('_');
-      queries.getArticlesByTag(tagsArr).then(el => {
-        setArticles(el.content.reverse());
-        setIsEmpty(el.empty);
-      });
+      const tmp = tagsStr.split('=');
+      const tagsArr = tmp[tmp.length - 1].split('_');
+      queries
+        .getArticlesByTag(tagsArr)
+        .then(el => {
+          setArticles(el.content.reverse());
+          setIsEmpty(el.empty);
+        })
+        .catch(() => setIsEmpty(true));
     }
   }, [tagsStr]);
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { Spin } from 'antd';
 import Context from '../Context';
 import Article from './Article';
@@ -250,4 +251,4 @@ ArticlePage.propTypes = {};
 
 ArticlePage.defaultProps = {};
 
-export default ArticlePage;
+export default withRouter(ArticlePage);

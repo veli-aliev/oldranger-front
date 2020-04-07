@@ -80,7 +80,7 @@ export const StyledHeader = styled.h1`
   font-weight: 600;
   font-size: 24px;
 `;
-export const MyTagsItem = styled.p`
+export const TagsItem = styled.p`
   cursor: pointer;
   margin: 0;
   display: flex;

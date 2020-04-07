@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Menu, Spin } from 'antd';
 import { useHistory, withRouter } from 'react-router-dom';
-import { StyledMenu, MyTagsItem } from '../styled';
+import { StyledMenu, TagsItem } from '../styled';
 import queries from '../../../serverQueries/index';
 
 const TagsMenu = ({ location }) => {
@@ -43,14 +43,14 @@ const TagsMenu = ({ location }) => {
       return buildTreeMenu(rest, [
         ...result,
         <li key={`item-${first.id}`}>
-          <MyTagsItem
+          <TagsItem
             onClick={showArticles(first.tagsHierarchy, first.id)}
             active={first.id}
             activeId={activeId}
             pad={first.tagsHierarchy.length}
           >
             {first.tag}
-          </MyTagsItem>
+          </TagsItem>
           <ul>{buildTreeMenu(menuItems.filter(elem => elem.parentId === first.id))}</ul>
         </li>,
       ]);
@@ -58,14 +58,14 @@ const TagsMenu = ({ location }) => {
     return buildTreeMenu(rest, [
       ...result,
       <li key={`item-${first.id}`}>
-        <MyTagsItem
+        <TagsItem
           active={first.id}
           activeId={activeId}
           onClick={showArticles(first.tagsHierarchy, first.id)}
           pad={first.tagsHierarchy.length}
         >
           {first.tag}
-        </MyTagsItem>
+        </TagsItem>
       </li>,
     ]);
   };

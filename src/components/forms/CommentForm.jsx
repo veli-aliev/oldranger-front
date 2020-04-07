@@ -18,7 +18,14 @@ const editorModules = {
   ],
 };
 
-const CommentForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onSubmitError }) => {
+const CommentForm = ({
+  initialValues,
+  buttonText,
+  onSubmit,
+  onSubmitSuccess,
+  onSubmitError,
+  startText = '',
+}) => {
   const onSubmitWrapper = useCallback(
     () => async (data, { resetForm, setSubmitting }) => {
       try {
@@ -40,7 +47,7 @@ const CommentForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={{ ...initialValues, text: startText }}
       validationSchema={validationSchema}
       onSubmit={onSubmitWrapper()}
     >
@@ -74,6 +81,7 @@ CommentForm.defaultProps = {
   },
   onSubmitSuccess: null,
   onSubmitError: null,
+  startText: '',
 };
 
 CommentForm.propTypes = {
@@ -82,6 +90,7 @@ CommentForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onSubmitSuccess: PropTypes.func,
   onSubmitError: PropTypes.func,
+  startText: PropTypes.string,
 };
 
 export default CommentForm;

@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.BASE_URL || 'http://localhost:8888';
+export const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://77.222.52.42:3000/';
 
 export const BASE_IMG_URL = `${BASE_URL}/img/`;
 export const SECURED_ALBUM_URL = `${BASE_URL}/api/securedPhoto/photoFromAlbum/`;

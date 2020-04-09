@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import queries from '../../../serverQueries';
+import { BASE_URL } from '../../../constants';
 
 const DeletePhotoButton = styled(Button)`
   display: none;
@@ -195,7 +196,7 @@ class Albums extends React.Component {
                 <AlbomBackgroundImage
                   src={
                     album.thumbImageId
-                      ? `http://localhost:8888/api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
+                      ? `${BASE_URL}api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
                       : `/defaultAlbumPicture.jpg`
                   }
                 />

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import queries from '../../../serverQueries';
+import Context from '../../Context';
 
 const DeletePhotoButton = styled(Button)`
   display: none;
@@ -83,7 +84,10 @@ class Albums extends React.Component {
   }
 
   componentDidMount() {
-    this.loadAlbums();
+    const { isLogin } = this.context;
+    if (isLogin) {
+      this.loadAlbums();
+    }
   }
 
   loadAlbums = async () => {
@@ -237,6 +241,8 @@ class Albums extends React.Component {
     );
   }
 }
+
+Albums.contextType = Context;
 
 Albums.propTypes = {
   location: PropTypes.shape({

@@ -110,10 +110,10 @@ const ArticleComment = props => {
       content={<CommentContentView dangerouslySetInnerHTML={{ __html: text }} />}
     >
       {commentId === commentWithOpenEditor && eventType === 'edit' && (
-        <CommentForm startText={text} onSubmit={onSubmitCommentForm(commentId)} />
+        <CommentForm startText={text} onSubmit={onSubmitCommentForm(commentId, parentId)} />
       )}
       {commentId === commentWithOpenEditor && eventType === 'reply' && (
-        <CommentForm startText="" onSubmit={onSubmitCommentForm(commentId)} />
+        <CommentForm startText="" onSubmit={onSubmitCommentForm(commentId, parentId)} />
       )}
       {nestedComments}
     </Comment>

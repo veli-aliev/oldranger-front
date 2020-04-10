@@ -4,16 +4,15 @@ import { Menu, Spin } from 'antd';
 import { useHistory, withRouter } from 'react-router-dom';
 import { StyledMenu, TagsItem } from '../styled';
 import queries from '../../../serverQueries/index';
+import useQuery from '../../../hooks/useQuery';
 
 const TagsMenu = ({ location }) => {
   const [menuItems, setMenuItems] = useState([]);
   const history = useHistory();
   const [activeId, setActiveId] = useState(null);
+  const hierarchy = useQuery(location, 'tags');
 
-  // парсим урл если есть теги введены устанавливаем в стейт id активного тега
-  const addFocusTag = tags => {
-    const href = location.search.split('=');
-    const hierarchy = String(href[href.length - 1]);
+  const addActiveTag = tags => {
     const activeTag = tags.find(tag => hierarchy === tag.tagsHierarchy.join('_')) || {};
     setActiveId(activeTag.id);
   };
@@ -21,17 +20,16 @@ const TagsMenu = ({ location }) => {
   useEffect(() => {
     queries.getTagsDtoTree().then(el => {
       setMenuItems(el);
-      addFocusTag(el);
+      addActiveTag(el);
     });
   }, []);
 
   useEffect(() => {
-    addFocusTag(menuItems);
+    addActiveTag(menuItems);
   }, [location]);
 
-  const showArticles = (tags, id) => () => {
+  const showArticles = tags => () => {
     history.push(`articles?tags=${tags.join('_')}`);
-    setActiveId(id);
   };
 
   const buildTreeMenu = (tags, result = []) => {

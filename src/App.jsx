@@ -1,6 +1,9 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 
+import { message } from 'antd';
+import { showMessageNetError } from './utils';
+
 import queries from './serverQueries';
 import {
   PrivateRoute,
@@ -43,9 +46,23 @@ class App extends React.Component {
   };
 
   logOut = async () => {
-    localStorage.removeItem('user');
-    queries.logOut();
-    this.setState({ isLogin: false, user: {} });
+    if (navigator.onLine) {
+      try {
+        const res = await queries.logOut();
+        if (res.status === 200) {
+          localStorage.removeItem('user');
+          this.setState({ isLogin: false, user: {} });
+        }
+      } catch (error) {
+        if (error.message === 'Network Error') {
+          message.error('Сетевая ошибка');
+        } else {
+          showMessageNetError(error);
+        }
+      }
+    } else {
+      message.error('Проверьте подключение к сети');
+    }
   };
 
   render() {

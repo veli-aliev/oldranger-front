@@ -14,7 +14,8 @@ class Queries {
   };
 
   logOut = async () => {
-    await axios.get('api/logout');
+    const res = await axios.get('api/logout');
+    return res;
   };
 
   updateProfile = async formData => {

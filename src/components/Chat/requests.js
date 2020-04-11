@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { BASE_URL } from '../../constants';
 
-const url = 'http://localhost:8888/api/chat';
+const url = `${BASE_URL}api/chat`;
 
 export const getImage = async formData => {
   const response = await axios.post(`${url}/image`, formData, {

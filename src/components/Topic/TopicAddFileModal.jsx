@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import propTypes from 'prop-types';
 import { Upload, Button, Icon, Row } from 'antd';
 import queries from '../../serverQueries';
+import { BASE_URL } from '../../constants';
 
-const url = 'http://localhost:8888/api/';
+const url = `${BASE_URL}api/`;
 const photoTempUrl = `${url}securedPhoto/photoFromAlbum/`;
 
 const ModalOverlay = styled.div`

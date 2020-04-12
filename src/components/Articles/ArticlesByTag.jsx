@@ -6,10 +6,10 @@ import { Column } from './styled';
 import Article from './Article';
 import useQuery from '../../hooks/useQuery';
 
-const ArticlesByTag = ({ location }) => {
+const ArticlesByTag = () => {
   const [articles, setArticles] = useState([]);
   const [isEmpty, setIsEmpty] = useState(false);
-  const tagsAtr = useQuery(location, 'tags');
+  const tagsAtr = useQuery().tags;
 
   useEffect(() => {
     if (!tagsAtr) {

@@ -10,7 +10,7 @@ const TagsMenu = ({ location }) => {
   const [menuItems, setMenuItems] = useState([]);
   const history = useHistory();
   const [activeId, setActiveId] = useState(null);
-  const hierarchy = useQuery(location, 'tags');
+  const hierarchy = useQuery().tags;
 
   const addActiveTag = tags => {
     const activeTag = tags.find(tag => hierarchy === tag.tagsHierarchy.join('_')) || {};

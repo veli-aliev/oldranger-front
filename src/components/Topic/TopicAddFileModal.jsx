@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import propTypes from 'prop-types';
 import { Upload, Button, Icon, Row } from 'antd';
 import queries from '../../serverQueries';
+import { BASE_URL } from '../../constants';
 
-const url = 'http://localhost:8888/api/';
+const url = `${BASE_URL}api/`;
 const photoTempUrl = `${url}securedPhoto/photoFromAlbum/`;
 
-const Wrapper = styled.div`
+const ModalOverlay = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
@@ -15,18 +16,22 @@ const Wrapper = styled.div`
   left: 0;
   z-index: 1;
   background: white;
-  opacity: 0.9;
+  opacity: 1;
   padding: 130px 100px;
   display: ${props => (props.hidden ? 'hidden' : 'block')};
+  cursor: pointer;
 `;
 
 const Form = styled.form`
+  position: relative;
   padding: 10px;
+  padding-top: 42px;
   margin: 0 auto;
   width: 500px;
   border: 1px solid black;
   background: white;
   opacity: 1;
+  z-index: 2;
 `;
 
 const Gallery = styled.div`
@@ -38,8 +43,8 @@ const Gallery = styled.div`
 
 const CloseModalButton = styled(Button)`
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
 `;
 
 const BGImage = styled.img`
@@ -179,7 +184,7 @@ class TopicAddFileModal extends React.Component {
       fileList,
     };
     return (
-      <Wrapper>
+      <>
         <Form>
           <CloseModalButton onClick={handleCloseModal(false)}>
             <Icon type="close" />
@@ -247,7 +252,8 @@ class TopicAddFileModal extends React.Component {
             </Button>
           </Row>
         </Form>
-      </Wrapper>
+        <ModalOverlay onClick={handleCloseModal(false)} />
+      </>
     );
   }
 }

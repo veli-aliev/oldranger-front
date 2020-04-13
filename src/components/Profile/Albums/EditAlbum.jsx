@@ -5,6 +5,7 @@ import { message, Button, Input, Modal } from 'antd';
 import styled from 'styled-components';
 import queries from '../../../serverQueries';
 import { StyledImage } from './Album';
+import { BASE_URL } from '../../../constants';
 
 const EditSection = styled.div`
   justify-content: space-around;
@@ -67,7 +68,7 @@ class EditAlbum extends React.Component {
     this.state = {
       photos: [],
       photosToDelete: [],
-      photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
+      photoTempUlr: `${BASE_URL}api/securedPhoto/photoFromAlbum/`,
       visible: false,
       thumbImageId,
       title,

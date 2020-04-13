@@ -53,11 +53,11 @@ class ArticlePage extends React.Component {
     }
   };
 
-  handleCommentFormSubmit = commentId => async ({ text }) => {
+  handleCommentFormSubmit = (commentId, parentId) => async ({ text }) => {
     const { eventType } = this.state;
     try {
       const fn = eventType === 'edit' ? this.editComment : this.postComment;
-      await fn(commentId, text);
+      await fn(commentId, text, parentId);
       //  TODO
       // eslint-disable-next-line no-empty
     } catch (error) {}
@@ -89,7 +89,7 @@ class ArticlePage extends React.Component {
     );
   };
 
-  editComment = async (commentId, text) => {
+  editComment = async (commentId, text, parentId) => {
     const {
       article: { id: idArticle },
     } = this.state;
@@ -98,11 +98,12 @@ class ArticlePage extends React.Component {
       user: { id: idUser },
     } = this.context;
 
-    const updatedComment = await queries.updateArticleComment(text, {
-      idArticle,
-      idUser,
-      commentID: commentId,
-    });
+    const data = { idArticle, idUser, commentID: commentId };
+    if (parentId !== -1) {
+      data.answerId = parentId;
+    }
+
+    const updatedComment = await queries.updateArticleComment(text, data);
     this.setState(
       ({ flatComments }) => {
         const comments = flatComments.reduce(

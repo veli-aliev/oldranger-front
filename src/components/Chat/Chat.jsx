@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button, message as systemMessage } from 'antd';
+import { BASE_URL } from '../../constants';
 import queries from '../../serverQueries';
 import {
   ChatContainer,
@@ -26,7 +27,7 @@ import {
   Footer,
 } from './styled';
 
-const url = process.env.BASE_URL || 'http://localhost:8888/';
+const url = BASE_URL;
 
 class Chat extends React.Component {
   constructor(props) {

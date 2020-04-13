@@ -82,12 +82,12 @@ class Chat extends React.Component {
     if (msg.type === 'MESSAGE') {
       // const urlAvatar = msg.senderAvatar === null ? default : `${msg.senderAvatar}`;
       return (
-        <Message
-          toMe={user.nickName === msg.replyTo}
-          key={msg.id}
-          onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
-        >
-          <MessageAvatar alt="avatar" src={`${url}img/${msg.senderAvatar}`} />
+        <Message toMe={user.nickName === msg.replyTo} key={msg.id}>
+          <MessageAvatar
+            alt="avatar"
+            src={`${url}img/${msg.senderAvatar}`}
+            onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
+          />
           <div>
             <MessageAuthor>{msg.sender}</MessageAuthor>
             {msg.originalImg ? (

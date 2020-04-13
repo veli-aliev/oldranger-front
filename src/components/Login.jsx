@@ -1,10 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { Button, Row, message } from 'antd';
+import { Button, Row } from 'antd';
 import { Form, Input } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-
-import { showMessageNetError } from '../utils';
 
 import queries from '../serverQueries';
 import Context from './Context';
@@ -35,29 +33,21 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
   formData.append('username', values.username);
   formData.append('password', values.password);
 
-  if (navigator.onLine) {
-    try {
-      await queries.logIn(formData);
-      const userData = await queries.getProfileData();
+  try {
+    await queries.logIn(formData);
+    const userData = await queries.getProfileData();
 
-      localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(userData));
 
-      setStatus('');
-      changeLoginState();
-      changeUserState(userData);
-    } catch (error) {
-      if (error.message === 'Network Error') {
-        message.error('Сетевая ошибка');
-      } else if (error.message !== 'Network Error') {
-        showMessageNetError(error);
-      } else if (error.response.status === 401) {
-        setStatus('Проверьте правильность ввода логина и пароля');
-      }
+    setStatus('');
+    changeLoginState();
+    changeUserState(userData);
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      setStatus('Проверьте правильность ввода логина и пароля');
     }
-  } else {
-    message.error('Проверьте подключение к сети');
+    changeLoadingState(false);
   }
-  changeLoadingState(false);
 };
 
 const Login = () => {

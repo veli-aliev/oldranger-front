@@ -1,8 +1,6 @@
 import { formatDistance, parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 
-import { message } from 'antd';
-
 // eslint-disable-next-line import/prefer-default-export
 export const dateToDateDistance = (isoDate, addSuffix = false) =>
   isoDate && formatDistance(parseISO(isoDate), new Date(), { locale: ru, addSuffix });
@@ -46,10 +44,4 @@ export const createTreeBuildFunction = (childKey = 'id', parentKey = 'parentId')
     }
   });
   return tree;
-};
-
-export const showMessageNetError = error => {
-  if (error.message === 'Request failed with status code 500') {
-    message.error('Сервер не отвечает');
-  }
 };

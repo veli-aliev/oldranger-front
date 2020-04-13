@@ -140,9 +140,6 @@ export const Message = styled(Li)`
   justify-content: space-between;
   padding: 10px 20px 10px 68px;
   color: black;
-  &:hover {
-    cursor: pointer;
-  }
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: ${props => (props.toMe ? '#128ff2' : '#f4f4f4')};
@@ -160,6 +157,9 @@ export const MessageAvatar = styled.img`
   top: 10px;
   border: 1px solid #128ff2;
   border-radius: 50%;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const MessageAuthor = styled.div`

@@ -4,6 +4,8 @@ import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import queries from '../../../serverQueries';
+import Context from '../../Context';
+import { BASE_URL } from '../../../constants';
 
 const DeletePhotoButton = styled(Button)`
   display: none;
@@ -83,7 +85,10 @@ class Albums extends React.Component {
   }
 
   componentDidMount() {
-    this.loadAlbums();
+    const { isLogin } = this.context;
+    if (isLogin) {
+      this.loadAlbums();
+    }
   }
 
   loadAlbums = async () => {
@@ -195,7 +200,7 @@ class Albums extends React.Component {
                 <AlbomBackgroundImage
                   src={
                     album.thumbImageId
-                      ? `http://localhost:8888/api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
+                      ? `${BASE_URL}api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
                       : `/defaultAlbumPicture.jpg`
                   }
                 />
@@ -237,6 +242,8 @@ class Albums extends React.Component {
     );
   }
 }
+
+Albums.contextType = Context;
 
 Albums.propTypes = {
   location: PropTypes.shape({

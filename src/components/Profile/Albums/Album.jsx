@@ -8,6 +8,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
 import UploadPhoto from './UploadPhoto';
+import { BASE_URL } from '../../../constants';
 
 const CloseModalButton = styled(Button)`
 position:absolute;
@@ -77,7 +78,7 @@ class Album extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
+      photoTempUlr: `${BASE_URL}api/securedPhoto/photoFromAlbum/`,
       photos: [],
       selectedIndex: 0,
       lightboxIsOpen: false,

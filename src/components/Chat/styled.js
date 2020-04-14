@@ -132,6 +132,10 @@ export const UserLink = styled.a`
 
 export const MessageList = styled(Ul)`
   width: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  position: relative;
 `;
 
 export const Message = styled(Li)`
@@ -181,16 +185,18 @@ export const MessageText = styled.p`
   margin: 0;
 `;
 
-export const ShowFullButton = styled.button`
+export const ScrollToTopButton = styled.button`
+  position: fixed;
+  top: 170px;
+  left: 50%;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   padding: 0;
   background-color: #fff;
   border: 1px solid #128ff2;
-  margin: 20px auto;
-  margin-left: calc(50% - 20px);
   cursor: pointer;
+  z-index: 2;
 `;
 
 export const Arrow = styled.span`

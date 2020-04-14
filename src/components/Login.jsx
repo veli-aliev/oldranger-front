@@ -57,8 +57,8 @@ const Login = () => {
   return (
     <Formik
       initialValues={{
-        username: 'Admin',
-        password: 'admin',
+        username: '',
+        password: '',
       }}
       validationSchema={validationSchema}
       onSubmit={login({ changeLoginState, changeUserState, changeLoadingState })}

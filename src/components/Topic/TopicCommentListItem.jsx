@@ -30,8 +30,9 @@ const TopicCommentListItem = ({
         true
       )}, отредактирован ${dateToDateDistance(comment.commentUpdateTime, true)}`
     : `Создан ${dateToDateDistance(comment.commentDateTime, true)}`;
+
   return (
-    <ListItem id={comment.positionInTopic + 1}>
+    <ListItem id={comment.positionInTopic}>
       <Comment
         actions={withActions ? commentActions : null}
         author={

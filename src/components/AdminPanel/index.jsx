@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import UsersList from './UsersList';
 import UserInfo from './UserInfo';
 import MailingLetters from './MailingLetters';
+import ArticleCreate from './ArticleCreate';
 
 const AdminPanelHeader = styled.div`
   margin-bottom: 30px;
@@ -30,12 +31,14 @@ const AdminPanel = () => {
         <Radio.Group value={selectedUrl} onChange={changeUrl}>
           <Radio.Button value="">Список пользователей</Radio.Button>
           <Radio.Button value="mail">Рассылка сообщений</Radio.Button>
+          <Radio.Button value="article-create">Создать статью</Radio.Button>
         </Radio.Group>
       </AdminPanelHeader>
       <Switch>
         <Route path={`${path}/`} exact component={UsersList} />
         <Route path={`${path}/users/:id`} exact component={UserInfo} />
         <Route path={`${path}/mail`} exact component={MailingLetters} />
+        <Route path={`${path}/article-create`} exact component={ArticleCreate} />
       </Switch>
     </div>
   );

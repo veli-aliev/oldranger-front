@@ -57,11 +57,6 @@ class Messages extends React.Component {
       });
   };
 
-  getPageComment = numberComment => {
-    const pageComment = numberComment < 11 ? 1 : Math.ceil(numberComment / 10);
-    return pageComment;
-  };
-
   render() {
     const { hasMore, messages } = this.state;
 
@@ -77,7 +72,7 @@ class Messages extends React.Component {
       <TopicCommentsList
         itemComponent={item => (
           <HashLink
-            to={`/topic/${item.topicId}?page=${this.getPageComment(item.positionInTopic)}#${
+            to={`/topic/${item.topicId}?page=${Math.ceil(item.positionInTopic / 10)}#${
               item.positionInTopic
             }`}
           >

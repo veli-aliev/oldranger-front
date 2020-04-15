@@ -49,6 +49,21 @@ class Queries {
     return res.data;
   };
 
+  addNewTagTree = async params => {
+    const res = await axios.post('/api/tags/node/add', {}, { params });
+    return res.data;
+  };
+
+  updateTagsTree = async params => {
+    const res = await axios.put(`/api/tags/node/update`, {}, { params });
+    return res.data;
+  };
+
+  deleteTags = async params => {
+    const res = await axios.delete(`/api/tags/node/delete`, { params });
+    return res.data;
+  };
+
   updateArticle = async (id, data, params) => {
     const res = await axios.put(`/api/article/update/${id}`, data, { params });
     return res.data;

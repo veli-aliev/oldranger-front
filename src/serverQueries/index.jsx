@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { message } from 'antd';
 import { BASE_URL } from '../constants';
 import { paramsSerializer } from '../utils';
 
@@ -7,14 +8,32 @@ class Queries {
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.withCredentials = true;
     axios.defaults.paramsSerializer = paramsSerializer;
+    axios.interceptors.response.use(this.handleSuccess, this.handleError);
   }
+
+  handleSuccess = response => {
+    return response;
+  };
+
+  handleError = error => {
+    if (error.message === 'Network Error' && !error.response) {
+      message.error('Сетевая ошибка');
+    }
+
+    if (error.message === 'Request failed with status code 500') {
+      message.error('Сервер не отвечает');
+    }
+
+    return Promise.reject(error);
+  };
 
   logIn = async formData => {
     await axios.post('login', formData);
   };
 
   logOut = async () => {
-    await axios.get('api/logout');
+    const res = await axios.get('api/logout');
+    return res;
   };
 
   updateProfile = async formData => {

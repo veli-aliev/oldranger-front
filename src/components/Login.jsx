@@ -5,7 +5,6 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import queries from '../serverQueries';
-
 import Context from './Context';
 import FormItem from './formItems/FormItem';
 
@@ -44,11 +43,11 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
     changeLoginState();
     changeUserState(userData);
   } catch (error) {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       setStatus('Проверьте правильность ввода логина и пароля');
     }
+    changeLoadingState(false);
   }
-  changeLoadingState(false);
 };
 
 const Login = () => {

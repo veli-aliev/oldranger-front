@@ -136,6 +136,7 @@ export const MessageList = styled(Ul)`
   -webkit-overflow-scrolling: touch;
   height: 100%;
   position: relative;
+  scroll-behavior: smooth;
 `;
 
 export const Message = styled(Li)`

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import throttle from 'lodash/throttle';
 import { Input, Button, message as systemMessage } from 'antd';
 import { BASE_URL } from '../../constants';
 import queries from '../../serverQueries';
@@ -36,7 +37,12 @@ class Chat extends React.Component {
   }
 
   componentDidMount() {
-    this.scrollingWrapper.addEventListener('scroll', this.onScroll);
+    this.trottledFunction = throttle(this.onScroll, 150);
+    this.scrollingWrapper.addEventListener('scroll', this.trottledFunction);
+  }
+
+  componentWillUnmount() {
+    this.scrollingWrapper.removeEventListener('scroll', this.trottledFunction);
   }
 
   handleChangeMessage = event => {

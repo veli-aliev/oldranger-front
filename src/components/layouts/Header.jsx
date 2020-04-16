@@ -2,32 +2,39 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'antd';
+import logo from '../../media/img/logo.png';
 
 import Context from '../Context';
 
 const StyledHeader = styled.div`
+  padding-top: 10px;
+  padding-bottom: 20px;
+`;
+
+const WrapLogo = styled.div`
   display: flex;
-  position: relative;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const Logo = styled.img`
+  width: 110px;
+  height: 95px;
+`;
+
+const LogoText = styled.h1`
+  font-family: 'MusorC';
+  font-weight: normal;
+  font-size: 28px;
+  margin: 0;
+`;
+
+const Menu = styled.div`
   width: 100%;
-  padding: 10px 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
-  > button {
-    margin-right: 20px;
-  }
-`;
-
-const LeftWrapper = styled.div`
-  margin-right: auto;
-  > button {
-    margin-right: 20px;
-  }
-`;
-
-const RightWrapper = styled.div`
-  > button {
-    margin-left: 20px;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
 
 const Header = () => {
@@ -35,7 +42,11 @@ const Header = () => {
     <Context.Consumer>
       {({ isLogin, logOut, user }) => (
         <StyledHeader>
-          <LeftWrapper>
+          <WrapLogo>
+            <Logo src={logo} alt='Клуб "Старый следопыт"' />
+            <LogoText>Клуб &quot;Старый следопыт&quot;</LogoText>
+          </WrapLogo>
+          <Menu>
             <Button type="primary">
               <Link to="/">Главная</Link>
             </Button>
@@ -52,10 +63,8 @@ const Header = () => {
                 <Link to="/articles">Статьи</Link>
               </Button>
             )}
-          </LeftWrapper>
-          <RightWrapper>
             {isLogin && user.role === 'ROLE_ADMIN' && (
-              <Button>
+              <Button style={{ marginLeft: '0' }}>
                 <Link to="/admin-panel">Панель администратора</Link>
               </Button>
             )}
@@ -73,7 +82,7 @@ const Header = () => {
                 <Link to="/login">Войти</Link>
               </Button>
             )}
-          </RightWrapper>
+          </Menu>
         </StyledHeader>
       )}
     </Context.Consumer>

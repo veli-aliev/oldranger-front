@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import { Formik, Field as FormikField } from 'formik';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Button, Form as AntForm, Input, Select } from 'antd';
+import Context from '../Context';
 import SimpleInput from '../formItems/SimpleInput';
 import { StyledForm, StyledSelect, ButtonGroup } from './styled';
 
@@ -15,6 +16,7 @@ const validationSchema = Yup.object({
 });
 
 const SearchForm = ({ history }) => {
+  const { isLogin } = useContext(Context);
   return (
     <Formik
       initialValues={{
@@ -33,9 +35,11 @@ const SearchForm = ({ history }) => {
               help={touched.searchRequest ? errors.searchRequest : ''}
             >
               <ButtonGroup>
-                <Button>
-                  <Link to="/topic/add">Создать тему</Link>
-                </Button>
+                {isLogin ? (
+                  <Button>
+                    <Link to="/topic/add">Создать тему</Link>
+                  </Button>
+                ) : null}
                 <InputGroup compact>
                   <SimpleInput placeholder="Поиск по Форуму" name="searchRequest" type="text" />
                   <FormikField name="searchBy">

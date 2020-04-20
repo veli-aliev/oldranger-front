@@ -146,7 +146,7 @@ class Chat extends React.Component {
                   const [username, id] = user;
                   return (
                     <User key={user}>
-                      <UserLink href={`/profile/${id}`}>{username}</UserLink>
+                      <UserLink href={`/anotheruser/${id}`}>{username}</UserLink>
                     </User>
                   );
                 })}

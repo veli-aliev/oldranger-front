@@ -3,13 +3,17 @@ import { Route } from 'react-router-dom';
 import TagsMenu from './TagsMenu/TagsMenu';
 import { Container } from './styled/index';
 import ArticlesByTag from './ArticlesByTag';
+import SearchForm from './SearchForm';
 
 const Articles = () => {
   return (
-    <Container>
-      <TagsMenu />
-      <Route exact path="/articles" component={ArticlesByTag} />
-    </Container>
+    <>
+      <SearchForm />
+      <Container>
+        <TagsMenu />
+        <Route exact path="/articles" component={ArticlesByTag} />
+      </Container>
+    </>
   );
 };
 

@@ -199,6 +199,13 @@ class Queries {
     return res.data;
   };
 
+  searchByArticles = async (title, page) => {
+    const res = await axios.get(`/api/searchArticles`, {
+      params: { title, page },
+    });
+    return res.data;
+  };
+
   addComment = async newComment => {
     // TODO Перенести в компонент
     const formData = new FormData();

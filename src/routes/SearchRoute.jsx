@@ -2,6 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import SearchTopicsPage from '../components/Search/SearchTopicsPage';
 import SearchCommentsPage from '../components/Search/SearchCommentsPage';
+import SearchArticlesPage from '../components/Search/SearchArticlesPage';
 
 const SearchRoute = () => (
   <>
@@ -10,6 +11,9 @@ const SearchRoute = () => (
     </Route>
     <Route exact path="/searchComments/:searchRequest">
       <SearchCommentsPage />
+    </Route>
+    <Route exact path="/searchArticles/:searchRequest">
+      <SearchArticlesPage />
     </Route>
   </>
 );

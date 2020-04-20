@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
+import { Form as AntForm } from 'antd';
 
 export const StyledMenu = styled.div`
   height: fit-content;
@@ -95,4 +96,11 @@ export const TagsItem = styled.p`
   color: ${props => (props.active === props.activeId ? '#1890ff' : 'black')};
   background-color: ${props => (props.active === props.activeId ? '#e6f7ff' : 'white')};
   border-right: 3px solid ${props => (props.active === props.activeId ? '#1890ff' : 'white')};
+`;
+
+export const StyledForm = styled(AntForm)`
+  text-align: right;
+  .ant-form-item-children-icon {
+    display: none;
+  }
 `;

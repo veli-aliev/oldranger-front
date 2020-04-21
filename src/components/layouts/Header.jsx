@@ -42,11 +42,6 @@ const Header = () => {
             <Button type="primary">
               <Link to="/chat">Чат</Link>
             </Button>
-            {isLogin && user.role === 'ROLE_ADMIN' && (
-              <Button>
-                <Link to="/article/create">Написать статью</Link>
-              </Button>
-            )}
             {isLogin && (
               <Button>
                 <Link to="/articles">Статьи</Link>

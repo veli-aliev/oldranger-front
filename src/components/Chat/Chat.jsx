@@ -87,6 +87,21 @@ class Chat extends React.Component {
     this.scrollingWrapper.scrollTop = 0;
   };
 
+  wrapLink = text => {
+    const reg = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,})/gi;
+    const textSplitOfLinks = text.split(reg);
+    const result = textSplitOfLinks.map((el, index) =>
+      index % 2 === 0 ? (
+        el
+      ) : (
+        <a href={el} target="_blank" rel="noopener noreferrer">
+          {el}
+        </a>
+      )
+    );
+    return result;
+  };
+
   drawMessage = msg => {
     const { user } = this.props;
     if (msg.type === 'MESSAGE') {
@@ -124,7 +139,7 @@ class Chat extends React.Component {
             ) : (
               ''
             )}
-            <MessageText className="message-text">{msg.text}</MessageText>
+            <MessageText className="message-text">{this.wrapLink(msg.text)}</MessageText>
           </div>
           <MessageDate className="message-date">{msg.messageDate}</MessageDate>
         </Message>

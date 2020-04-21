@@ -14,7 +14,7 @@
     "prettier/prettier": ["error", {
       "singleQuote": true,
       "trailingComma": "es5",
-      "endOfLine": "auto", //es-lint не ругается на lf 
+      "endOfLine": "auto",
       "printWidth": 100
     }],
     "max-depth": ["warn", 4],

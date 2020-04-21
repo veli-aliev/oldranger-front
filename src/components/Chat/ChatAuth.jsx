@@ -120,6 +120,12 @@ class ChatAuth extends React.Component {
     }, 200);
   };
 
+  deleteCurrentMessage = async id => {
+    const { messages } = this.state;
+    queries.deleteMessage(id);
+    this.setState({ messages: messages.filter(msg => msg.id !== id) });
+  };
+
   render() {
     const { isJoin, messages, usersOnline } = this.state;
     const { user } = this.props;
@@ -128,6 +134,7 @@ class ChatAuth extends React.Component {
     ) : (
       <Chat
         handleDisconnect={this.disconnect}
+        deleteCurrentMessage={this.deleteCurrentMessage}
         usersOnline={usersOnline}
         messages={messages}
         sendMessage={this.sendMessage}

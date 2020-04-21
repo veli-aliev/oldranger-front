@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import throttle from 'lodash/throttle';
 import { Input, Button, message as systemMessage } from 'antd';
 import { BASE_URL } from '../../constants';
 import queries from '../../serverQueries';
@@ -21,7 +22,7 @@ import {
   MessageImage,
   MessageDate,
   MessageText,
-  ShowFullButton,
+  ScrollToTopButton,
   Arrow,
   Form,
   Footer,
@@ -32,7 +33,16 @@ const url = BASE_URL;
 class Chat extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { message: '', file: null, filePath: '', replyTo: null, isFull: false };
+    this.state = { message: '', file: null, filePath: '', replyTo: null, hasScrolled: false };
+  }
+
+  componentDidMount() {
+    this.trottledFunction = throttle(this.onScroll, 150);
+    this.scrollingWrapper.addEventListener('scroll', this.trottledFunction);
+  }
+
+  componentWillUnmount() {
+    this.scrollingWrapper.removeEventListener('scroll', this.trottledFunction);
   }
 
   handleChangeMessage = event => {
@@ -74,7 +84,7 @@ class Chat extends React.Component {
   handleShowFull = () => {
     const { getMessages } = this.props;
     getMessages(true);
-    this.setState({ isFull: true });
+    this.scrollingWrapper.scrollTop = 0;
   };
 
   drawMessage = msg => {
@@ -127,9 +137,22 @@ class Chat extends React.Component {
     );
   };
 
+  onScroll = () => {
+    const { hasScrolled } = this.state;
+    if (this.scrollingWrapper.scrollTop > 100 && !hasScrolled) {
+      this.setState({ hasScrolled: true });
+    } else if (this.scrollingWrapper.scrollTop < 100 && hasScrolled) {
+      this.setState({ hasScrolled: false });
+    }
+  };
+
+  reference = id => ref => {
+    this[id] = ref;
+  };
+
   render() {
     const { handleDisconnect, messages, usersOnline } = this.props;
-    const { message, filePath, isFull } = this.state;
+    const { message, filePath, hasScrolled } = this.state;
     return (
       <section>
         <ChatContainer>
@@ -153,13 +176,11 @@ class Chat extends React.Component {
               </UserList>
             </div>
             <div style={{ width: '80%' }}>
-              <MessageList className="message-list">
-                {isFull ? (
-                  ''
-                ) : (
-                  <ShowFullButton onClick={this.handleShowFull}>
+              <MessageList className="message-list" ref={this.reference('scrollingWrapper')}>
+                {hasScrolled && (
+                  <ScrollToTopButton onClick={this.handleShowFull}>
                     <Arrow />
-                  </ShowFullButton>
+                  </ScrollToTopButton>
                 )}
                 {messages.map(msg => this.drawMessage(msg))}
               </MessageList>

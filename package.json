@@ -14,6 +14,7 @@
     "interweave": "^12.2.1",
     "libphonenumber-js": "^1.7.30",
     "lodash": "^4.17.15",
+    "lodash.throttle": "^4.1.1",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",

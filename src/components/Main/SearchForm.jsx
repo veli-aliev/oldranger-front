@@ -7,6 +7,7 @@ import { Button, Form as AntForm, Input, Select } from 'antd';
 import Context from '../Context';
 import SimpleInput from '../formItems/SimpleInput';
 import { StyledForm, StyledSelect, ButtonGroup } from './styled';
+import Context from '../Context';
 
 const InputGroup = Input.Group;
 const { Option } = Select;
@@ -35,11 +36,11 @@ const SearchForm = ({ history }) => {
               help={touched.searchRequest ? errors.searchRequest : ''}
             >
               <ButtonGroup>
-                {isLogin ? (
+                {isLogin && (
                   <Button>
                     <Link to="/topic/add">Создать тему</Link>
                   </Button>
-                ) : null}
+                )}
                 <InputGroup compact>
                   <SimpleInput placeholder="Поиск по Форуму" name="searchRequest" type="text" />
                   <FormikField name="searchBy">

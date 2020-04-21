@@ -4,11 +4,12 @@ import React from 'react';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
+import { BASE_URL } from '../../constants';
 import Chat from './Chat';
 import Greeting from './Greeting';
 import queries from '../../serverQueries';
 
-const url = process.env.BASE_URL || 'http://localhost:8888/';
+const url = BASE_URL;
 
 class ChatAuth extends React.Component {
   constructor(props) {

@@ -13,7 +13,7 @@ const SearchCommentsItem = ({ item, history }) => {
   return (
     <ClickableItemWrapper clickHandler={commentClickHandler}>
       <>
-        <b>Здесь будет название топика, а пока его ID {item.topicId}</b>
+        <h3>{item.topicName}</h3>
         <TopicCommentItem comment={item} />
       </>
     </ClickableItemWrapper>

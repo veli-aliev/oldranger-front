@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { message, Button, Input, Modal } from 'antd';
 import styled from 'styled-components';
 import queries from '../../../serverQueries';
 import { StyledImage } from './Album';
+import { BASE_URL } from '../../../constants';
 
 const EditSection = styled.div`
   justify-content: space-around;
@@ -67,7 +68,7 @@ class EditAlbum extends React.Component {
     this.state = {
       photos: [],
       photosToDelete: [],
-      photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
+      photoTempUlr: `${BASE_URL}api/securedPhoto/photoFromAlbum/`,
       visible: false,
       thumbImageId,
       title,
@@ -117,11 +118,22 @@ class EditAlbum extends React.Component {
   handleDeletePhotos = async () => {
     const { photosToDelete } = this.state;
     try {
-      await Promise.all(photosToDelete.map(id => queries.deletePhotoFromAlbum(id)));
-      this.setState(({ photos }) => ({
-        photos: photos.filter(({ photoID }) => !photosToDelete.includes(photoID)),
-        photosToDelete: [],
-      }));
+      // await Promise.all(photosToDelete.map(id => queries.deletePhotoFromAlbum(id)));
+      await queries.deletePhotosFromAlbum(photosToDelete);
+      this.setState(({ photos, thumbImageId }) => {
+        const updatedPhotos = photos.filter(({ photoID }) => !photosToDelete.includes(photoID));
+        const updatedThumbImageId = () => {
+          if (updatedPhotos.length === 0) {
+            return '';
+          }
+          return updatedPhotos.includes(thumbImageId) ? thumbImageId : updatedPhotos[0].photoID;
+        };
+        return {
+          photos: updatedPhotos,
+          photosToDelete: [],
+          thumbImageId: updatedThumbImageId(),
+        };
+      });
     } catch (error) {
       // message.error('что-то пошло не так');
       await this.loadPhotos();
@@ -129,9 +141,11 @@ class EditAlbum extends React.Component {
   };
 
   handleSubmit = async () => {
+    const { history } = this.props;
     try {
       const { photoAlbumId, title, thumbImageId } = this.state;
       await queries.updateAlbum(photoAlbumId, { title, photoId: thumbImageId });
+      history.push('/profile/albums');
     } catch (err) {
       message.error('что-то пошло не так');
     }
@@ -230,6 +244,9 @@ class EditAlbum extends React.Component {
 }
 
 EditAlbum.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
       photoAlbumId: PropTypes.number.isRequired,
@@ -239,4 +256,4 @@ EditAlbum.propTypes = {
   }).isRequired,
 };
 
-export default EditAlbum;
+export default withRouter(EditAlbum);

@@ -1,39 +1,41 @@
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { userRoles } from '../constants';
 import Articles from '../components/Articles/Articles';
-import ArticleCreate from '../components/Articles/ArticleCreate';
-import AdminRoute from './AdminRoute';
+import PrivateRoute from './PrivateRoute';
 import ArticleUpdate from '../components/Articles/ArticleUpdate';
 import ArticlePage from '../components/Articles/ArticlePage';
 
-const ArticlesRoute = ({ isLogin }) => {
+const ArticlesRoute = ({ isLogin, role }) => {
   return (
     <>
-      <Route>
-        {isLogin ? (
-          <Switch>
-            <Route exact path="/articles">
-              <Articles />
-            </Route>
-            <AdminRoute exact path="/article/create">
-              <ArticleCreate />
-            </AdminRoute>
-            <Route exact path="/article/:articleId" component={ArticlePage} />
-            <AdminRoute exact path="/article/:articleId/update">
-              <ArticleUpdate />
-            </AdminRoute>
-          </Switch>
-        ) : (
-          <Redirect to="/login" />
-        )}
-      </Route>
+      <Switch>
+        <PrivateRoute isAllowed={isLogin} exact path="/articles" component={Articles} />
+        <PrivateRoute
+          isAllowed={isLogin}
+          exact
+          path="/article/:articleId"
+          component={ArticlePage}
+        />
+        <PrivateRoute
+          isAllowed={isLogin && role === userRoles.admin}
+          exact
+          path="/article/:articleId/update"
+          component={ArticleUpdate}
+        />
+      </Switch>
     </>
   );
 };
 
 ArticlesRoute.propTypes = {
   isLogin: PropTypes.bool.isRequired,
+  role: PropTypes.string,
+};
+
+ArticlesRoute.defaultProps = {
+  role: null,
 };
 
 export default ArticlesRoute;

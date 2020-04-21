@@ -53,11 +53,14 @@ class TopicEditingForm extends React.Component {
       idUser,
       commentId,
       text,
+      photoIdList: [],
     };
 
     files.forEach((file, index) => {
       if (file.originFileObj) {
         editingComment[`image${index + 1}`] = file;
+      } else {
+        editingComment.photoIdList.push(file.uid * -1);
       }
     });
     queries

@@ -4,25 +4,29 @@ import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
 import { Column } from './styled';
 import Article from './Article';
+import useQuery from '../../hooks/useQuery';
 
-const ArticlesByTag = ({ location: { search: tagsStr } }) => {
+const ArticlesByTag = () => {
   const [articles, setArticles] = useState([]);
   const [isEmpty, setIsEmpty] = useState(false);
+  const tagsAtr = useQuery().tags;
 
   useEffect(() => {
-    if (!tagsStr) {
+    if (!tagsAtr) {
       queries.getArticlesByTag().then(el => {
         setArticles(el.content);
         setIsEmpty(el.empty);
       });
     } else {
-      const tagsArr = tagsStr.split('=')[1].split('_');
-      queries.getArticlesByTag(tagsArr).then(el => {
-        setArticles(el.content.reverse());
-        setIsEmpty(el.empty);
-      });
+      queries
+        .getArticlesByTag(tagsAtr.split('_'))
+        .then(el => {
+          setArticles(el.content.reverse());
+          setIsEmpty(el.empty);
+        })
+        .catch(() => setIsEmpty(true));
     }
-  }, [tagsStr]);
+  }, [tagsAtr]);
 
   const LoadOrNotFound = isEmpty ? <h1>Статей по этому тегу не найдено</h1> : <Spin />;
   return (

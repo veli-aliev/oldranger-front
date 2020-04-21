@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { message } from 'antd';
 import { BASE_URL } from '../constants';
 import { paramsSerializer } from '../utils';
 
@@ -7,14 +8,32 @@ class Queries {
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.withCredentials = true;
     axios.defaults.paramsSerializer = paramsSerializer;
+    axios.interceptors.response.use(this.handleSuccess, this.handleError);
   }
+
+  handleSuccess = response => {
+    return response;
+  };
+
+  handleError = error => {
+    if (error.message === 'Network Error' && !error.response) {
+      message.error('Сетевая ошибка');
+    }
+
+    if (error.message === 'Request failed with status code 500') {
+      message.error('Сервер не отвечает');
+    }
+
+    return Promise.reject(error);
+  };
 
   logIn = async formData => {
     await axios.post('login', formData);
   };
 
   logOut = async () => {
-    await axios.get('api/logout');
+    const res = await axios.get('api/logout');
+    return res;
   };
 
   updateProfile = async formData => {
@@ -46,6 +65,21 @@ class Queries {
     const res = await axios.get('/api/tags/node/tree', {
       withCredentials: true,
     });
+    return res.data;
+  };
+
+  addNewTagTree = async params => {
+    const res = await axios.post('/api/tags/node/add', {}, { params });
+    return res.data;
+  };
+
+  updateTagsTree = async params => {
+    const res = await axios.put(`/api/tags/node/update`, {}, { params });
+    return res.data;
+  };
+
+  deleteTags = async params => {
+    const res = await axios.delete(`/api/tags/node/delete`, { params });
     return res.data;
   };
 
@@ -111,6 +145,16 @@ class Queries {
 
   getProfileSubscriptions = async page => {
     const res = await axios.get(`/api/subscriptions`, { params: { page } });
+    return res.data;
+  };
+
+  addTopicToSubscriptions = async topicId => {
+    const res = await axios.post(`/api/subscriptions`, {}, { params: { topicId } });
+    return res.data;
+  };
+
+  deleteTopicFromSubscriptions = async topicId => {
+    const res = await axios.delete('/api/subscriptions', { params: { topicId } });
     return res.data;
   };
 
@@ -185,6 +229,7 @@ class Queries {
     formData.set('idTopic', editingComment.idTopic);
     formData.set('idUser', editingComment.idUser);
     formData.set('text', editingComment.text);
+    formData.set('photoIdList', JSON.stringify(editingComment.photoIdList));
 
     if (editingComment.image1) {
       formData.set('image1', editingComment.image1.originFileObj, editingComment.image1.name);
@@ -270,6 +315,10 @@ class Queries {
     return res.data;
   };
 
+  deletePhotosFromAlbum = async photoIds => {
+    await axios.delete('api/photos/deleteMultiplePhoto', { data: photoIds });
+  };
+
   getUsersList = async (page, query) => {
     const res = await axios.get('/api/admin/users', {
       params: { page: Number(page), ...(query ? { query } : {}) },
@@ -293,6 +342,11 @@ class Queries {
       dateUnblock: new Date(dateUnblock).toISOString(),
       // Не работает, потому что на беке ещё не смержили ветку с dev
     });
+    return res.data;
+  };
+
+  unblockUser = async id => {
+    const res = await axios.post('/api/admin/unblocking', { id });
     return res.data;
   };
 

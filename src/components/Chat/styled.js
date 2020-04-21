@@ -132,6 +132,11 @@ export const UserLink = styled.a`
 
 export const MessageList = styled(Ul)`
   width: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  position: relative;
+  scroll-behavior: smooth;
 `;
 
 export const Message = styled(Li)`
@@ -140,9 +145,6 @@ export const Message = styled(Li)`
   justify-content: space-between;
   padding: 10px 20px 10px 68px;
   color: black;
-  &:hover {
-    cursor: pointer;
-  }
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: ${props => (props.toMe ? '#128ff2' : '#f4f4f4')};
@@ -160,6 +162,9 @@ export const MessageAvatar = styled.img`
   top: 10px;
   border: 1px solid #128ff2;
   border-radius: 50%;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const MessageAuthor = styled.div`
@@ -181,16 +186,32 @@ export const MessageText = styled.p`
   margin: 0;
 `;
 
-export const ShowFullButton = styled.button`
+export const MessageInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  .message-delete {
+    cursor: pointer;
+    padding: none;
+    background: inherit;
+    border: none;
+  }
+`;
+
+export const ScrollToTopButton = styled.button`
+  position: fixed;
+  top: 170px;
+  left: 50%;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   padding: 0;
   background-color: #fff;
   border: 1px solid #128ff2;
-  margin: 20px auto;
-  margin-left: calc(50% - 20px);
   cursor: pointer;
+  z-index: 2;
 `;
 
 export const Arrow = styled.span`

@@ -16,7 +16,7 @@ const ModalOverlay = styled.div`
   left: 0;
   z-index: 1;
   background: white;
-  opacity: 1;
+  opacity: 0.9;
   padding: 130px 100px;
   display: ${props => (props.hidden ? 'hidden' : 'block')};
   cursor: pointer;

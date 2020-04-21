@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Tag, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 import { ArticleContentView, ArticleTitle } from '../commons/HTMLContentViews';
 import { StyledArticle, StyledMeta, StyledTags, StyledUserInfo, StyledDate } from './styled/index';
 import { dateToDateDistance } from '../../utils/index';
+import context from '../Context';
 
 const Article = props => {
   const { articleInfo, isPreview } = props;
+  const {
+    user: { role },
+  } = useContext(context);
   return (
     <StyledArticle>
       <ArticleTitle>
@@ -18,7 +22,7 @@ const Article = props => {
         ) : (
           articleInfo.title
         )}
-        {
+        {role === 'ROLE_ADMIN' ? (
           <Link
             style={{
               fontSize: '16px',
@@ -30,7 +34,7 @@ const Article = props => {
           >
             <Icon type="edit" theme="outlined" />
           </Link>
-        }
+        ) : null}
       </ArticleTitle>
       <ArticleContentView dangerouslySetInnerHTML={{ __html: articleInfo.text }} />
       <StyledMeta>

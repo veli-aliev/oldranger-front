@@ -72,7 +72,7 @@ class App extends React.Component {
           path="/admin-panel"
           component={AdminPanel}
         />
-        <TopicRoute />
+        <TopicRoute isLogin={isLogin} />
         <SubsectionRoute />
         <SearchRoute />
         <ArticlesRoute isLogin={isLogin} role={role} />

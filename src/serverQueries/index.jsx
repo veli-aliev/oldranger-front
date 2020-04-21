@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { message } from 'antd';
 import { BASE_URL } from '../constants';
 import { paramsSerializer } from '../utils';
 
@@ -7,14 +8,32 @@ class Queries {
     axios.defaults.baseURL = BASE_URL;
     axios.defaults.withCredentials = true;
     axios.defaults.paramsSerializer = paramsSerializer;
+    axios.interceptors.response.use(this.handleSuccess, this.handleError);
   }
+
+  handleSuccess = response => {
+    return response;
+  };
+
+  handleError = error => {
+    if (error.message === 'Network Error' && !error.response) {
+      message.error('Сетевая ошибка');
+    }
+
+    if (error.message === 'Request failed with status code 500') {
+      message.error('Сервер не отвечает');
+    }
+
+    return Promise.reject(error);
+  };
 
   logIn = async formData => {
     await axios.post('login', formData);
   };
 
   logOut = async () => {
-    await axios.get('api/logout');
+    const res = await axios.get('api/logout');
+    return res;
   };
 
   updateProfile = async formData => {
@@ -46,6 +65,21 @@ class Queries {
     const res = await axios.get('/api/tags/node/tree', {
       withCredentials: true,
     });
+    return res.data;
+  };
+
+  addNewTagTree = async params => {
+    const res = await axios.post('/api/tags/node/add', {}, { params });
+    return res.data;
+  };
+
+  updateTagsTree = async params => {
+    const res = await axios.put(`/api/tags/node/update`, {}, { params });
+    return res.data;
+  };
+
+  deleteTags = async params => {
+    const res = await axios.delete(`/api/tags/node/delete`, { params });
     return res.data;
   };
 
@@ -344,6 +378,11 @@ class Queries {
   getAllMessages = async page => {
     const res = await axios.get(`/api/chat/messages?page=${page}`);
     return res;
+  };
+
+  deleteMessage = async id => {
+    const res = await axios.delete(`/api/chat/messages/${id}`);
+    return res.status;
   };
 
   createNewTopic = async formData => {

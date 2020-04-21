@@ -27,9 +27,8 @@ class Subscriptions extends React.Component {
       return this.setState({ hasMore: false });
     }
 
-    const badApiAdaptationTopicsFixMePlease = newTopics.map(item => ({
-      topic: item.topic,
-      totalMessages: 0,
+    const badApiAdaptationTopicsFixMePlease = newTopics.map(topic => ({
+      topic,
       isSubscribed: false,
       hasNewMessages: false,
       newMessagesCount: 0,

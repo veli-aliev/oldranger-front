@@ -57,9 +57,9 @@ class TopicPage extends React.Component {
     if (page === 1) {
       queries
         .getTopic(match.params.topicId, 0, 10)
-        .then(({ topic, commentDto }) => {
+        .then(({ topic, commentDto, subscribed }) => {
           this.setState({
-            topic,
+            topic: { ...topic, isSubscribed: subscribed },
             page,
             messages: commentDto ? commentDto.content : null,
             error: false,
@@ -71,9 +71,9 @@ class TopicPage extends React.Component {
     } else {
       queries
         .getTopic(match.params.topicId, page - 1, 10)
-        .then(({ topic, commentDto }) => {
+        .then(({ topic, commentDto, subscribed }) => {
           this.setState({
-            topic,
+            topic: { ...topic, isSubscribed: subscribed },
             page,
             messages: commentDto ? commentDto.content : null,
             error: false,
@@ -221,6 +221,38 @@ class TopicPage extends React.Component {
     }));
   };
 
+  toggleSubscriptionStatus = () => {
+    const {
+      topic: { id: topicId, isSubscribed },
+    } = this.state;
+    const setSubscriptionState = newSubscriptionState => {
+      this.setState(({ topic }) => ({
+        topic: {
+          ...topic,
+          isSubscribed: newSubscriptionState,
+        },
+      }));
+    };
+    const addSubscription = () => {
+      queries.addTopicToSubscriptions(topicId).catch(() => {
+        setSubscriptionState(false);
+        message.error('Что-то пошло не так, топик не добавлен');
+      });
+    };
+    const deleteSubscription = () => {
+      queries.deleteTopicFromSubscriptions(topicId).catch(() => {
+        setSubscriptionState(true);
+        message.error('Что-то пошло не так, топик не удален');
+      });
+    };
+    setSubscriptionState(!isSubscribed);
+    if (!isSubscribed) {
+      addSubscription();
+    } else {
+      deleteSubscription();
+    }
+  };
+
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
     const { userProfile } = this.props;
@@ -258,6 +290,9 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
+            <Button onClick={this.toggleSubscriptionStatus}>
+              {topic.isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+            </Button>
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
               messages={messages}

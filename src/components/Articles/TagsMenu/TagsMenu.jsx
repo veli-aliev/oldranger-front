@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Menu, Spin } from 'antd';
-import { useHistory } from 'react-router-dom';
-import { StyledMenu } from '../styled';
+import { useHistory, withRouter } from 'react-router-dom';
+import { StyledMenu, TagsItem } from '../styled';
 import queries from '../../../serverQueries/index';
+import useQuery from '../../../hooks/useQuery';
 
-const { SubMenu } = Menu;
-
-const TagsMenu = () => {
+const TagsMenu = ({ location }) => {
   const [menuItems, setMenuItems] = useState([]);
   const history = useHistory();
+  const [activeId, setActiveId] = useState(null);
+  const hierarchy = useQuery().tags;
+
+  const addActiveTag = tags => {
+    const activeTag = tags.find(tag => hierarchy === tag.tagsHierarchy.join('_')) || {};
+    setActiveId(activeTag.id);
+  };
 
   useEffect(() => {
     queries.getTagsDtoTree().then(el => {
       setMenuItems(el);
+      addActiveTag(el);
     });
   }, []);
+
+  useEffect(() => {
+    addActiveTag(menuItems);
+  }, [location]);
 
   const showArticles = tags => () => {
     history.push(`articles?tags=${tags.join('_')}`);
@@ -28,20 +40,31 @@ const TagsMenu = () => {
     if (menuItems.some(el => el.parentId === first.id)) {
       return buildTreeMenu(rest, [
         ...result,
-        <SubMenu
-          onTitleClick={showArticles(first.tagsHierarchy)}
-          key={first.id}
-          title={<span>{first.tag}</span>}
-        >
-          {buildTreeMenu(menuItems.filter(elem => elem.parentId === first.id))}
-        </SubMenu>,
+        <li key={`item-${first.id}`}>
+          <TagsItem
+            onClick={showArticles(first.tagsHierarchy, first.id)}
+            active={first.id}
+            activeId={activeId}
+            pad={first.tagsHierarchy.length}
+          >
+            {first.tag}
+          </TagsItem>
+          <ul>{buildTreeMenu(menuItems.filter(elem => elem.parentId === first.id))}</ul>
+        </li>,
       ]);
     }
     return buildTreeMenu(rest, [
       ...result,
-      <Menu.Item onClick={showArticles(first.tagsHierarchy)} key={first.id}>
-        {first.tag}
-      </Menu.Item>,
+      <li key={`item-${first.id}`}>
+        <TagsItem
+          active={first.id}
+          activeId={activeId}
+          onClick={showArticles(first.tagsHierarchy, first.id)}
+          pad={first.tagsHierarchy.length}
+        >
+          {first.tag}
+        </TagsItem>
+      </li>,
     ]);
   };
 
@@ -56,4 +79,8 @@ const TagsMenu = () => {
   );
 };
 
-export default TagsMenu;
+TagsMenu.propTypes = {
+  location: PropTypes.shape({ search: PropTypes.string.isRequired }).isRequired,
+};
+
+export default withRouter(TagsMenu);

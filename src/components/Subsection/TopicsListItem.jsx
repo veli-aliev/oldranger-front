@@ -27,7 +27,7 @@ const TopicsListItem = ({ topicData, history }) => {
         </Col>
         <TopicItemInfo span={2}>
           <p>
-            <Icon type="message" /> {topicData.totalMessages}
+            <Icon type="message" /> {topicData.topic.messageCount}
           </p>
         </TopicItemInfo>
       </Row>

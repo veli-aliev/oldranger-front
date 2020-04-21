@@ -17,9 +17,18 @@ const ArticleComment = props => {
     onOpenEditorClick,
     onSubmitCommentForm,
     onDeleteComment,
+    eventType,
   } = props;
 
-  const { id: commentId, commentText: text, commentDateTime: date, author, nested } = comment;
+  const {
+    id: commentId,
+    parentId,
+    commentText: text,
+    commentDateTime: date,
+    author,
+    nested,
+    deleted,
+  } = comment;
   const { user } = useContext(Context);
 
   const actionsArr = [];
@@ -55,8 +64,8 @@ const ArticleComment = props => {
         key="delete"
         role="button"
         tabIndex="0"
-        onKeyPress={onDeleteComment(commentId)}
-        onClick={onDeleteComment(commentId)}
+        onKeyPress={onDeleteComment(commentId, parentId)}
+        onClick={onDeleteComment(commentId, parentId)}
       >
         Удалить
       </span>
@@ -71,12 +80,13 @@ const ArticleComment = props => {
       onOpenEditorClick={onOpenEditorClick}
       onSubmitCommentForm={onSubmitCommentForm}
       onDeleteComment={onDeleteComment}
+      eventType={eventType}
     />
   ));
 
   return (
     <Comment
-      actions={actionsArr}
+      actions={deleted ? null : actionsArr}
       author={author.nickName}
       datetime={
         <Tooltip
@@ -99,8 +109,11 @@ const ArticleComment = props => {
       }
       content={<CommentContentView dangerouslySetInnerHTML={{ __html: text }} />}
     >
-      {commentId === commentWithOpenEditor && (
-        <CommentForm onSubmit={onSubmitCommentForm(commentId)} />
+      {commentId === commentWithOpenEditor && eventType === 'edit' && (
+        <CommentForm startText={text} onSubmit={onSubmitCommentForm(commentId, parentId)} />
+      )}
+      {commentId === commentWithOpenEditor && eventType === 'reply' && (
+        <CommentForm startText="" onSubmit={onSubmitCommentForm(commentId, parentId)} />
       )}
       {nestedComments}
     </Comment>
@@ -118,12 +131,15 @@ ArticleComment.propTypes = {
     author: PropTypes.object.isRequired,
     commentDateTime: PropTypes.string,
     commentText: PropTypes.string,
+    deleted: PropTypes.bool,
+    parentId: PropTypes.number,
   }).isRequired,
   // eslint-disable-next-line react/require-default-props
   commentWithOpenEditor: PropTypes.number,
   onOpenEditorClick: PropTypes.func.isRequired,
   onSubmitCommentForm: PropTypes.func.isRequired,
   onDeleteComment: PropTypes.func.isRequired,
+  eventType: PropTypes.string.isRequired,
 };
 
 export default ArticleComment;

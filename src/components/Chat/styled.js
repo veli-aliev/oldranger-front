@@ -186,6 +186,20 @@ export const MessageText = styled.p`
   margin: 0;
 `;
 
+export const MessageInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  .message-delete {
+    cursor: pointer;
+    padding: none;
+    background: inherit;
+    border: none;
+  }
+`;
+
 export const ScrollToTopButton = styled.button`
   position: fixed;
   top: 170px;

@@ -3,17 +3,15 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { Formik } from 'formik';
-import { EditorField, SelectField, FormItemLabel } from './fields';
-import useTagsFetching from '../../hooks/useTagsFetching';
+import { EditorField, FormItemLabel } from './fields';
 
 const validationSchema = Yup.object({
-  title: Yup.string()
+  name: Yup.string()
     .required('Это поле обязательно')
     .min(5, 'Заголовок не может быть меньше 5 символов'),
-  text: Yup.string()
+  startMessage: Yup.string()
     .required('Это поле обязательно')
     .max(500000, 'Слишком длинное сообщение'),
-  tagsId: Yup.array(Yup.number().required('Это поле обязательно')).min(1, 'Добавьте минимум 1 тэг'),
 });
 
 const editorModules = {
@@ -25,7 +23,7 @@ const editorModules = {
   ],
 };
 
-const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onSubmitError }) => {
+const TopicForm = ({ initialValues, onSubmit, onSubmitSuccess, onSubmitError }) => {
   const onSubmitWrapper = useCallback(
     () => async (data, { resetForm, setSubmitting }) => {
       try {
@@ -45,8 +43,6 @@ const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
     [onSubmit, onSubmitSuccess, onSubmitError]
   );
 
-  const { loading, results: tags, error } = useTagsFetching();
-
   return (
     <Formik
       initialValues={initialValues}
@@ -56,23 +52,11 @@ const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
       {({ values, handleChange, touched, errors, handleSubmit, submitting }) => {
         return (
           <Form onSubmit={handleSubmit} labelAlign="left">
-            <FormItemLabel name="title" label="Заголовок">
-              <Input name="title" value={values.title} onChange={handleChange('title')} />
+            <FormItemLabel name="name" label="Заголовок">
+              <Input name="name" value={values.name} onChange={handleChange('name')} />
             </FormItemLabel>
-            <FormItemLabel name="tagsId" label="Разделы">
-              <SelectField
-                loading={loading || error}
-                name="tagsId"
-                options={tags}
-                labelKey="name"
-                valueKey="id"
-                notFoundContent="Разделов не найдено"
-              />
-            </FormItemLabel>
-            <FormItemLabel wrapperCol={{ span: 24 }} name="text">
-              <EditorField name="text" className="article-editor" modules={editorModules}>
-                {/* <ArticleContentView /> */}
-              </EditorField>
+            <FormItemLabel wrapperCol={{ span: 24 }} name="startMessage">
+              <EditorField name="startMessage" className="article-editor" modules={editorModules} />
             </FormItemLabel>
             <Form.Item wrapperCol={{ span: 24 }}>
               <Checkbox name="isDraft" checked={values.isDraft} onChange={handleChange('isDraft')}>
@@ -86,7 +70,7 @@ const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
                 disabled={!!touched.message && !!errors.message}
                 loading={submitting}
               >
-                {buttonText}
+                Отравить
               </Button>
             </Form.Item>
           </Form>
@@ -96,12 +80,10 @@ const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
   );
 };
 
-ArticleForm.defaultProps = {
-  buttonText: 'Отправить',
+TopicForm.defaultProps = {
   initialValues: {
-    title: '',
-    text: '',
-    tagsId: [],
+    name: '',
+    startMessage: '',
     isHideToAnon: true,
     isDraft: true,
   },
@@ -109,12 +91,11 @@ ArticleForm.defaultProps = {
   onSubmitError: null,
 };
 
-ArticleForm.propTypes = {
-  buttonText: PropTypes.string,
+TopicForm.propTypes = {
   initialValues: PropTypes.shape([PropTypes.array]),
   onSubmit: PropTypes.func.isRequired,
   onSubmitSuccess: PropTypes.func,
   onSubmitError: PropTypes.func,
 };
 
-export default ArticleForm;
+export default TopicForm;

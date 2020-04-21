@@ -139,7 +139,14 @@ class Queries {
   };
 
   getTopic = async (id, page, limit) => {
-    const res = await axios.get(`/api/topic/${id}`, { params: { page, limit } });
+    const res = await axios.get(`/api/topic/${id}`, {
+      params: { page, limit },
+    });
+    return res.data;
+  };
+
+  updateTopic = async formData => {
+    const res = await axios.put('/api/topic/edit', formData);
     return res.data;
   };
 

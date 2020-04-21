@@ -2,6 +2,8 @@ import React from 'react';
 import { parseISO, format } from 'date-fns';
 import ru from 'date-fns/locale/ru';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
+import { Link, useParams } from 'react-router-dom';
 import PropTypesUser from './propTypes/userProps';
 import UserAvatar from '../commons/UserAvatar';
 import {
@@ -16,10 +18,26 @@ import {
 } from './TopicHeaderStyled';
 
 const TopicStartMessage = ({ topic }) => {
+  const { topicId } = useParams();
+
   return (
     <TopicContainer>
       <TopicHeaderWrapp>
-        <TopicHeaderTitle>{topic.name}</TopicHeaderTitle>
+        <TopicHeaderTitle>
+          {topic.name}
+          <Link
+            style={{
+              fontSize: '16px',
+              marginLeft: '6px',
+              color: '#24292e',
+              lineHeight: '40px',
+            }}
+            to={`/topic/${topicId}/update`}
+          >
+            <Icon type="edit" theme="outlined" />
+          </Link>
+        </TopicHeaderTitle>
+
         <TopicHeaderAuthorWrapp>
           <TopicHeaderAuthorWrappCol>
             <UserAvatar

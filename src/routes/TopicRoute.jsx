@@ -7,7 +7,7 @@ import PrivateRoute from './PrivateRoute';
 
 const TopicRoute = ({ isLogin }) => (
   <Switch>
-    <PrivateRoute isLogin={isLogin} path="/topic/add" component={TopicCreate} />
+    <PrivateRoute isAllowed={isLogin} path="/topic/add" component={TopicCreate} />
     <Route exact path="/topic/:topicId">
       <TopicPage />
     </Route>

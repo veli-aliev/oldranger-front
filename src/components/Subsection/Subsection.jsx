@@ -16,13 +16,15 @@ class Subsection extends React.Component {
       hasMore: true,
       page: 1,
       hasChildren: true,
+      inProgress: true,
     };
   }
 
   componentDidMount() {
     this.getTopic(0).then(topics => {
       const hasChildren = !(topics.length === 0);
-      this.setState({ topics, name: topics[0].topic.subsection.name, hasChildren });
+      const topicName = topics.length === 0 ? 'No Title' : topics[0].topic.subsection.name;
+      this.setState({ topics, name: topicName, hasChildren, inProgress: false });
     });
   }
 
@@ -43,7 +45,7 @@ class Subsection extends React.Component {
   };
 
   render() {
-    const { topics, name, hasMore, hasChildren } = this.state;
+    const { topics, name, hasMore, hasChildren, inProgress } = this.state;
     return (
       <>
         <SearchForm />
@@ -67,6 +69,7 @@ class Subsection extends React.Component {
         <TopicsList
           fetchMessages={this.lazyLoadMore}
           hasMore={hasMore}
+          inProgress={inProgress}
           hasChildren={hasChildren}
           items={topics}
           title={name}

@@ -36,14 +36,15 @@ const StyledAlbumCard = styled.div`
   }
 `;
 const AlbomShadow = styled.div`
-    color: #fff;
-    box-sizing: border-box;
-    position: absolute; 
-    bottom: 0;
-    width: 100%;
-    padding: 35px 12px 9px;
-    background: url(/shadow.png);
-}`;
+  color: #fff;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 35px 12px 9px;
+  background: url(/shadow.png);
+`;
+
 const PhotoCounter = styled.span`
   position: absolute;
   bottom: 0;

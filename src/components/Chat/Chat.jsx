@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button, message as systemMessage } from 'antd';
+import throttle from 'lodash/throttle';
+import { Input, Button, message as systemMessage, Icon, Tooltip } from 'antd';
 import { BASE_URL } from '../../constants';
-import queries from '../../serverQueries';
 import {
   ChatContainer,
   Header,
@@ -21,7 +21,8 @@ import {
   MessageImage,
   MessageDate,
   MessageText,
-  ShowFullButton,
+  MessageInner,
+  ScrollToTopButton,
   Arrow,
   Form,
   Footer,
@@ -32,7 +33,16 @@ const url = BASE_URL;
 class Chat extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { message: '', file: null, filePath: '', replyTo: null, isFull: false };
+    this.state = { message: '', file: null, filePath: '', replyTo: null, hasScrolled: false };
+  }
+
+  componentDidMount() {
+    this.trottledFunction = throttle(this.onScroll, 150);
+    this.scrollingWrapper.addEventListener('scroll', this.trottledFunction);
+  }
+
+  componentWillUnmount() {
+    this.scrollingWrapper.removeEventListener('scroll', this.trottledFunction);
   }
 
   handleChangeMessage = event => {
@@ -50,11 +60,11 @@ class Chat extends React.Component {
 
   uploadFile = async () => {
     const { filePath } = this.state;
+    const { postFile } = this.props;
     if (!filePath) return;
-
     const form = document.querySelector('.message-form');
     const formData = new FormData(form);
-    const file = await queries.postFile(formData);
+    const file = await postFile(formData);
     this.setState({ file });
   };
 
@@ -74,18 +84,34 @@ class Chat extends React.Component {
   handleShowFull = () => {
     const { getMessages } = this.props;
     getMessages(true);
-    this.setState({ isFull: true });
+    this.scrollingWrapper.scrollTop = 0;
+  };
+
+  wrapLink = text => {
+    const reg = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,})/gi;
+    const textSplitOfLinks = text.split(reg);
+    const result = textSplitOfLinks.map((el, index) =>
+      index % 2 === 0 ? (
+        el
+      ) : (
+        <a href={el} target="_blank" rel="noopener noreferrer">
+          {el}
+        </a>
+      )
+    );
+    return result;
   };
 
   drawMessage = msg => {
-    const { user } = this.props;
+    const { user, deleteCurrentMessage } = this.props;
+    const isSender = user.nickName === msg.sender;
     if (msg.type === 'MESSAGE') {
-      // const urlAvatar = msg.senderAvatar === null ? default : `${msg.senderAvatar}`;
+      const urlAvatar = msg.senderAvatar === null ? 'default-sm.png' : msg.senderAvatar;
       return (
         <Message toMe={user.nickName === msg.replyTo} key={msg.id}>
           <MessageAvatar
             alt="avatar"
-            src={`${url}img/${msg.senderAvatar}`}
+            src={`${url}img/${urlAvatar}`}
             onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
           />
           <div>
@@ -114,9 +140,22 @@ class Chat extends React.Component {
             ) : (
               ''
             )}
-            <MessageText className="message-text">{msg.text}</MessageText>
+            <MessageText className="message-text">{this.wrapLink(msg.text)}</MessageText>
           </div>
-          <MessageDate className="message-date">{msg.messageDate}</MessageDate>
+          <MessageInner>
+            {isSender ? (
+              <Tooltip placement="topRight" title="Удалить">
+                <button
+                  type="button"
+                  className="message-delete"
+                  onClick={() => deleteCurrentMessage(msg.id)}
+                >
+                  <Icon type="delete" theme="twoTone" />
+                </button>
+              </Tooltip>
+            ) : null}
+            <MessageDate className="message-date">{msg.messageDate}</MessageDate>
+          </MessageInner>
         </Message>
       );
     }
@@ -127,14 +166,27 @@ class Chat extends React.Component {
     );
   };
 
+  onScroll = () => {
+    const { hasScrolled } = this.state;
+    if (this.scrollingWrapper.scrollTop > 100 && !hasScrolled) {
+      this.setState({ hasScrolled: true });
+    } else if (this.scrollingWrapper.scrollTop < 100 && hasScrolled) {
+      this.setState({ hasScrolled: false });
+    }
+  };
+
+  reference = id => ref => {
+    this[id] = ref;
+  };
+
   render() {
-    const { handleDisconnect, messages, usersOnline } = this.props;
-    const { message, filePath, isFull } = this.state;
+    const { handleDisconnect, messages, usersOnline, label } = this.props;
+    const { message, filePath, hasScrolled } = this.state;
     return (
       <section>
         <ChatContainer>
           <Header>
-            <h2>Общий чат</h2>
+            <h2>{label}</h2>
             <CloseButton onClick={handleDisconnect} />
           </Header>
           <Main>
@@ -153,13 +205,11 @@ class Chat extends React.Component {
               </UserList>
             </div>
             <div style={{ width: '80%' }}>
-              <MessageList className="message-list">
-                {isFull ? (
-                  ''
-                ) : (
-                  <ShowFullButton onClick={this.handleShowFull}>
+              <MessageList className="message-list" ref={this.reference('scrollingWrapper')}>
+                {hasScrolled && (
+                  <ScrollToTopButton onClick={this.handleShowFull}>
                     <Arrow />
-                  </ShowFullButton>
+                  </ScrollToTopButton>
                 )}
                 {messages.map(msg => this.drawMessage(msg))}
               </MessageList>
@@ -196,6 +246,7 @@ export default Chat;
 
 Chat.propTypes = {
   sendMessage: PropTypes.func.isRequired,
+  deleteCurrentMessage: PropTypes.func.isRequired,
   getMessages: PropTypes.func.isRequired,
   handleDisconnect: PropTypes.func.isRequired,
   user: PropTypes.shape({
@@ -203,6 +254,8 @@ Chat.propTypes = {
   }),
   usersOnline: PropTypes.shape({}),
   messages: PropTypes.arrayOf(PropTypes.object),
+  postFile: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 Chat.defaultProps = {

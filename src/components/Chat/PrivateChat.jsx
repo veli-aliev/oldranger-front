@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import uniqueId from 'lodash/uniqueId';
 import React from 'react';
 import Stomp from 'stompjs';
@@ -5,8 +6,8 @@ import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { BASE_URL } from '../../constants';
-import Private from './Private';
 import queries from '../../serverQueries';
+import Chat from './Chat';
 
 const url = BASE_URL;
 
@@ -55,8 +56,10 @@ class PrivateChat extends React.Component {
 
   disconnect = () => {
     const { chatToken } = this.state;
+    const { history } = this.props;
     this.stompClient.unsubscribe(`/channel/private/${chatToken}`);
     this.stompClient.disconnect();
+    history.push(`/`);
   };
 
   sendMessage = async (msg, file, replyTo = null) => {
@@ -74,22 +77,22 @@ class PrivateChat extends React.Component {
     }
   };
 
-  getMessages = async () => {
+  getMessages = async (isFull = false) => {
     const { chatToken } = this.state;
-    let status = 200;
-    let page = 0;
-    let messages = [];
-    while (status === 200) {
-      /*eslint-disable */
-      const response = await queries.getPersonalMessage(chatToken, page);
-      status = response.status;
-      page += 1;
-      messages = [...messages, ...response.data];
-    }
-    this.setState({ messages: messages.reverse() });
-    const last = document.querySelector('.message-list li:last-of-type');
-    if (last) {
-      last.scrollIntoView();
+    if (isFull) {
+      let status = 200;
+      let page = 0;
+      let messages = [];
+      while (status === 200) {
+        const response = await queries.getPersonalMessage(chatToken, page);
+        status = response.status;
+        page += 1;
+        messages = [...messages, ...response.data];
+      }
+      this.setState({ messages: messages.reverse() });
+    } else {
+      const { data } = await queries.getPersonalMessage(chatToken, 0);
+      this.setState({ messages: data ? data.reverse() : [] });
     }
   };
 
@@ -107,6 +110,12 @@ class PrivateChat extends React.Component {
     }, 200);
   };
 
+  postFile = chatToken => async formData => queries.postFilePersonalChat(formData, chatToken);
+
+  deleteCurrentMessage = async () => {
+    // TO-DO на беке нет функционала
+  };
+
   render() {
     const { messages, user, chatToken, anotherUserNick, show } = this.state;
     if (!show) {
@@ -114,13 +123,15 @@ class PrivateChat extends React.Component {
     }
     return (
       <>
-        <Private
-          disconnect={this.disconnect}
+        <Chat
+          handleDisconnect={this.disconnect}
+          deleteCurrentMessage={this.deleteCurrentMessage}
           messages={messages}
           sendMessage={this.sendMessage}
           user={user}
-          chatToken={chatToken}
-          anotherUserNick={anotherUserNick}
+          postFile={this.postFile(chatToken)}
+          label={`Персональный чат с ${anotherUserNick}`}
+          getMessages={this.getMessages}
         />
       </>
     );
@@ -139,6 +150,9 @@ PrivateChat.propTypes = {
       id: PropTypes.string,
     }),
   }),
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 PrivateChat.defaultProps = {

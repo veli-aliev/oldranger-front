@@ -16,15 +16,18 @@ class Subsection extends React.Component {
       hasMore: true,
       page: 1,
       hasChildren: true,
-      inProgress: true,
     };
   }
 
   componentDidMount() {
     this.getTopic(0).then(topics => {
       const hasChildren = !(topics.length === 0);
-      const topicName = topics.length === 0 ? 'No Title' : topics[0].topic.subsection.name;
-      this.setState({ topics, name: topicName, hasChildren, inProgress: false });
+      const topicName = topics[0] === undefined ? 'No Title' : topics[0].topic.subsection.name;
+      this.setState({
+        topics,
+        name: topicName,
+        hasChildren,
+      });
     });
   }
 

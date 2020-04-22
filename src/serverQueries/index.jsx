@@ -389,6 +389,26 @@ class Queries {
     const res = await axios.post('/api/topic/new', formData);
     return res;
   };
+
+  getPersonalToken = async (id, params) => {
+    const res = await axios.get(`/api/private/${id}`, { params });
+    return res.data;
+  };
+
+  getPersonalMessage = async (chatToken, page) => {
+    const res = await axios.get(`/api/private/messages/${chatToken}?page=${page}`);
+    return res;
+  };
+
+  postFilePersonalChat = async (formData, chatToken) => {
+    const res = await axios.post(`/api/private/image/${chatToken}`, formData);
+    return res.data;
+  };
+
+  getAnotherUserData = async id => {
+    const res = await axios.get(`/api/${id}`);
+    return res.data;
+  };
 }
 
 export default new Queries();

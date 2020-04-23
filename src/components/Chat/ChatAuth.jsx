@@ -145,6 +145,8 @@ class ChatAuth extends React.Component {
         sendMessage={this.sendMessage}
         user={user}
         getMessages={this.getMessages}
+        postFile={queries.postFile}
+        label="Общий чат"
       />
     ) : (
       <Spin />

@@ -22,7 +22,12 @@ class Subsection extends React.Component {
   componentDidMount() {
     this.getTopic(0).then(topics => {
       const hasChildren = !(topics.length === 0);
-      this.setState({ topics, name: topics[0].topic.subsection.name, hasChildren });
+      const topicName = topics[0] === undefined ? 'No Title' : topics[0].topic.subsection.name;
+      this.setState({
+        topics,
+        name: topicName,
+        hasChildren,
+      });
     });
   }
 
@@ -43,7 +48,7 @@ class Subsection extends React.Component {
   };
 
   render() {
-    const { topics, name, hasMore, hasChildren } = this.state;
+    const { topics, name, hasMore, hasChildren, inProgress } = this.state;
     return (
       <>
         <SearchForm />
@@ -67,6 +72,7 @@ class Subsection extends React.Component {
         <TopicsList
           fetchMessages={this.lazyLoadMore}
           hasMore={hasMore}
+          inProgress={inProgress}
           hasChildren={hasChildren}
           items={topics}
           title={name}

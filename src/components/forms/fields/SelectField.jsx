@@ -1,30 +1,59 @@
-import { Select } from 'antd';
+import { TreeSelect } from 'antd';
 import { useField, useFormikContext } from 'formik';
 import React from 'react';
 import PropTypes from 'prop-types';
+
+const { TreeNode } = TreeSelect;
 
 const SelectField = ({ name, disabled, mode, options, valueKey, labelKey, ...rest }) => {
   const [, { value }] = useField(name);
   const { setFieldValue } = useFormikContext();
 
+  const setValue = (val, tags) => {
+    return tags.reduce(
+      (acc, tag) => (val.includes(tag.position) || val.includes(tag.tag) ? [...acc, tag.tag] : acc),
+      []
+    );
+  };
+
+  const buildTreeTags = (tags, result = []) => {
+    if (tags.length === 0) {
+      return result;
+    }
+    // eslint-disable-next-line no-shadow
+    const [first, ...rest] = tags;
+    if (options.some(el => el.parentId === first.id)) {
+      return buildTreeTags(rest, [
+        ...result,
+        <TreeNode value={first.tag} title={first.tag}>
+          {buildTreeTags(options.filter(elem => elem.parentId === first.id))}
+        </TreeNode>,
+      ]);
+    }
+    return buildTreeTags(rest, [
+      ...result,
+      <TreeNode value={first.tag} title={first.tag}>
+        {buildTreeTags(options.filter(elem => elem.parentId === first.id))}
+      </TreeNode>,
+    ]);
+  };
+
   return (
-    <Select
+    <TreeSelect
+      showSearch
+      allowClear
+      multiple
+      treeDefaultExpandAll
       name={name}
-      component={Select}
+      value={setValue(value, options)}
+      component={TreeSelect}
       disabled={disabled}
       onChange={arr => setFieldValue(name, arr)}
-      mode={mode}
-      value={value}
       optionFilterProp="title"
       {...rest}
     >
-      {options &&
-        options.map(option => (
-          <Select.Option key={option[labelKey]} title={option[labelKey]} value={option[valueKey]}>
-            {option[labelKey]}
-          </Select.Option>
-        ))}
-    </Select>
+      {buildTreeTags(options.filter(el => el.parentId === null))}
+    </TreeSelect>
   );
 };
 

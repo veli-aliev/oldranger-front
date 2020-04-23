@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import throttle from 'lodash/throttle';
 import { Input, Button, message as systemMessage, Icon, Tooltip } from 'antd';
 import { BASE_URL } from '../../constants';
-import queries from '../../serverQueries';
 import {
   ChatContainer,
   Header,
@@ -61,11 +60,11 @@ class Chat extends React.Component {
 
   uploadFile = async () => {
     const { filePath } = this.state;
+    const { postFile } = this.props;
     if (!filePath) return;
-
     const form = document.querySelector('.message-form');
     const formData = new FormData(form);
-    const file = await queries.postFile(formData);
+    const file = await postFile(formData);
     this.setState({ file });
   };
 
@@ -107,12 +106,12 @@ class Chat extends React.Component {
     const { user, deleteCurrentMessage } = this.props;
     const isSender = user.nickName === msg.sender;
     if (msg.type === 'MESSAGE') {
-      // const urlAvatar = msg.senderAvatar === null ? default : `${msg.senderAvatar}`;
+      const urlAvatar = msg.senderAvatar === null ? 'default-sm.png' : msg.senderAvatar;
       return (
         <Message toMe={user.nickName === msg.replyTo} key={msg.id}>
           <MessageAvatar
             alt="avatar"
-            src={`${url}img/${msg.senderAvatar}`}
+            src={`${url}img/${urlAvatar}`}
             onClick={() => this.setState({ replyTo: msg.sender, message: `${msg.sender}, ` })}
           />
           <div>
@@ -181,13 +180,13 @@ class Chat extends React.Component {
   };
 
   render() {
-    const { handleDisconnect, messages, usersOnline } = this.props;
+    const { handleDisconnect, messages, usersOnline, label } = this.props;
     const { message, filePath, hasScrolled } = this.state;
     return (
       <section>
         <ChatContainer>
           <Header>
-            <h2>Общий чат</h2>
+            <h2>{label}</h2>
             <CloseButton onClick={handleDisconnect} />
           </Header>
           <Main>
@@ -199,7 +198,7 @@ class Chat extends React.Component {
                   const [username, id] = user;
                   return (
                     <User key={user}>
-                      <UserLink href={`/profile/${id}`}>{username}</UserLink>
+                      <UserLink href={`/anotheruser/${id}`}>{username}</UserLink>
                     </User>
                   );
                 })}
@@ -255,6 +254,8 @@ Chat.propTypes = {
   }),
   usersOnline: PropTypes.shape({}),
   messages: PropTypes.arrayOf(PropTypes.object),
+  postFile: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 Chat.defaultProps = {

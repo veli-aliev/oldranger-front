@@ -70,6 +70,7 @@ const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
                 notFoundContent="Разделов не найдено"
               />
             </FormItemLabel>
+
             <FormItemLabel wrapperCol={{ span: 24 }} name="text">
               <EditorField name="text" className="article-editor" modules={editorModules}>
                 {/* <ArticleContentView /> */}

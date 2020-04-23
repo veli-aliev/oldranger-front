@@ -58,7 +58,7 @@ class Messages extends React.Component {
   };
 
   getPageComment = numberComment => {
-    Math.ceil(numberComment / 10);
+    return Math.ceil(numberComment / 10);
   };
 
   render() {

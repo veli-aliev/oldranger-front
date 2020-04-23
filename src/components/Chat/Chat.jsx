@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import throttle from 'lodash/throttle';
+import { throttle } from 'lodash';
+
 import { Input, Button, message as systemMessage, Icon, Tooltip } from 'antd';
 import { BASE_URL } from '../../constants';
 import {
@@ -204,7 +205,7 @@ class Chat extends React.Component {
                 })}
               </UserList>
             </div>
-            <div style={{ width: '80%' }}>
+            <div style={{ width: '80%', postion: 'relative' }}>
               <MessageList className="message-list" ref={this.reference('scrollingWrapper')}>
                 {hasScrolled && (
                   <ScrollToTopButton onClick={this.handleShowFull}>

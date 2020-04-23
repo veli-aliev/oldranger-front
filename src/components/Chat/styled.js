@@ -18,19 +18,9 @@ const Li = styled.li`
   border-bottom: 1px solid #f4f4f4;
 `;
 
-export const GreetingContainer = styled.div`
-  text-align: center;
-  padding: 20px;
-  margin: 0 auto;
-  background: #fff;
-  box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
-  border-radius: 2px;
-  max-width: 500px;
-`;
-
 export const ChatContainer = styled.div`
   max-width: 700px;
-  margin: 30px auto 0;
+  margin: 10px auto 0;
   background-color: #fff;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
   height: calc(100% - 60px);
@@ -135,7 +125,6 @@ export const MessageList = styled(Ul)`
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   height: 100%;
-  position: relative;
   scroll-behavior: smooth;
 `;
 
@@ -201,8 +190,8 @@ export const MessageInner = styled.div`
 `;
 
 export const ScrollToTopButton = styled.button`
-  position: fixed;
-  top: 170px;
+  position: absolute;
+  top: 80px;
   left: 50%;
   border-radius: 50%;
   width: 40px;

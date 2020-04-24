@@ -65,8 +65,6 @@ const ArticleForm = ({ initialValues, buttonText, onSubmit, onSubmitSuccess, onS
                 loading={loading || error}
                 name="tagsId"
                 options={tags}
-                labelKey="name"
-                valueKey="id"
                 notFoundContent="Разделов не найдено"
               />
             </FormItemLabel>

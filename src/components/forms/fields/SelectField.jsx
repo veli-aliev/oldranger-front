@@ -23,7 +23,6 @@ const SelectField = ({ name, disabled, options, ...rest }) => {
       optionFilterProp="title"
       value={value}
       multiple
-      placeholder="Pl"
       onChange={arr => setFieldValue(name, arr)}
       treeData={normalizedTags}
       {...rest}

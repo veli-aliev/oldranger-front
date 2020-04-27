@@ -3,7 +3,6 @@ import { Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { userRoles } from '../constants';
 import Articles from '../components/Articles/Articles';
-import ArticleCreate from '../components/Articles/ArticleCreate';
 import PrivateRoute from './PrivateRoute';
 import ArticleUpdate from '../components/Articles/ArticleUpdate';
 import ArticlePage from '../components/Articles/ArticlePage';
@@ -13,12 +12,6 @@ const ArticlesRoute = ({ isLogin, role }) => {
     <>
       <Switch>
         <PrivateRoute isAllowed={isLogin} exact path="/articles" component={Articles} />
-        <PrivateRoute
-          isAllowed={isLogin && role === userRoles.admin}
-          exact
-          path="/article/create"
-          component={ArticleCreate}
-        />
         <PrivateRoute
           isAllowed={isLogin}
           exact

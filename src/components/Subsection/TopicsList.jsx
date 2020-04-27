@@ -5,7 +5,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { StyledList, StyledTitle } from '../Main/styled';
 
 const TopicsList = ({ title, items, itemComponent, fetchMessages, hasMore, hasChildren }) => {
-  return items.length > 0 ? (
+  return title.length > 0 ? (
     <InfiniteScroll
       dataLength={items.length}
       next={fetchMessages}

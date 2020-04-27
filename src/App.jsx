@@ -16,7 +16,9 @@ import Context from './components/Context';
 import Header from './components/layouts/Header';
 import Profile from './components/Profile';
 import ChatAuth from './components/Chat/ChatAuth';
+import PrivateChat from './components/Chat/PrivateChat';
 import AdminPanel from './components/AdminPanel';
+import ProfileAnotherUser from './components/Profile/ProfileAnotherUser';
 
 class App extends React.Component {
   constructor(props) {
@@ -68,17 +70,30 @@ class App extends React.Component {
         <AuthRoute isLogin={isLogin} />
         <PrivateRoute isAllowed={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
+          isAllowed={isLogin}
+          exact
+          path="/anotheruser/:id"
+          component={ProfileAnotherUser}
+        />
+        <PrivateRoute
           isAllowed={isLogin && role === 'ROLE_ADMIN'}
           path="/admin-panel"
           component={AdminPanel}
         />
-        <TopicRoute />
+        <TopicRoute isLogin={isLogin} />
         <SubsectionRoute />
         <SearchRoute />
         <ArticlesRoute isLogin={isLogin} role={role} />
         {/* TODO delete eslint disable */}
         {/* eslint-disable-next-line no-undef */}
         <ChatRoute path="/chat" isLogin={isLogin} user={user} component={ChatAuth} />
+        <ChatRoute
+          exact
+          path="/private/:id"
+          isLogin={isLogin}
+          user={user}
+          component={PrivateChat}
+        />
       </Context.Provider>
     );
   }

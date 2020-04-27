@@ -18,19 +18,9 @@ const Li = styled.li`
   border-bottom: 1px solid #f4f4f4;
 `;
 
-export const GreetingContainer = styled.div`
-  text-align: center;
-  padding: 20px;
-  margin: 0 auto;
-  background: #fff;
-  box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
-  border-radius: 2px;
-  max-width: 500px;
-`;
-
 export const ChatContainer = styled.div`
   max-width: 700px;
-  margin: 30px auto 0;
+  margin: 10px auto 0;
   background-color: #fff;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
   height: calc(100% - 60px);
@@ -132,6 +122,10 @@ export const UserLink = styled.a`
 
 export const MessageList = styled(Ul)`
   width: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  scroll-behavior: smooth;
 `;
 
 export const Message = styled(Li)`
@@ -181,16 +175,32 @@ export const MessageText = styled.p`
   margin: 0;
 `;
 
-export const ShowFullButton = styled.button`
+export const MessageInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  .message-delete {
+    cursor: pointer;
+    padding: none;
+    background: inherit;
+    border: none;
+  }
+`;
+
+export const ScrollToTopButton = styled.button`
+  position: absolute;
+  top: 80px;
+  left: 50%;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   padding: 0;
   background-color: #fff;
   border: 1px solid #128ff2;
-  margin: 20px auto;
-  margin-left: calc(50% - 20px);
   cursor: pointer;
+  z-index: 2;
 `;
 
 export const Arrow = styled.span`

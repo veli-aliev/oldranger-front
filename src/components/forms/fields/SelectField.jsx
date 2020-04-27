@@ -1,49 +1,45 @@
-import { Select } from 'antd';
+import { TreeSelect } from 'antd';
 import { useField, useFormikContext } from 'formik';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SelectField = ({ name, disabled, mode, options, valueKey, labelKey, ...rest }) => {
+const SelectField = ({ name, disabled, options, ...rest }) => {
   const [, { value }] = useField(name);
   const { setFieldValue } = useFormikContext();
-
+  const normalizedTags = options.map(({ id, parentId, tag }) => ({
+    id,
+    pId: parentId,
+    value: id,
+    title: tag,
+  }));
   return (
-    <Select
+    <TreeSelect
+      treeDataSimpleMode
+      showSearch
+      allowClear
+      treeDefaultExpandAll
       name={name}
-      component={Select}
       disabled={disabled}
-      onChange={arr => setFieldValue(name, arr)}
-      mode={mode}
-      value={value}
       optionFilterProp="title"
+      value={value}
+      multiple
+      onChange={arr => setFieldValue(name, arr)}
+      treeData={normalizedTags}
       {...rest}
-    >
-      {options &&
-        options.map(option => (
-          <Select.Option key={option[labelKey]} title={option[labelKey]} value={option[valueKey]}>
-            {option[labelKey]}
-          </Select.Option>
-        ))}
-    </Select>
+    />
   );
 };
 
 SelectField.defaultProps = {
-  valueKey: 'id',
-  labelKey: 'name',
   disabled: false,
-  mode: 'multiple',
   name: '',
   options: [],
 };
 
 SelectField.propTypes = {
   name: PropTypes.string,
-  valueKey: PropTypes.string,
-  labelKey: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.object),
   disabled: PropTypes.bool,
-  mode: PropTypes.string,
 };
 
 export default SelectField;

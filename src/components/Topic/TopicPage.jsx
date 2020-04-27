@@ -291,7 +291,7 @@ class TopicPage extends React.Component {
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
             <Button onClick={this.toggleSubscriptionStatus}>
-              {topic.isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+              {topic.isSubscribed ? 'Отписаться' : 'Подписаться'}
             </Button>
             <TopicCommentsList
               changePageHandler={this.changePageHandler}

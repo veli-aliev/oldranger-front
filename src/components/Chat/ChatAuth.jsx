@@ -4,9 +4,10 @@ import React from 'react';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { Spin } from 'antd';
 import { BASE_URL } from '../../constants';
 import Chat from './Chat';
-import Greeting from './Greeting';
 import queries from '../../serverQueries';
 
 const url = BASE_URL;
@@ -22,8 +23,11 @@ class ChatAuth extends React.Component {
     this.disconnect();
   };
 
-  connect = async event => {
-    event.preventDefault();
+  componentDidMount = async () => {
+    await this.connect();
+  };
+
+  connect = async () => {
     const isForb = await queries.isForbidden();
     if (isForb) {
       // banned user
@@ -39,6 +43,7 @@ class ChatAuth extends React.Component {
 
   disconnect = () => {
     const { user } = this.state;
+    const { history } = this.props;
     if (this.stompClient) {
       this.stompClient.send(
         `chat/delUser`,
@@ -49,6 +54,7 @@ class ChatAuth extends React.Component {
       this.stompClient.disconnect();
     }
     this.setState({ isJoin: false });
+    history.push('/');
   };
 
   onConnected = () => {
@@ -121,31 +127,41 @@ class ChatAuth extends React.Component {
     }, 200);
   };
 
+  deleteCurrentMessage = async id => {
+    const { messages } = this.state;
+    queries.deleteMessage(id);
+    this.setState({ messages: messages.filter(msg => msg.id !== id) });
+  };
+
   render() {
     const { isJoin, messages, usersOnline } = this.state;
     const { user } = this.props;
-    return !isJoin ? (
-      <Greeting handleConnect={this.connect} />
-    ) : (
+    return isJoin ? (
       <Chat
         handleDisconnect={this.disconnect}
+        deleteCurrentMessage={this.deleteCurrentMessage}
         usersOnline={usersOnline}
         messages={messages}
         sendMessage={this.sendMessage}
         user={user}
         getMessages={this.getMessages}
+        postFile={queries.postFile}
+        label="Общий чат"
       />
+    ) : (
+      <Spin />
     );
   }
 }
 
-export default ChatAuth;
+export default withRouter(ChatAuth);
 
 ChatAuth.propTypes = {
   user: PropTypes.shape({
     nickName: PropTypes.string,
     avatar: PropTypes.string,
   }),
+  history: PropTypes.objectOf(PropTypes.func).isRequired,
 };
 
 ChatAuth.defaultProps = {

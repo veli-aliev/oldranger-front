@@ -1,4 +1,5 @@
 import React from 'react';
+import { HashLink } from 'react-router-hash-link';
 import { Row, message } from 'antd';
 
 import queries from '../../serverQueries';
@@ -56,6 +57,10 @@ class Messages extends React.Component {
       });
   };
 
+  getPageComment = numberComment => {
+    return Math.ceil(numberComment / 10);
+  };
+
   render() {
     const { hasMore, messages } = this.state;
 
@@ -70,11 +75,17 @@ class Messages extends React.Component {
     return (
       <TopicCommentsList
         itemComponent={item => (
-          <TopicCommentItem
-            comment={item}
-            updateComment={this.handleUpdateMessage}
-            deleteComment={this.handleDeleteMessage}
-          />
+          <HashLink
+            to={`/topic/${item.topicId}?page=${this.getPageComment(item.positionInTopic)}#${
+              item.positionInTopic
+            }`}
+          >
+            <TopicCommentItem
+              comment={item}
+              updateComment={this.handleUpdateMessage}
+              deleteComment={this.handleDeleteMessage}
+            />
+          </HashLink>
         )}
         messages={messages}
         title=""

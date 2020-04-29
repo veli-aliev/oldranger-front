@@ -12,7 +12,9 @@ const InputGroup = Input.Group;
 const { Option } = Select;
 
 const validationSchema = Yup.object({
-  searchRequest: Yup.string().min(3, 'Введите не меннее 3-х символов'),
+  searchRequest: Yup.string()
+    .min(3, 'Введите не меннее 3-х символов')
+    .required('Поле поиска должно быть заполнено'),
 });
 
 const SearchForm = ({ history }) => {

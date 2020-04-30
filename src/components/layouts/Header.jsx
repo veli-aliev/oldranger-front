@@ -57,20 +57,15 @@ const Header = ({ countMessages }) => {
             <Button type="primary">
               <Link to="/">Главная</Link>
             </Button>
-            <Button type="primary">
-              <Link to="/chat">
-                Чат
-                {isLogin && (
-                  <Badge count={countMessages}>
-                    <span className="head-example" />
-                  </Badge>
-                )}
-              </Link>
-            </Button>
             {isLogin && (
-              <Button>
-                <Link to="/articles">Статьи</Link>
-              </Button>
+              <>
+                <Button type="primary">
+                  <Link to="/chat">Чат</Link>
+                </Button>
+                <Button>
+                  <Link to="/articles">Статьи</Link>
+                </Button>
+              </>
             )}
             {isLogin && user.role === 'ROLE_ADMIN' && (
               <Button style={{ marginLeft: '0' }}>

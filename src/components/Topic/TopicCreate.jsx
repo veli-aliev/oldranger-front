@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import styled from 'styled-components';
 import { Button, Input, Select, Spin, Row } from 'antd';
 import { withFormik, Field, Form } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import queries from '../../serverQueries';
 import TopicAddFileModal from './TopicAddFileModal';
 
@@ -236,4 +236,4 @@ const formikTopicCreate = withFormik({
   },
 })(TopicCreate);
 
-export default formikTopicCreate;
+export default withRouter(formikTopicCreate);

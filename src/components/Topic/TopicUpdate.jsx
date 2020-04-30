@@ -6,12 +6,10 @@ import TopicForm from '../forms/TopicForm';
 import useTopicFetching from '../../hooks/useTopicFetching';
 import { StyledCenteredContainer, StyledHeader } from './styled';
 
-const updateTopic = subsection => async values => {
+const updateTopic = (id, subsection, topicStarter) => async values => {
   const { name, startMessage } = values;
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('startMessage', startMessage);
-  formData.append('subsection', subsection);
+  const formData = { id, name, startMessage, subsection, topicStarter };
+
   console.log(formData);
   const data = await queries.updateTopic(formData);
   return data;
@@ -32,16 +30,24 @@ const TopicUpdate = () => {
   }
 
   const {
-    topic: { name, startMessage, subsection, isHideToAnon = true, draft: isDraft },
+    topic: {
+      id,
+      name,
+      startMessage,
+      subsection,
+      topicStarter,
+      isHideToAnon = true,
+      draft: isDraft,
+    },
   } = results;
 
   return (
     <>
       <StyledHeader>Редактирование темы</StyledHeader>
       <TopicForm
-        initialValues={{ name, startMessage, subsection, isHideToAnon, isDraft }}
-        onSubmit={updateTopic(subsection)}
-        onSubmitSuccess={({ id }) => history.push(`/topic/${id}`)}
+        initialValues={{ name, startMessage, isHideToAnon, isDraft }}
+        onSubmit={updateTopic(id, subsection, topicStarter)}
+        onSubmitSuccess={() => history.push(`/topic/${topicId}`)}
       />
     </>
   );

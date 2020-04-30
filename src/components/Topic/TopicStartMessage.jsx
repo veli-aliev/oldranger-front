@@ -24,12 +24,12 @@ const TopicStartMessage = ({ topic }) => {
 
   return (
     <Context.Consumer>
-      {({ isLogin }) => (
+      {({ isLogin, user: { role } }) => (
         <TopicContainer>
           <TopicHeaderWrapp>
             <TopicHeaderTitle>
               {topic.name}
-              {isLogin && (
+              {isLogin && role === 'ROLE_ADMIN' && (
                 <Link
                   style={{
                     fontSize: '16px',

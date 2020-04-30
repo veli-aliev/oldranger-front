@@ -1,6 +1,6 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Route, Switch } from 'react-router-dom';
 import { userRoles } from '../constants';
 import PrivateRoute from './PrivateRoute';
 import TopicPage from '../components/Topic/TopicPage';
@@ -9,7 +9,7 @@ import TopicUpdate from '../components/Topic/TopicUpdate';
 
 const TopicRoute = ({ isLogin, role }) => (
   <Switch>
-    <Route exact path="/topic/add" render={props => <TopicCreate {...props} />} />
+    <PrivateRoute isAllowed={isLogin} path="/topic/add" component={TopicCreate} />
     <Route exact path="/topic/:topicId">
       <TopicPage />
     </Route>

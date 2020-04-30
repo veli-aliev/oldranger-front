@@ -132,7 +132,7 @@ export const Message = styled(Li)`
   position: relative;
   display: flex;
   justify-content: space-between;
-  padding: 10px 20px 10px 68px;
+  padding: 10px 0 10px 68px;
   color: black;
   border-bottom-width: 1px;
   border-bottom-style: solid;
@@ -167,19 +167,20 @@ export const MessageImage = styled.img`
 `;
 
 export const MessageDate = styled.span`
+  width: 80px;
   color: #888888;
   font-size: 10px;
 `;
 
 export const MessageText = styled.p`
   margin: 0;
+  word-break: break-all;
 `;
 
 export const MessageInner = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
+  margin-left: 5px;
 
   .message-delete {
     cursor: pointer;

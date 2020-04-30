@@ -9,8 +9,6 @@ import { StyledCenteredContainer, StyledHeader } from './styled';
 const updateTopic = (id, subsection, topicStarter) => async values => {
   const { name, startMessage } = values;
   const formData = { id, name, startMessage, subsection, topicStarter };
-
-  console.log(formData);
   const data = await queries.updateTopic(formData);
   return data;
 };

@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Row } from 'antd';
 import { Form, Input } from 'formik-antd';
 import { Formik } from 'formik';
@@ -24,7 +25,7 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const login = ({ changeLoginState, changeUserState, changeLoadingState }) => async (
+const login = ({ changeLoginState, changeUserState, changeLoadingState }, connectFunc) => async (
   values,
   { setStatus }
 ) => {
@@ -32,11 +33,10 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
   const formData = new FormData();
   formData.append('username', values.username);
   formData.append('password', values.password);
-
   try {
     await queries.logIn(formData);
     const userData = await queries.getProfileData();
-
+    connectFunc();
     localStorage.setItem('user', JSON.stringify(userData));
 
     setStatus('');
@@ -50,7 +50,7 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }) => asy
   }
 };
 
-const Login = () => {
+const Login = ({ connect }) => {
   const [loading, changeLoadingState] = useState(false);
   const { changeLoginState, changeUserState } = useContext(Context);
   return (
@@ -60,7 +60,7 @@ const Login = () => {
         password: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={login({ changeLoginState, changeUserState, changeLoadingState })}
+      onSubmit={login({ changeLoginState, changeUserState, changeLoadingState }, connect)}
     >
       {({ status }) => (
         <>
@@ -87,6 +87,10 @@ const Login = () => {
       )}
     </Formik>
   );
+};
+
+Login.propTypes = {
+  connect: PropTypes.func.isRequired,
 };
 
 export default Login;

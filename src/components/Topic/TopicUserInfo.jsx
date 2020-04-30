@@ -13,7 +13,7 @@ const TopicUserInfo = ({ user }) => {
     <StyledTopicUserInfo type="flex" justify="space-between" align="middle">
       <UserInfoLeft>
         <h3>
-          <Link to={`/profile/${user.nickName}`}>{user.nickName}</Link>
+          <Link to={`/anotheruser/${user.id}`}>{user.nickName}</Link>
         </h3>
         <p>{`${user.firstName} ${user.lastName}`}</p>
       </UserInfoLeft>

@@ -37,6 +37,7 @@ class ChatAuth extends React.Component {
         const socket = new SockJS(`${url}ws`, null, {});
         this.stompClient = Stomp.over(socket);
         this.stompClient.connect({}, this.onConnected, () => {});
+        this.stompClient.debug =() => {}
       }
     }
   };
@@ -52,6 +53,7 @@ class ChatAuth extends React.Component {
       );
       this.stompClient.unsubscribe(`/channel/public`);
       this.stompClient.disconnect();
+      this.stompClient.debug =() => {}
     }
     this.setState({ isJoin: false });
     history.push('/');
@@ -67,6 +69,7 @@ class ChatAuth extends React.Component {
       {},
       JSON.stringify({ sender: user.nickName, type: 'JOIN' })
     );
+    this.stompClient.debug =() => {}
   };
 
   getUsersOnline = async () => {
@@ -105,6 +108,7 @@ class ChatAuth extends React.Component {
         ...file,
       };
       this.stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
+      this.stompClient.debug =() => {}
     }
   };
 

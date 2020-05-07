@@ -52,6 +52,7 @@ class PrivateChat extends React.Component {
       this.stompClient.subscribe(`/channel/private/${token}`, this.onMessageRecieved, {});
       this.getMessages();
     });
+    this.stompClient.debug =() => {}
   };
 
   disconnect = () => {
@@ -59,6 +60,7 @@ class PrivateChat extends React.Component {
     const { history } = this.props;
     this.stompClient.unsubscribe(`/channel/private/${chatToken}`);
     this.stompClient.disconnect();
+    this.stompClient.debug =() => {}
     history.push(`/`);
   };
 
@@ -74,6 +76,7 @@ class PrivateChat extends React.Component {
         ...file,
       };
       this.stompClient.send(`/chat/send/${chatToken}`, {}, JSON.stringify(message));
+      this.stompClient.debug =() => {}
     }
   };
 

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import { Form, Input, Icon, Button, Alert } from 'antd';
+import { Form, Input, Icon, Button, Alert, TreeSelect } from 'antd';
 import serverQueries from '../../serverQueries';
+
+const { TreeNode, SHOW_PARENT } = TreeSelect;
 
 const SendMailBlock = styled.div`
   display: flex;
@@ -34,6 +36,7 @@ const MailingLetters = () => {
         initialValues={{ subject: '', message: '' }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           setSubmitting(true);
+          console.log(values);
           serverQueries
             .sendMailToAllUsers(values)
             .then(() => {
@@ -48,8 +51,32 @@ const MailingLetters = () => {
             });
         }}
       >
-        {({ values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit }) => (
+        {({
+          values,
+          errors,
+          touched,
+          isSubmitting,
+          handleBlur,
+          setFieldValue,
+          handleChange,
+          handleSubmit,
+        }) => (
           <Form onSubmit={handleSubmit} style={formStyles}>
+            <Form.Item name="treeUsers">
+              <TreeSelect
+                name="treeUsers"
+                value={values.treeUsers}
+                treeCheckable
+                showCheckedStrategy={SHOW_PARENT}
+                onChange={arr => setFieldValue('treeUsers', arr)}
+              >
+                <TreeNode value="all" title="Все">
+                  <TreeNode value="Moderator" title="Moderator" />
+                  <TreeNode value="Prospect" title="Prospect" />
+                  <TreeNode value="User" title="User" />
+                </TreeNode>
+              </TreeSelect>
+            </Form.Item>
             <Form.Item
               validateStatus={touched.subject && errors.subject ? 'error' : null}
               help={touched.subject && errors.subject ? errors.subject : null}

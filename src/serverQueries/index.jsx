@@ -351,7 +351,8 @@ class Queries {
   };
 
   sendMailToAllUsers = async params => {
-    const res = await axios.post('/api/admin/sendMail', params);
+    console.log(params);
+    const res = await axios.post('/api/admin/sendMail', { params });
     return res.data;
   };
 

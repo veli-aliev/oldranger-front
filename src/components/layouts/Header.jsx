@@ -61,9 +61,14 @@ const Header = () => {
               </>
             )}
             {isLogin && user.role === 'ROLE_ADMIN' && (
-              <Button style={{ marginLeft: '0' }}>
-                <Link to="/admin-panel">Панель администратора</Link>
-              </Button>
+              <>
+                <Button style={{ marginLeft: '0' }}>
+                  <Link to="/admin-panel">Панель администратора</Link>
+                </Button>
+                <Button style={{ marginLeft: '0' }}>
+                  <Link to="/articleDraft">Черновики</Link>
+                </Button>
+              </>              
             )}
             {isLogin ? (
               <>

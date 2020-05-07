@@ -3,6 +3,7 @@ import 'antd/dist/antd.css';
 
 import queries from './serverQueries';
 import {
+  ArticleDraft,
   PrivateRoute,
   CommonRoute,
   AuthRoute,
@@ -83,6 +84,7 @@ class App extends React.Component {
         <TopicRoute isLogin={isLogin} />
         <SubsectionRoute />
         <SearchRoute />
+        <ArticleDraft />
         <ArticlesRoute isLogin={isLogin} role={role} />
         {/* TODO delete eslint disable */}
         {/* eslint-disable-next-line no-undef */}

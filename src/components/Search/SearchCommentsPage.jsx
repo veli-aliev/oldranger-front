@@ -28,7 +28,7 @@ class SearchCommentsPage extends React.Component {
     try {
       const res = await queries.searchByComments(match.params.searchRequest, page);
       this.setState({
-        messages: res.commentDto,
+        messages: res,
         totalMessagesCounter: res.countMessages,
         currentPage: page,
         isLoading: false,
@@ -55,14 +55,15 @@ class SearchCommentsPage extends React.Component {
         params: { searchRequest },
       },
     } = this.props;
-    const markedMessages = messages.map(curMessage => {
+
+    const markedMessages = messages && messages.map(curMessage => {
       const markedComment = this.markWord(curMessage.commentText, searchRequest);
       return { ...curMessage, commentText: markedComment };
     });
     if (isLoading) {
       return <Spin />;
     }
-    return messages.length > 0 ? (
+    return messages && messages.length > 0 ? (
       <div>
         <TopicCommentsList
           changePageHandler={this.changePageHandler}

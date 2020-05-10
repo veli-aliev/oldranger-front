@@ -51,3 +51,17 @@ export const ListItem = styled.li`
 export const DeletedMessageText = styled(Typography.Text)`
   font-size: 12px;
 `;
+
+export const StyledCenteredContainer = styled.div`
+  display: flex;
+  min-height: 500px;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const StyledHeader = styled.h1`
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
+`;

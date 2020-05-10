@@ -26,6 +26,7 @@ const StyledAlbumCard = styled.div`
   width: 239px;
   margin: 3px;
   background-size: cover;
+  cursor: pointer;
   &:hover ${DeletePhotoButton} {
     display: block;
   }
@@ -217,13 +218,15 @@ class Albums extends React.Component {
                 >
                   <Icon type="delete" style={{ color: 'red' }} />
                 </DeletePhotoButton>
-                <EditPhotoButton
-                  type="default"
-                  title="Редактировать албом"
-                  onClick={this.editPhotoAlbum(album)}
-                >
-                  <Icon type="edit" />
-                </EditPhotoButton>
+                {album.photosCounter === 0 ? null : (
+                  <EditPhotoButton
+                    type="default"
+                    title="Редактировать альбом"
+                    onClick={this.editPhotoAlbum(album)}
+                  >
+                    <Icon type="edit" />
+                  </EditPhotoButton>
+                )}
               </StyledAlbumCard>
             ))}
           </StyledAlbumWrapper>

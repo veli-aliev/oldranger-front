@@ -31,23 +31,21 @@ class MainPage extends React.Component {
     return (
       <StyledMainPage>
         <SearchForm />
-        {actualTopics.length > 0 ? (
-          <TopicsList
-            itemComponent={item => <TopicsListItem topicData={item} />}
-            items={actualTopics}
-            title="Актуальные темы"
-          />
+        {actualTopics.length > 0 && rootSections.length > 0 ? (
+          <>
+            <TopicsList
+              itemComponent={item => <TopicsListItem topicData={item} />}
+              items={actualTopics}
+              title="Актуальные темы"
+            />
+            {rootSections.map(section => (
+              <SubSectionsList section={section} key={section.section.id} />
+            ))}
+            <Albums isMainPage />
+          </>
         ) : (
           <Spin />
         )}
-        {rootSections.length > 0 ? (
-          rootSections.map(section => (
-            <SubSectionsList section={section} key={section.section.id} />
-          ))
-        ) : (
-          <Spin />
-        )}
-        <Albums isMainPage />
       </StyledMainPage>
     );
   }

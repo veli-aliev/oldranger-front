@@ -30,6 +30,14 @@ class ChatAuth extends React.Component {
     const isForb = await queries.isForbidden();
     if (isForb) {
       // banned user
+    } else {
+      const currentUser = await queries.getCurrentUser();
+      if (currentUser.username) {
+        const socket = new SockJS(`${url}ws`, null, {});
+        this.stompClient = Stomp.over(socket);
+        this.stompClient.connect({}, this.onConnected, () => {});
+        this.stompClient.debug = () => {};
+      }
     }
     this.onConnected();
   };

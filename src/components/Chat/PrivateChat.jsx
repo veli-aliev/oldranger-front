@@ -52,6 +52,7 @@ class PrivateChat extends React.Component {
       this.stompClient.subscribe(`/channel/private/${token}`, this.onMessageRecieved, {});
       this.getMessages();
     });
+    this.stompClient.debug = () => {};
   };
 
   disconnect = () => {

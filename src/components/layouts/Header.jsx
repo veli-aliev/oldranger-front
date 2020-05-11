@@ -1,8 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Badge } from 'antd';
+import { Button } from 'antd';
 import logo from '../../media/img/logo.png';
 
 import Context from '../Context';
@@ -44,7 +43,7 @@ const Menu = styled.div`
   }
 `;
 
-const Header = ({ countMessages }) => {
+const Header = () => {
   return (
     <Context.Consumer>
       {({ isLogin, logOut, user }) => (
@@ -91,14 +90,6 @@ const Header = ({ countMessages }) => {
       )}
     </Context.Consumer>
   );
-};
-
-Header.defaultProps = {
-  countMessages: 0,
-};
-
-Header.propTypes = {
-  countMessages: PropTypes.number,
 };
 
 export default Header;

@@ -93,6 +93,11 @@ class Queries {
     return res.data;
   };
 
+  getArticleDraft = async () => {
+    const res = await axios.get('/api/article/drafts');
+    return res.data;
+  };
+
   createArticleComment = async (data, params) => {
     const res = await axios.post('/api/article/comment/add', data, {
       params,

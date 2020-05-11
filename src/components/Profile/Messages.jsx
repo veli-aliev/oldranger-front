@@ -1,7 +1,6 @@
 import React from 'react';
 import { HashLink } from 'react-router-hash-link';
 import { Row, message } from 'antd';
-
 import queries from '../../serverQueries';
 import TopicCommentsList from '../Topic/TopicCommentsList';
 import TopicCommentItem from '../Topic/TopicCommentItem';

@@ -14,6 +14,7 @@ const { Option } = Select;
 const validationSchema = Yup.object({
   searchRequest: Yup.string()
     .min(3, 'Введите не меннее 3-х символов')
+    .matches(/[\S]+(\s[\S]+)*/, 'Поле поиска должно быть заполнено')
     .required('Поле поиска должно быть заполнено'),
 });
 

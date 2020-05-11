@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { message, Spin } from 'antd';
+import { Spin } from 'antd';
 import queries from '../../serverQueries';
 import TopicCommentsList from '../Topic/TopicCommentsList';
 import SearchCommentsItem from './SearchCommentsItem';
@@ -14,6 +14,7 @@ class SearchCommentsPage extends React.Component {
       messages: [],
       currentPage: 1,
       totalMessagesCounter: null,
+      messageError: null,
       isLoading: true,
     };
   }
@@ -28,14 +29,15 @@ class SearchCommentsPage extends React.Component {
     try {
       const res = await queries.searchByComments(match.params.searchRequest, page);
       this.setState({
-        messages: res.commentDto,
+        messages: res,
         totalMessagesCounter: res.countMessages,
         currentPage: page,
         isLoading: false,
       });
-    } catch {
-      message.error('Похоже, что-то не так. Сообщения загрузить не удалось');
-      this.setState({ isLoading: false });
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        this.setState({ messageError: error.response.data, isLoading: false });
+      }
     }
   };
 
@@ -49,20 +51,23 @@ class SearchCommentsPage extends React.Component {
   };
 
   render() {
-    const { messages, currentPage, totalMessagesCounter, isLoading } = this.state;
+    const { messages, currentPage, totalMessagesCounter, messageError, isLoading } = this.state;
     const {
       match: {
         params: { searchRequest },
       },
     } = this.props;
-    const markedMessages = messages.map(curMessage => {
-      const markedComment = this.markWord(curMessage.commentText, searchRequest);
-      return { ...curMessage, commentText: markedComment };
-    });
+
+    const markedMessages =
+      messages &&
+      messages.map(curMessage => {
+        const markedComment = this.markWord(curMessage.commentText, searchRequest);
+        return { ...curMessage, commentText: markedComment };
+      });
     if (isLoading) {
       return <Spin />;
     }
-    return messages.length > 0 ? (
+    return messages && messages.length > 0 ? (
       <div>
         <TopicCommentsList
           changePageHandler={this.changePageHandler}
@@ -74,9 +79,12 @@ class SearchCommentsPage extends React.Component {
         />
       </div>
     ) : (
-      <StyledTitle>
-        Нет результатов по запросу <i>{searchRequest}</i>
-      </StyledTitle>
+      messageError && (
+        <StyledTitle>
+          {`${messageError} `}
+          <i>{searchRequest}</i>
+        </StyledTitle>
+      )
     );
   }
 }

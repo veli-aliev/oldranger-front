@@ -6,8 +6,10 @@ import SearchRoute from './SearchRoute';
 import SubsectionRoute from './SubsectionRoute';
 import ArticlesRoute from './ArticlesRoute';
 import ChatRoute from './ChatRoute';
+import ArticleDraft from './ArticleDraft';
 
 export {
+  ArticleDraft,
   PrivateRoute,
   CommonRoute,
   AuthRoute,

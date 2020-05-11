@@ -35,6 +35,12 @@ const Menu = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+
+  .ant-badge {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
 `;
 
 const Header = () => {

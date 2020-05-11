@@ -1,4 +1,5 @@
-.ql-toolbar, .ql-container {
+.ql-toolbar,
+.ql-container {
   transition: border-color, box-shadow 0.3s;
 }
 
@@ -11,19 +12,19 @@
 }
 
 .quill--focus .ql-container.ql-snow {
-  border-right: 1px solid #37A3FF;
-  border-left: 1px solid #37A3FF;
-  border-bottom: 1px solid #37A3FF;
+  border-right: 1px solid #37a3ff;
+  border-left: 1px solid #37a3ff;
+  border-bottom: 1px solid #37a3ff;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 .quill--focus .ql-toolbar.ql-snow {
-  border: 1px solid #37A3FF;
+  border: 1px solid #37a3ff;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 .article-editor .ql-editor {
-  min-height: 480px;
+  max-height: 400px;
 }
 
 .article-editor .ql-container {
@@ -53,7 +54,7 @@
     margin-bottom: 28px;
     position: relative;
     &:before {
-      content: "";
+      content: '';
       height: 28px;
       width: 6px;
       position: absolute;
@@ -69,7 +70,8 @@
     }
   }
 
-  & ul, ol {
+  & ul,
+  ol {
     margin: 0 0 0 34px;
     padding: 0;
     & li {
@@ -86,7 +88,6 @@
   }
 }
 
-
 .comment-editor .ql-container {
   font-size: 14px;
   line-height: 1.56;
@@ -98,7 +99,8 @@
     }
   }
 
-  & ul, ol {
+  & ul,
+  ol {
     margin: 0 0 0 18px;
     padding: 0;
     & li {

@@ -1,16 +1,11 @@
 /* eslint-disable no-await-in-loop */
 import uniqueId from 'lodash/uniqueId';
 import React from 'react';
-import Stomp from 'stompjs';
-import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'antd';
-import { BASE_URL } from '../../constants';
 import Chat from './Chat';
 import queries from '../../serverQueries';
-
-const url = BASE_URL;
 
 class ChatAuth extends React.Component {
   constructor(props) {
@@ -20,11 +15,15 @@ class ChatAuth extends React.Component {
   }
 
   componentWillUnmount = () => {
+    const { changeJoinChat } = this.props;
     this.disconnect();
+    changeJoinChat(false);
   };
 
   componentDidMount = async () => {
+    const { changeJoinChat } = this.props;
     await this.connect();
+    changeJoinChat(true);
   };
 
   connect = async () => {
@@ -40,34 +39,26 @@ class ChatAuth extends React.Component {
         this.stompClient.debug = () => {};
       }
     }
+    this.onConnected();
   };
 
   disconnect = () => {
     const { user } = this.state;
     const { history } = this.props;
-    if (this.stompClient) {
-      this.stompClient.send(
-        `chat/delUser`,
-        {},
-        JSON.stringify({ sender: user.nickName, type: 'LEAVE' })
-      );
-      this.stompClient.unsubscribe(`/channel/public`);
-      this.stompClient.disconnect();
-    }
+    const { stompClient } = this.props;
+    stompClient.send(`chat/delUser`, {}, JSON.stringify({ sender: user.nickName, type: 'LEAVE' }));
+
     this.setState({ isJoin: false });
     history.push('/');
   };
 
   onConnected = () => {
-    this.setState({ isJoin: true });
-    this.stompClient.subscribe(`/channel/public`, this.onMessageRecieved, {});
+    const { stompClient } = this.props;
     const { user } = this.state;
     this.getMessages();
-    this.stompClient.send(
-      `/chat/addUser`,
-      {},
-      JSON.stringify({ sender: user.nickName, type: 'JOIN' })
-    );
+    this.setState({ isJoin: true });
+    stompClient.subscribe(`/channel/public`, this.onMessageRecieved, {});
+    stompClient.send(`/chat/addUser`, {}, JSON.stringify({ sender: user.nickName, type: 'JOIN' }));
   };
 
   getUsersOnline = async () => {
@@ -95,6 +86,7 @@ class ChatAuth extends React.Component {
   };
 
   sendMessage = (msg, file, replyTo = null) => {
+    const { stompClient } = this.props;
     if (msg || file) {
       const { user } = this.props;
       const message = {
@@ -105,7 +97,7 @@ class ChatAuth extends React.Component {
         type: 'MESSAGE',
         ...file,
       };
-      this.stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
+      stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
     }
   };
 
@@ -122,10 +114,10 @@ class ChatAuth extends React.Component {
       messages: [...state.messages, message],
     }));
     this.getUsersOnline();
-    setTimeout(() => {
-      const lastMessage = document.querySelector('.message-list li:last-of-type');
+    const lastMessage = document.querySelector('.message-list li:last-of-type');
+    if (lastMessage) {
       lastMessage.scrollIntoView();
-    }, 200);
+    }
   };
 
   deleteCurrentMessage = async id => {
@@ -162,7 +154,9 @@ ChatAuth.propTypes = {
     nickName: PropTypes.string,
     avatar: PropTypes.string,
   }),
+  stompClient: PropTypes.objectOf().isRequired,
   history: PropTypes.objectOf(PropTypes.func).isRequired,
+  changeJoinChat: PropTypes.func.isRequired,
 };
 
 ChatAuth.defaultProps = {

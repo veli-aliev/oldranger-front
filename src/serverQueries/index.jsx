@@ -93,6 +93,11 @@ class Queries {
     return res.data;
   };
 
+  getArticleDraft = async () => {
+    const res = await axios.get('/api/article/drafts');
+    return res.data;
+  };
+
   createArticleComment = async (data, params) => {
     const res = await axios.post('/api/article/comment/add', data, {
       params,
@@ -139,7 +144,14 @@ class Queries {
   };
 
   getTopic = async (id, page, limit) => {
-    const res = await axios.get(`/api/topic/${id}`, { params: { page, limit } });
+    const res = await axios.get(`/api/topic/${id}`, {
+      params: { page, limit },
+    });
+    return res.data;
+  };
+
+  updateTopic = async formData => {
+    const res = await axios.put('/api/topic/edit', formData);
     return res.data;
   };
 
@@ -195,6 +207,13 @@ class Queries {
     // TODO node nodeValue ???
     const res = await axios.get(`/api/searchTopics`, {
       params: { finderTag, node: 0, nodeValue: 0 },
+    });
+    return res.data;
+  };
+
+  searchByArticles = async (title, page) => {
+    const res = await axios.get(`/api/searchArticles`, {
+      params: { title, page },
     });
     return res.data;
   };

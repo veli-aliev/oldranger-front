@@ -1,8 +1,12 @@
 import React from 'react';
+import Stomp from 'stompjs';
+import SockJS from 'sockjs-client';
+import { Spin } from 'antd';
 import 'antd/dist/antd.css';
 
 import queries from './serverQueries';
 import {
+  ArticleDraft,
   PrivateRoute,
   CommonRoute,
   AuthRoute,
@@ -19,6 +23,9 @@ import ChatAuth from './components/Chat/ChatAuth';
 import PrivateChat from './components/Chat/PrivateChat';
 import AdminPanel from './components/AdminPanel';
 import ProfileAnotherUser from './components/Profile/ProfileAnotherUser';
+import { BASE_URL } from './constants';
+
+const url = BASE_URL;
 
 class App extends React.Component {
   constructor(props) {
@@ -29,10 +36,53 @@ class App extends React.Component {
       initialState = {
         user,
         isLogin: true,
+        isJoinChat: false,
+        countMessages: 0,
+        stompClient: null,
       };
     }
     this.state = { ...initialState };
   }
+
+  componentDidMount = async () => {
+    const { isLogin } = this.state;
+    if (isLogin) {
+      await this.connect();
+    }
+  };
+
+  connect = async () => {
+    const currentUser = await queries.getCurrentUser();
+    if (currentUser.username) {
+      const socket = new SockJS(`${url}ws`, null, {});
+      this.stompClient = Stomp.over(socket);
+      this.stompClient.connect({}, this.onConnected, () => {});
+      this.setState({ stompClient: this.stompClient });
+    }
+  };
+
+  changeJoinChat = isJoin => {
+    this.setState({ isJoinChat: isJoin, countMessages: 0 });
+  };
+
+  onConnected = () => {
+    this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});
+    this.setState({ connect: true });
+  };
+
+  disconnect = () => {
+    this.stompClient.unsubscribe(`/channel/public`);
+    this.stompClient.disconnect();
+  };
+
+  onCheckMessage = payload => {
+    const message = JSON.parse(payload.body);
+    if (message.id) {
+      this.setState(state => ({
+        countMessages: state.isJoinChat ? 0 : state.countMessages + 1,
+      }));
+    }
+  };
 
   changeLoginState = () => {
     this.setState(({ isLogin }) => ({
@@ -47,6 +97,7 @@ class App extends React.Component {
   logOut = async () => {
     localStorage.removeItem('user');
     queries.logOut();
+    this.disconnect();
     this.setState({ isLogin: false, user: {} });
   };
 
@@ -55,6 +106,9 @@ class App extends React.Component {
       isLogin,
       user: { role },
       user,
+      countMessages,
+      stompClient,
+      connect,
     } = this.state;
     return (
       <Context.Provider
@@ -65,9 +119,9 @@ class App extends React.Component {
           ...this.state,
         }}
       >
-        <Header />
+        <Header countMessages={countMessages} />
         <CommonRoute />
-        <AuthRoute isLogin={isLogin} />
+        <AuthRoute isLogin={isLogin} connect={this.connect} />
         <PrivateRoute isAllowed={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
           isAllowed={isLogin}
@@ -80,13 +134,25 @@ class App extends React.Component {
           path="/admin-panel"
           component={AdminPanel}
         />
-        <TopicRoute isLogin={isLogin} />
+        <TopicRoute isLogin={isLogin} role={role} />
         <SubsectionRoute />
         <SearchRoute />
+        <ArticleDraft />
         <ArticlesRoute isLogin={isLogin} role={role} />
         {/* TODO delete eslint disable */}
         {/* eslint-disable-next-line no-undef */}
-        <ChatRoute path="/chat" isLogin={isLogin} user={user} component={ChatAuth} />
+        {connect ? (
+          <ChatRoute
+            path="/chat"
+            isLogin={isLogin}
+            changeJoinChat={this.changeJoinChat}
+            stompClient={stompClient}
+            user={user}
+            component={ChatAuth}
+          />
+        ) : (
+          <Spin />
+        )}
         <ChatRoute
           exact
           path="/private/:id"

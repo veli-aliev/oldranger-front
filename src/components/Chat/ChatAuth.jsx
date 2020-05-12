@@ -111,7 +111,6 @@ class ChatAuth extends React.Component {
 
   onMessageRecieved = payload => {
     const message = JSON.parse(payload.body);
-
     // fakeId - это костыль, чтобы избежать постоянного перерендера
     // т.к. уникального ключа для событий c type JOIN/LEAVE нет
     if (!message.id) {

@@ -48,11 +48,11 @@ class PrivateChat extends React.Component {
   connect = async token => {
     const socket = new SockJS(`${url}ws`, null, {});
     this.stompClient = Stomp.over(socket);
+    this.stompClient.debug = null;
     this.stompClient.connect({}, () => {
       this.stompClient.subscribe(`/channel/private/${token}`, this.onMessageRecieved, {});
       this.getMessages();
     });
-    this.stompClient.debug = () => {};
   };
 
   disconnect = () => {

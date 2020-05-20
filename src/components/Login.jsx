@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Row } from 'antd';
+import { Button, Row, Statistic, Modal } from 'antd';
 import { Form, Input } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -8,7 +8,6 @@ import * as Yup from 'yup';
 import queries from '../serverQueries';
 import Context from './Context';
 import FormItem from './formItems/FormItem';
-import LockStatus from './LockStatus';
 
 const formLayoutSchema = {
   labelCol: {
@@ -26,10 +25,28 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const login = (
-  { changeLoginState, changeUserState, changeLoadingState, setLockStatus, setUnlockTime },
-  connectFunc
-) => async (values, { setStatus }) => {
+const shakeBanStatus = (unlockTime = Date.now()) => {
+  // Если время бана больше 7 дней то это пермаментный бан
+  const perpetualBan = unlockTime - Date.now() > 691200000;
+  Modal.error({
+    title: 'Вы забаннены на этом форуме',
+    content: perpetualBan ? (
+      'НАВСЕГДА'
+    ) : (
+      <Statistic.Countdown
+        valueStyle={{ fontSize: '20px' }}
+        title="До окончания бана"
+        value={unlockTime}
+        format="D д H ч m мин s сек"
+      />
+    ),
+  });
+};
+
+const login = ({ changeLoginState, changeUserState, changeLoadingState }, connectFunc) => async (
+  values,
+  { setStatus }
+) => {
   changeLoadingState(true);
   const formData = new FormData();
   formData.append('username', values.username);
@@ -48,8 +65,7 @@ const login = (
       setStatus('Проверьте правильность ввода логина и пароля');
     }
     if (error.response && error.response.status === 403) {
-      setLockStatus(true);
-      setUnlockTime(error.response.data.unlockTime);
+      shakeBanStatus(error.response.data.unlockTime);
     }
     changeLoadingState(false);
   }
@@ -57,8 +73,6 @@ const login = (
 
 const Login = ({ connect }) => {
   const [loading, changeLoadingState] = useState(false);
-  const [isLock, setLockStatus] = useState(false);
-  const [unlockTime, setUnlockTime] = useState(null);
   const { changeLoginState, changeUserState } = useContext(Context);
   return (
     <>
@@ -68,10 +82,7 @@ const Login = ({ connect }) => {
           password: '',
         }}
         validationSchema={validationSchema}
-        onSubmit={login(
-          { changeLoginState, changeUserState, changeLoadingState, setLockStatus, setUnlockTime },
-          connect
-        )}
+        onSubmit={login({ changeLoginState, changeUserState, changeLoadingState }, connect)}
       >
         {({ status }) => (
           <>
@@ -97,7 +108,6 @@ const Login = ({ connect }) => {
           </>
         )}
       </Formik>
-      <LockStatus unlockTime={unlockTime} setLockStatus={setLockStatus} isLock={isLock} />
     </>
   );
 };

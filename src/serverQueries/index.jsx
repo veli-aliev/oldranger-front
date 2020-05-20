@@ -367,7 +367,7 @@ class Queries {
   prohibitionWrite = async (id, dateUnblock = new Date()) => {
     const res = await axios.post('/api/admin/writingBan', {
       id,
-      banType: 'string',
+      banType: 'ON_FORUM_MESS',
       dateUnblock: new Date(dateUnblock).toISOString(),
     });
     return res.data;

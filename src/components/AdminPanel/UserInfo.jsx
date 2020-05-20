@@ -31,7 +31,6 @@ const UserInfo = () => {
   }, [id]);
 
   const { nickName, accountNonLocked } = user;
-
   return (
     <div>
       <Button type="primary" onClick={() => history.go(-1)}>

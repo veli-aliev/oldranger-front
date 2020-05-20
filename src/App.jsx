@@ -56,7 +56,7 @@ class App extends React.Component {
     if (currentUser.username) {
       const socket = new SockJS(`${url}ws`, null, {});
       this.stompClient = Stomp.over(socket);
-      this.stompClient.debug = null;
+      // this.stompClient.debug = null;
       this.stompClient.connect({}, this.onConnected, () => {});
       this.setState({ stompClient: this.stompClient });
     }

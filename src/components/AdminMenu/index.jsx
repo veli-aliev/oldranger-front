@@ -14,6 +14,15 @@ const AdminMenu = ({ user, updateUser }) => {
     return null;
   }
 
+  const handleMut = dt => () =>
+    serverQueries
+      .prohibitionWrite(user.id, Date.now() + dt)
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Замутить не удалось.'));
+
   const handleBan = dt => () =>
     serverQueries
       .blackListRequest(user.id, Date.now() + dt)
@@ -57,6 +66,15 @@ const AdminMenu = ({ user, updateUser }) => {
       </Menu.Item>
       <Menu.Item onClick={openConfirm(handleBan(9999 * 24 * oneHour), 'перманентный бан')}>
         перманентный бан
+      </Menu.Item>
+      <Menu.Item onClick={openConfirm(handleMut(24 * oneHour), 'мут на 24 часа')}>
+        мут на 24 часа
+      </Menu.Item>
+      <Menu.Item onClick={openConfirm(handleMut(7 * 24 * oneHour), 'мут на 7 дней')}>
+        мут на 7 дней
+      </Menu.Item>
+      <Menu.Item onClick={openConfirm(handleMut(9999 * 24 * oneHour), 'перманентный мут')}>
+        перманентный мут
       </Menu.Item>
     </Menu>
   );

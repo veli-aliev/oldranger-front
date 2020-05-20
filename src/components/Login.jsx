@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 import queries from '../serverQueries';
 import Context from './Context';
 import FormItem from './formItems/FormItem';
+import LockStatus from './LockStatus';
 
 const formLayoutSchema = {
   labelCol: {
@@ -25,10 +26,10 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const login = ({ changeLoginState, changeUserState, changeLoadingState }, connectFunc) => async (
-  values,
-  { setStatus }
-) => {
+const login = (
+  { changeLoginState, changeUserState, changeLoadingState, setLockStatus, setUnlockTime },
+  connectFunc
+) => async (values, { setStatus }) => {
   changeLoadingState(true);
   const formData = new FormData();
   formData.append('username', values.username);
@@ -46,46 +47,58 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }, connec
     if (error.response && error.response.status === 401) {
       setStatus('Проверьте правильность ввода логина и пароля');
     }
+    if (error.response && error.response.status === 403) {
+      setLockStatus(true);
+      setUnlockTime(error.response.data.unlockTime);
+    }
     changeLoadingState(false);
   }
 };
 
 const Login = ({ connect }) => {
   const [loading, changeLoadingState] = useState(false);
+  const [isLock, setLockStatus] = useState(false);
+  const [unlockTime, setUnlockTime] = useState(null);
   const { changeLoginState, changeUserState } = useContext(Context);
   return (
-    <Formik
-      initialValues={{
-        username: '',
-        password: '',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={login({ changeLoginState, changeUserState, changeLoadingState }, connect)}
-    >
-      {({ status }) => (
-        <>
-          {status && (
-            <Row type="flex" justify="center">
-              <h3>{status}</h3>
-            </Row>
-          )}
-          <Form {...formLayoutSchema}>
-            <FormItem label="Логин" name="username">
-              <Input name="username" />
-            </FormItem>
-            <FormItem label="Пароль" name="password">
-              <Input.Password name="password" />
-            </FormItem>
+    <>
+      <Formik
+        initialValues={{
+          username: '',
+          password: '',
+        }}
+        validationSchema={validationSchema}
+        onSubmit={login(
+          { changeLoginState, changeUserState, changeLoadingState, setLockStatus, setUnlockTime },
+          connect
+        )}
+      >
+        {({ status }) => (
+          <>
+            {status && (
+              <Row type="flex" justify="center">
+                <h3>{status}</h3>
+              </Row>
+            )}
+            <Form {...formLayoutSchema}>
+              <FormItem label="Логин" name="username">
+                <Input name="username" />
+              </FormItem>
+              <FormItem label="Пароль" name="password">
+                <Input.Password name="password" />
+              </FormItem>
 
-            <Row type="flex" justify="center">
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Войти
-              </Button>
-            </Row>
-          </Form>
-        </>
-      )}
-    </Formik>
+              <Row type="flex" justify="center">
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Войти
+                </Button>
+              </Row>
+            </Form>
+          </>
+        )}
+      </Formik>
+      <LockStatus unlockTime={unlockTime} setLockStatus={setLockStatus} isLock={isLock} />
+    </>
   );
 };
 

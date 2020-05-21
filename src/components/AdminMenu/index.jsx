@@ -58,24 +58,28 @@ const AdminMenu = ({ user, updateUser }) => {
 
   const menu = (
     <Menu>
-      <Menu.Item onClick={openConfirm(handleBan(24 * oneHour), 'бан на 24 часа')}>
-        бан на 24 часа
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleBan(7 * 24 * oneHour), 'бан на 7 дней')}>
-        бан на 7 дней
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleBan(9999 * 24 * oneHour), 'перманентный бан')}>
-        перманентный бан
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleMut(24 * oneHour), 'мут на 24 часа')}>
-        мут на 24 часа
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleMut(7 * 24 * oneHour), 'мут на 7 дней')}>
-        мут на 7 дней
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleMut(9999 * 24 * oneHour), 'перманентный мут')}>
-        перманентный мут
-      </Menu.Item>
+      <Menu.SubMenu title="Бан">
+        <Menu.Item onClick={openConfirm(handleBan(24 * oneHour), 'бан на 24 часа')}>
+          бан на 24 часа
+        </Menu.Item>
+        <Menu.Item onClick={openConfirm(handleBan(7 * 24 * oneHour), 'бан на 7 дней')}>
+          бан на 7 дней
+        </Menu.Item>
+        <Menu.Item onClick={openConfirm(handleBan(9999 * 24 * oneHour), 'перманентный бан')}>
+          перманентный бан
+        </Menu.Item>
+      </Menu.SubMenu>
+      <Menu.SubMenu title="Мут">
+        <Menu.Item onClick={openConfirm(handleMut(24 * oneHour), 'мут на 24 часа')}>
+          мут на 24 часа
+        </Menu.Item>
+        <Menu.Item onClick={openConfirm(handleMut(7 * 24 * oneHour), 'мут на 7 дней')}>
+          мут на 7 дней
+        </Menu.Item>
+        <Menu.Item onClick={openConfirm(handleMut(9999 * 24 * oneHour), 'перманентный мут')}>
+          перманентный мут
+        </Menu.Item>
+      </Menu.SubMenu>
     </Menu>
   );
 

@@ -61,7 +61,7 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }, connec
     changeLoginState();
     changeUserState(userData);
   } catch (error) {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 400) {
       setStatus('Проверьте правильность ввода логина и пароля');
     }
     if (error.response && error.response.status === 403) {

@@ -14,9 +14,9 @@ const AdminMenu = ({ user, updateUser }) => {
     return null;
   }
 
-  const handleMut = dt => () =>
+  const handleMut = (dt, mutType) => () =>
     serverQueries
-      .prohibitionWrite(user.id, Date.now() + dt)
+      .prohibitionWrite(user.id, mutType, Date.now() + dt)
       .then(({ dateUnblock }) => {
         const accountNonLocked = dateUnblock === null;
         updateUser({ ...user, accountNonLocked });
@@ -69,16 +69,65 @@ const AdminMenu = ({ user, updateUser }) => {
           перманентный бан
         </Menu.Item>
       </Menu.SubMenu>
-      <Menu.SubMenu title="Мут">
-        <Menu.Item onClick={openConfirm(handleMut(24 * oneHour), 'мут на 24 часа')}>
-          мут на 24 часа
-        </Menu.Item>
-        <Menu.Item onClick={openConfirm(handleMut(7 * 24 * oneHour), 'мут на 7 дней')}>
-          мут на 7 дней
-        </Menu.Item>
-        <Menu.Item onClick={openConfirm(handleMut(9999 * 24 * oneHour), 'перманентный мут')}>
-          перманентный мут
-        </Menu.Item>
+      <Menu.SubMenu title="Запрет">
+        <Menu.SubMenu title="Запрет чата">
+          <Menu.Item onClick={openConfirm(handleMut(24 * oneHour, 'ON_CHAT'), 'запрет на 24 часа')}>
+            запрет на 24 часа
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(handleMut(7 * 24 * oneHour, 'ON_CHAT'), 'запрет на 7 дней')}
+          >
+            запрет на 7 дней
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(9999 * 24 * oneHour, 'ON_CHAT'),
+              'пермаментный запрет чата'
+            )}
+          >
+            пермаментный запрет чата
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu title="Запрет на комментирование">
+          <Menu.Item
+            onClick={openConfirm(handleMut(24 * oneHour, 'ON_COMMENTS'), 'запрет на 24 часа')}
+          >
+            запрет на 24 часа
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(handleMut(7 * 24 * oneHour, 'ON_COMMENTS'), 'запрет на 7 дней')}
+          >
+            запрет на 7 дней
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(9999 * 24 * oneHour, 'ON_COMMENTS'),
+              'пермаментный запрет'
+            )}
+          >
+            пермаментный запрет
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu title="Запрет на создание тем">
+          <Menu.Item
+            onClick={openConfirm(handleMut(24 * oneHour, 'ON_FORUM_MESS'), 'запрет на 24 часа')}
+          >
+            запрет на 24 часа
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(handleMut(7 * 24 * oneHour, 'ON_FORUM_MESS'), 'запрет на 7 дней')}
+          >
+            запрет на 7 дней
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(9999 * 24 * oneHour, 'ON_FORUM_MESS'),
+              'пермаментный запрет'
+            )}
+          >
+            пермаментный запрет
+          </Menu.Item>
+        </Menu.SubMenu>
       </Menu.SubMenu>
     </Menu>
   );

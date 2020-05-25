@@ -364,10 +364,11 @@ class Queries {
     return res.data;
   };
 
-  prohibitionWrite = async (id, dateUnblock = new Date()) => {
+  prohibitionWrite = async (id, banType, dateUnblock = new Date()) => {
+    console.log(id, banType, dateUnblock);
     const res = await axios.post('/api/admin/writingBan', {
       id,
-      banType: 'ON_CHAT',
+      banType,
       dateUnblock: new Date(dateUnblock).toISOString(),
     });
     return res.data;

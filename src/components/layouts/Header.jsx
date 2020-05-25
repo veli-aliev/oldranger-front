@@ -46,48 +46,51 @@ const Menu = styled.div`
 const Header = () => {
   return (
     <Context.Consumer>
-      {({ isLogin, logOut, user }) => (
-        <StyledHeader>
-          <WrapLogo>
-            <Logo src={logo} alt='Клуб "Старый следопыт"' />
-            <LogoText>Клуб &quot;Старый следопыт&quot;</LogoText>
-          </WrapLogo>
-          <Menu>
-            <Button type="primary">
-              <Link to="/">Главная</Link>
-            </Button>
-            {isLogin && (
-              <>
-                <Button type="primary">
-                  <Link to="/chat">Чат</Link>
-                </Button>
-                <Button>
-                  <Link to="/articles">Статьи</Link>
-                </Button>
-              </>
-            )}
-            {isLogin && user.role === 'ROLE_ADMIN' && (
-              <Button style={{ marginLeft: '0' }}>
-                <Link to="/admin-panel">Панель администратора</Link>
+      {({ isLogin, logOut, user }) => {
+        const muteChat = user.mute && user.mute.includes('ON_CHAT');
+        return (
+          <StyledHeader>
+            <WrapLogo>
+              <Logo src={logo} alt='Клуб "Старый следопыт"' />
+              <LogoText>Клуб &quot;Старый следопыт&quot;</LogoText>
+            </WrapLogo>
+            <Menu>
+              <Button type="primary">
+                <Link to="/">Главная</Link>
               </Button>
-            )}
-            {isLogin ? (
-              <>
-                <Button>
-                  <Link to="/profile">Профиль</Link>
+              {isLogin && (
+                <>
+                  <Button disabled={muteChat} type="primary">
+                    <Link to="/chat">Чат</Link>
+                  </Button>
+                  <Button>
+                    <Link to="/articles">Статьи</Link>
+                  </Button>
+                </>
+              )}
+              {isLogin && user.role === 'ROLE_ADMIN' && (
+                <Button style={{ marginLeft: '0' }}>
+                  <Link to="/admin-panel">Панель администратора</Link>
                 </Button>
-                <Button type="danger" onClick={logOut}>
-                  Выйти
+              )}
+              {isLogin ? (
+                <>
+                  <Button>
+                    <Link to="/profile">Профиль</Link>
+                  </Button>
+                  <Button type="danger" onClick={logOut}>
+                    Выйти
+                  </Button>
+                </>
+              ) : (
+                <Button type="link">
+                  <Link to="/login">Войти</Link>
                 </Button>
-              </>
-            ) : (
-              <Button type="link">
-                <Link to="/login">Войти</Link>
-              </Button>
-            )}
-          </Menu>
-        </StyledHeader>
-      )}
+              )}
+            </Menu>
+          </StyledHeader>
+        );
+      }}
     </Context.Consumer>
   );
 };

@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button, Badge } from 'antd';
 import logo from '../../media/img/logo.png';
 
 import Context from '../Context';
@@ -38,12 +39,12 @@ const Menu = styled.div`
 
   .ant-badge {
     position: absolute;
-    right: 0;
-    top: 0;
+    right: -10px;
+    top: -5px;
   }
 `;
 
-const Header = () => {
+const Header = ({ countMessages }) => {
   return (
     <Context.Consumer>
       {({ isLogin, logOut, user }) => (
@@ -59,7 +60,10 @@ const Header = () => {
             {isLogin && (
               <>
                 <Button type="primary">
-                  <Link to="/chat">Чат</Link>
+                  <Link to="/chat">
+                    Чат
+                    <Badge count={countMessages} />
+                  </Link>
                 </Button>
                 <Button>
                   <Link to="/articles">Статьи</Link>
@@ -90,6 +94,14 @@ const Header = () => {
       )}
     </Context.Consumer>
   );
+};
+
+Header.defaultProps = {
+  countMessages: 0,
+};
+
+Header.propTypes = {
+  countMessages: PropTypes.number,
 };
 
 export default Header;

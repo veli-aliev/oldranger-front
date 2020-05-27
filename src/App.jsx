@@ -69,7 +69,7 @@ class App extends React.Component {
 
   isConnected = () => {
     this.setState({ connect: true });
-  }
+  };
 
   onConnected = () => {
     this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});

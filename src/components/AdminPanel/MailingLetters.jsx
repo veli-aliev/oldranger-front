@@ -62,18 +62,20 @@ const MailingLetters = () => {
           handleSubmit,
         }) => (
           <Form onSubmit={handleSubmit} style={formStyles}>
-            <Form.Item name="treeUsers">
+            <Form.Item name="roles">
               <TreeSelect
-                name="treeUsers"
-                value={values.treeUsers}
+                name="roles"
+                value={values.roles}
                 treeCheckable
                 showCheckedStrategy={SHOW_PARENT}
-                onChange={arr => setFieldValue('treeUsers', arr)}
+                onChange={arr => setFieldValue('roles', arr)}
               >
-                <TreeNode value="all" title="Все">
-                  <TreeNode value="Moderator" title="Moderator" />
-                  <TreeNode value="Prospect" title="Prospect" />
-                  <TreeNode value="User" title="User" />
+                <TreeNode value="ALL" title="Все">
+                  <TreeNode value="ROLE_MODERATOR" title="Moderator" />
+                  <TreeNode value="ROLE_VETERAN" title="Veteran" />
+                  <TreeNode value="ROLE_OLD_TIMERT" title="Old timert" />
+                  <TreeNode value="ROLE_USER" title="User" />
+                  <TreeNode value="ROLE_PROSPECT" title="Prospect" />
                 </TreeNode>
               </TreeSelect>
             </Form.Item>

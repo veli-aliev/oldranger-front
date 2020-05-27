@@ -350,9 +350,15 @@ class Queries {
     return res.data;
   };
 
-  sendMailToAllUsers = async params => {
+  sendMailToAllUsers = async ({ roles, ...params }) => {
     console.log(params);
-    const res = await axios.post('/api/admin/sendMail', { params });
+    const res = await axios.post('/api/admin/sendMail', {
+      emailDraft: {
+        ...params,
+        lastEditDate: new Date().toISOString(),
+      },
+      roles,
+    });
     return res.data;
   };
 

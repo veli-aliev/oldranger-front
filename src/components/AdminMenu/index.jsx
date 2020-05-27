@@ -42,6 +42,16 @@ const AdminMenu = ({ user, updateUser }) => {
       .catch(() => message.error('Похоже, что-то не так. Разблокировать не удалось.'));
   };
 
+  const handleUnmute = () => {
+    serverQueries
+      .unmuteUser(user.id)
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Разблокировать не удалось.'));
+  };
+
   const openConfirm = (action, content) => () => {
     Modal.confirm({
       title: 'Confirmation',
@@ -140,7 +150,10 @@ const AdminMenu = ({ user, updateUser }) => {
       </Button>
     </Dropdown>
   ) : (
-    <Button onClick={openConfirm(handleUnban, 'unban')}>Разблокировать</Button>
+    <>
+      <Button onClick={openConfirm(handleUnban, 'unban')}>Разблокировать</Button>
+      <Button onClick={openConfirm(handleUnmute, 'unmute')}>Размутить</Button>
+    </>
   );
 };
 

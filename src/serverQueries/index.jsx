@@ -379,6 +379,11 @@ class Queries {
     return res.data;
   };
 
+  unmuteUser = async id => {
+    const res = await axios.post('/api/admin/unmute', { id });
+    return res.data;
+  };
+
   sendMailToAllUsers = async params => {
     const res = await axios.post('/api/admin/sendMail', params);
     return res.data;

@@ -32,27 +32,27 @@ class MainPage extends React.Component {
     const { rootSections, actualTopics } = this.state;
     return (
       <Context.Consumer>
-      {({ isLogin }) => (
-        <StyledMainPage>
-          <SearchForm />
-          {actualTopics.length > 0 && rootSections.length > 0 ? (
-            <>
-              <TopicsList
-                itemComponent={item => <TopicsListItem topicData={item} />}
-                items={actualTopics}
-                title="Актуальные темы"
-              />
-              {rootSections.map(section => (
-                <SubSectionsList section={section} key={section.section.id} isLogin={isLogin} />
-              ))}
-              {isLogin ? <Albums isMainPage /> : null}
-            </>
-          ) : (
-            <Spin />
-          )}
-        </StyledMainPage>
-      )}
-    </Context.Consumer>
+        {({ isLogin }) => (
+          <StyledMainPage>
+            <SearchForm />
+            {actualTopics.length > 0 && rootSections.length > 0 ? (
+              <>
+                <TopicsList
+                  itemComponent={item => <TopicsListItem topicData={item} />}
+                  items={actualTopics}
+                  title="Актуальные темы"
+                />
+                {rootSections.map(section => (
+                  <SubSectionsList section={section} key={section.section.id} isLogin={isLogin} />
+                ))}
+                {isLogin && <Albums isMainPage />}
+              </>
+            ) : (
+              <Spin />
+            )}
+          </StyledMainPage>
+        )}
+      </Context.Consumer>
     );
   }
 }

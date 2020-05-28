@@ -4,7 +4,10 @@ import SubSectionItem from './SubSectionItem';
 import sectionProps from './propTypes/sectionProps';
 
 const SubSectionsList = ({ section, isLogin }) => {
-  if (section.section.name === 'Только для пользователей' && !isLogin) {
+  const {
+    section: { id },
+  } = section;
+  if (id === 2 && !isLogin) {
     return null;
   }
   return (
@@ -18,6 +21,7 @@ const SubSectionsList = ({ section, isLogin }) => {
 
 SubSectionsList.propTypes = {
   section: sectionProps.isRequired,
+  isLogin: sectionProps.isRequired,
 };
 
 export default SubSectionsList;

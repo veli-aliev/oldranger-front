@@ -34,12 +34,14 @@ class ChatAuth extends React.Component {
     this.onConnected();
   };
 
-  disconnect = () => {
+  disconnect = evt => {
     const { user } = this.state;
     const { history, stompClient } = this.props;
     stompClient.send(`chat/delUser`, {}, JSON.stringify({ sender: user.nickName, type: 'LEAVE' }));
     this.setState({ isJoin: false });
-    history.push('/');
+    if (evt) {
+      history.push('/');
+    }
   };
 
   onConnected = () => {

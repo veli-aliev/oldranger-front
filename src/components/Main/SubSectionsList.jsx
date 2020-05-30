@@ -5,9 +5,9 @@ import sectionProps from './propTypes/sectionProps';
 
 const SubSectionsList = ({ section, isLogin }) => {
   const {
-    section: { id },
+    section: { hideToAnon },
   } = section;
-  if (id === 2 && !isLogin) {
+  if (hideToAnon && !isLogin) {
     return null;
   }
   return (

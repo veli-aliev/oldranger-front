@@ -32,15 +32,11 @@ const validationSchema = Yup.object({
     .required('Это поле обязательно'),
 });
 
-const onSubmit = ({ changeLoadingState, value, setValue }) => async (
-  values,
-  { setStatus, resetForm }
-) => {
+const onSubmit = ({ changeLoadingState }) => async (values, { setStatus, resetForm }) => {
   changeLoadingState(true);
   try {
-    await queries.requestRegistration({ ...values, about: value });
+    await queries.requestRegistration({ ...values });
     resetForm({});
-    setValue('');
     setStatus('Письмо успешно отправлено администратору');
   } catch (error) {
     setStatus('Ошибка, повторите позже');
@@ -49,12 +45,7 @@ const onSubmit = ({ changeLoadingState, value, setValue }) => async (
 };
 
 const FormCommunicationAdmin = () => {
-  const [value, setValue] = useState('');
   const [loading, changeLoadingState] = useState(false);
-  const onChangeValue = ({ target }) => {
-    setValue(target.value);
-  };
-
   return (
     <Formik
       initialValues={{
@@ -64,7 +55,7 @@ const FormCommunicationAdmin = () => {
         about: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={onSubmit({ changeLoadingState, value, setValue })}
+      onSubmit={onSubmit({ changeLoadingState })}
     >
       {({ status }) => (
         <>
@@ -85,7 +76,7 @@ const FormCommunicationAdmin = () => {
               <Input name="email" />
             </FormItem>
             <FormItem label="О себе" name="about">
-              <Input.TextArea rows={4} onChange={onChangeValue} value={value} />
+              <Input.TextArea name="about" rows={4} />
             </FormItem>
 
             <Row type="flex" justify="center">

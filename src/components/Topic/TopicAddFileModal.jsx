@@ -120,10 +120,10 @@ class TopicAddFileModal extends React.Component {
   loadAlbums = async () => {
     const allAlbums = await queries.getAlbums();
     const promises = allAlbums.map(album => {
-      return queries.getPhotosFromAlbum(album.id).then(data => {
+      return queries.getPhotosFromAlbum(album.photoAlbumId).then(data => {
         const images = data.map(image => ({
-          src: `${photoTempUrl}${image.id}?type=original`,
-          id: image.id,
+          src: `${photoTempUrl}${image.photoID}?type=original`,
+          id: image.photoID,
         }));
         return { ...album, selected: false, images };
       });
@@ -135,8 +135,9 @@ class TopicAddFileModal extends React.Component {
 
   toggleFullAlbum = id => async () => {
     const { albums } = this.state;
+
     const newAlbums = albums.map(item => {
-      if (item.id === id) {
+      if (item.photoAlbumId === id) {
         return { ...item, selected: !item.selected };
       }
       return { ...item, selected: false };
@@ -146,6 +147,7 @@ class TopicAddFileModal extends React.Component {
 
   handleUpload = async () => {
     const { fileList } = this.state;
+    console.log(fileList);
     const { setFileList } = this.props;
     const formData = new FormData();
 
@@ -161,6 +163,7 @@ class TopicAddFileModal extends React.Component {
 
   render() {
     const { fileList, albums } = this.state;
+    
     const { handleCloseModal, toggleImageToUpload, imagesToUpload } = this.props;
 
     const selectedAlbum = albums.find(album => album.selected);
@@ -200,15 +203,15 @@ class TopicAddFileModal extends React.Component {
           <Gallery>
             {albums.map(album => (
               <AlbumCard
-                key={album.id}
-                onClick={this.toggleFullAlbum(album.id)}
-                selected={selectedAlbum && album.id === selectedAlbum.id}
+                key={album.photoAlbumId}
+                onClick={this.toggleFullAlbum(album.photoAlbumId)}
+                selected={selectedAlbum && album.photoAlbumId === selectedAlbum.photoAlbumId}
               >
                 <BGImage
                   src={
-                    album.originalThumbImage === 'thumb_image_placeholder'
+                    album.photosCounter === 0
                       ? '/defaultAlbumPicture.jpg'
-                      : `${url}img/chat/${album.originalThumbImage}`
+                      : `${url}securedPhoto/photoFromAlbum/1`
                   }
                 />
                 <AlbumShadow>
@@ -228,7 +231,9 @@ class TopicAddFileModal extends React.Component {
                 )}
               </Row>
               <Gallery>
-                {selectedAlbum.images.map(image => (
+                {selectedAlbum.images.map(image => {
+                  console.log(image);
+                  return (
                   <ImageCard key={image.src}>
                     <BGImage src={image.src} alt="user-image" />
                     <ChoosePhotoButton
@@ -237,7 +242,7 @@ class TopicAddFileModal extends React.Component {
                       onClick={toggleImageToUpload(image.id)}
                     />
                   </ImageCard>
-                ))}
+                )})}
               </Gallery>
             </>
           ) : null}

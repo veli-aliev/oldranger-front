@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
+import { Breadcrumb, message, notification, Spin, Typography, Button, Result, Modal } from 'antd';
 // import styled from 'styled-components';
 import Comment from 'antd/es/comment';
 import { Markup } from 'interweave';
@@ -42,6 +42,7 @@ class TopicPage extends React.Component {
       uploading: false,
       lightboxIsOpen: false,
       error: false,
+      photoModal: false,
     };
     this.replyForm = React.createRef();
   }
@@ -49,6 +50,24 @@ class TopicPage extends React.Component {
   componentDidMount() {
     const { page } = this.state;
     this.getTopics(parseInt(page, 10));
+  }
+
+  showModal = () => {
+    this.setState({
+      photoModal: true,
+    });
+  };
+
+  handleOk = () => {
+    this.setState({
+      photoModal: false,
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      photoModal: false,
+    });
   }
 
   getTopics = page => {
@@ -255,6 +274,11 @@ class TopicPage extends React.Component {
 
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
+    console.log(topic);
+    let path = '';
+    if (topic !== null && topic.photoAlbum ) {
+      path = `http://localhost:8888/api/securedPhoto/photoFromAlbum/${topic.photoAlbum.thumbImage.id}?size=small`;
+    }
     const { userProfile } = this.props;
     const { isLogin } = this.context;
     const avatar = userProfile.avatar ? (
@@ -290,6 +314,14 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
+            {topic && (topic.photoAlbum !== null) ? ( 
+              <>
+                <img alt="example" width="30%" src={path}  onClick={this.showModal} style={{ display:"block", marginBottom: '50px' }}/>
+                <Modal visible={this.state.photoModal} footer={null} onCancel={this.handleCancel}>
+                  <img alt="example" style={{ width: '100%' }} src={path} />
+                </Modal>
+              </>
+            ) : null}
             {isLogin && (
               <Button onClick={this.toggleSubscriptionStatus}>
                 {topic.isSubscribed ? 'Отписаться' : 'Подписаться'}

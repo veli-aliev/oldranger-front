@@ -46,7 +46,7 @@ const FormCommunicationAdmin = () => {
     changeLoadingState(true);
     setStatus('');
     queries
-      .newUser({ ...values, adout: value })
+      .newUser({ ...values, about: value })
       .then(() => {
         setStatus('Письмо с подтверждением отправлено на ваш email');
         onReset();

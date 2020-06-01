@@ -68,7 +68,7 @@ class TopicPage extends React.Component {
     this.setState({
       photoModal: false,
     });
-  }
+  };
 
   getTopics = page => {
     // Get a topic and a list of comments for this topic by topic id
@@ -274,9 +274,9 @@ class TopicPage extends React.Component {
 
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
-    console.log(topic);
     let path = '';
-    if (topic !== null && topic.photoAlbum ) {
+    const { photoModal } = this.state;
+    if (topic !== null && topic.photoAlbum) {
       path = `http://localhost:8888/api/securedPhoto/photoFromAlbum/${topic.photoAlbum.thumbImage.id}?size=small`;
     }
     const { userProfile } = this.props;
@@ -314,10 +314,23 @@ class TopicPage extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <TopicStartMessage topic={topic} toggleLightbox={this.toggleLightbox} />
-            {topic && (topic.photoAlbum !== null) ? ( 
+            {topic && topic.photoAlbum !== null ? (
               <>
-                <img alt="example" width="30%" src={path}  onClick={this.showModal} style={{ display:"block", marginBottom: '50px' }}/>
-                <Modal visible={this.state.photoModal} footer={null} onCancel={this.handleCancel}>
+                <div
+                  role="button"
+                  onClick={this.showModal}
+                  onKeyPress={() => {}}
+                  tabIndex="0"
+                  style={{ outlineStyle: 'none' }}
+                >
+                  <img
+                    alt="example"
+                    width="30%"
+                    src={path}
+                    style={{ display: 'block', marginBottom: '50px' }}
+                  />
+                </div>
+                <Modal visible={photoModal} footer={null} onCancel={this.handleCancel}>
                   <img alt="example" style={{ width: '100%' }} src={path} />
                 </Modal>
               </>

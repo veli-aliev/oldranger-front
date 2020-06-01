@@ -147,7 +147,6 @@ class TopicAddFileModal extends React.Component {
 
   handleUpload = async () => {
     const { fileList } = this.state;
-    console.log(fileList);
     const { setFileList } = this.props;
     const formData = new FormData();
 
@@ -163,7 +162,7 @@ class TopicAddFileModal extends React.Component {
 
   render() {
     const { fileList, albums } = this.state;
-    
+
     const { handleCloseModal, toggleImageToUpload, imagesToUpload } = this.props;
 
     const selectedAlbum = albums.find(album => album.selected);
@@ -232,17 +231,17 @@ class TopicAddFileModal extends React.Component {
               </Row>
               <Gallery>
                 {selectedAlbum.images.map(image => {
-                  console.log(image);
                   return (
-                  <ImageCard key={image.src}>
-                    <BGImage src={image.src} alt="user-image" />
-                    <ChoosePhotoButton
-                      shape="circle"
-                      icon={imagesToUpload.includes(image.id) ? 'check' : undefined}
-                      onClick={toggleImageToUpload(image.id)}
-                    />
-                  </ImageCard>
-                )})}
+                    <ImageCard key={image.src}>
+                      <BGImage src={image.src} alt="user-image" />
+                      <ChoosePhotoButton
+                        shape="circle"
+                        icon={imagesToUpload.includes(image.id) ? 'check' : undefined}
+                        onClick={toggleImageToUpload(image.id)}
+                      />
+                    </ImageCard>
+                  );
+                })}
               </Gallery>
             </>
           ) : null}

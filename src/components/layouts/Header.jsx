@@ -93,6 +93,11 @@ const Header = ({ countMessages }) => {
                 <Link to="/login">Войти</Link>
               </Button>
             )}
+            {isLogin || (
+              <Button type="primary">
+                <Link to="/request-invite">Запросить регистрацию</Link>
+              </Button>
+            )}
           </Menu>
         </StyledHeader>
       )}

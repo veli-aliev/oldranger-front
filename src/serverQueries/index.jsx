@@ -36,7 +36,7 @@ class Queries {
     return res;
   };
 
-  newUser = async values => {
+  requestRegistration = async values => {
     const res = await axios.post('api/registration/new', values);
     return res.data;
   };

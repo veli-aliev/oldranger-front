@@ -36,6 +36,11 @@ class Queries {
     return res;
   };
 
+  requestRegistration = async values => {
+    const res = await axios.post('api/registration/new', values);
+    return res.data;
+  };
+
   updateProfile = async formData => {
     const res = await axios.post('/api/updateProfile', formData);
     return res.data;

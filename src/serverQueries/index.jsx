@@ -24,6 +24,10 @@ class Queries {
       message.error('Сервер не отвечает');
     }
 
+    if (error.response.status === 401) {
+      message.error('Пользователь не авторизован');
+    }
+
     message.error(error.message);
   };
 

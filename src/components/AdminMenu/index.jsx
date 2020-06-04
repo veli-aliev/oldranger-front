@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Menu, Dropdown, Icon, Modal, Button, message } from 'antd';
 import context from '../Context';
+import { convertTimeToMilliseconds } from '../../utils';
 import serverQueries from '../../serverQueries';
 
 const AdminMenu = ({ user, updateUser }) => {
@@ -64,34 +65,42 @@ const AdminMenu = ({ user, updateUser }) => {
     });
   };
 
-  const oneHour = 60 * 60 * 1000;
-
   const menu = (
     <Menu>
       <Menu.SubMenu title="Бан">
-        <Menu.Item onClick={openConfirm(handleBan(24 * oneHour), 'бан на 24 часа')}>
+        <Menu.Item onClick={openConfirm(handleBan(convertTimeToMilliseconds()), 'бан на 24 часа')}>
           бан на 24 часа
         </Menu.Item>
-        <Menu.Item onClick={openConfirm(handleBan(7 * 24 * oneHour), 'бан на 7 дней')}>
+        <Menu.Item onClick={openConfirm(handleBan(convertTimeToMilliseconds(7)), 'бан на 7 дней')}>
           бан на 7 дней
         </Menu.Item>
-        <Menu.Item onClick={openConfirm(handleBan(9999 * 24 * oneHour), 'перманентный бан')}>
+        <Menu.Item
+          onClick={openConfirm(handleBan(convertTimeToMilliseconds(9999)), 'перманентный бан')}
+        >
           перманентный бан
         </Menu.Item>
       </Menu.SubMenu>
       <Menu.SubMenu title="Запрет">
         <Menu.SubMenu title="Запрет чата">
-          <Menu.Item onClick={openConfirm(handleMut(24 * oneHour, 'ON_CHAT'), 'запрет на 24 часа')}>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(), 'ON_CHAT'),
+              'запрет на 24 часа'
+            )}
+          >
             запрет на 24 часа
           </Menu.Item>
           <Menu.Item
-            onClick={openConfirm(handleMut(7 * 24 * oneHour, 'ON_CHAT'), 'запрет на 7 дней')}
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(7), 'ON_CHAT'),
+              'запрет на 7 дней'
+            )}
           >
             запрет на 7 дней
           </Menu.Item>
           <Menu.Item
             onClick={openConfirm(
-              handleMut(9999 * 24 * oneHour, 'ON_CHAT'),
+              handleMut(convertTimeToMilliseconds(9999), 'ON_CHAT'),
               'пермаментный запрет чата'
             )}
           >
@@ -100,18 +109,24 @@ const AdminMenu = ({ user, updateUser }) => {
         </Menu.SubMenu>
         <Menu.SubMenu title="Запрет на комментирование">
           <Menu.Item
-            onClick={openConfirm(handleMut(24 * oneHour, 'ON_COMMENTS'), 'запрет на 24 часа')}
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(), 'ON_COMMENTS'),
+              'запрет на 24 часа'
+            )}
           >
             запрет на 24 часа
           </Menu.Item>
           <Menu.Item
-            onClick={openConfirm(handleMut(7 * 24 * oneHour, 'ON_COMMENTS'), 'запрет на 7 дней')}
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(7), 'ON_COMMENTS'),
+              'запрет на 7 дней'
+            )}
           >
             запрет на 7 дней
           </Menu.Item>
           <Menu.Item
             onClick={openConfirm(
-              handleMut(9999 * 24 * oneHour, 'ON_COMMENTS'),
+              handleMut(convertTimeToMilliseconds(9999), 'ON_COMMENTS'),
               'пермаментный запрет'
             )}
           >
@@ -120,18 +135,24 @@ const AdminMenu = ({ user, updateUser }) => {
         </Menu.SubMenu>
         <Menu.SubMenu title="Запрет на создание тем">
           <Menu.Item
-            onClick={openConfirm(handleMut(24 * oneHour, 'ON_FORUM_MESS'), 'запрет на 24 часа')}
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(), 'ON_FORUM_MESS'),
+              'запрет на 24 часа'
+            )}
           >
             запрет на 24 часа
           </Menu.Item>
           <Menu.Item
-            onClick={openConfirm(handleMut(7 * 24 * oneHour, 'ON_FORUM_MESS'), 'запрет на 7 дней')}
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(7), 'ON_FORUM_MESS'),
+              'запрет на 7 дней'
+            )}
           >
             запрет на 7 дней
           </Menu.Item>
           <Menu.Item
             onClick={openConfirm(
-              handleMut(9999 * 24 * oneHour, 'ON_FORUM_MESS'),
+              handleMut(convertTimeToMilliseconds(9999), 'ON_FORUM_MESS'),
               'пермаментный запрет'
             )}
           >

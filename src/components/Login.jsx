@@ -25,9 +25,9 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Это поле обязательно'),
 });
 
-const shakeBanStatus = (unlockTime = Date.now()) => {
-  // Если время бана больше 7 дней то это пермаментный бан
-  const perpetualBan = unlockTime - Date.now() > 691200000;
+const showBanStatus = (unlockTime = Date.now()) => {
+  // 31557600000 - год
+  const perpetualBan = unlockTime - Date.now() > 31557600000;
   Modal.error({
     title: 'Вы забаннены на этом форуме',
     content: perpetualBan ? (
@@ -61,11 +61,11 @@ const login = ({ changeLoginState, changeUserState, changeLoadingState }, connec
     changeLoginState();
     changeUserState(userData);
   } catch (error) {
-    if (error.response && error.response.status === 400) {
+    if (error.response && error.response.status === 401) {
       setStatus('Проверьте правильность ввода логина и пароля');
     }
     if (error.response && error.response.status === 403) {
-      shakeBanStatus(error.response.data.unlockTime);
+      showBanStatus(error.response.data.unlockTime);
     }
     changeLoadingState(false);
   }

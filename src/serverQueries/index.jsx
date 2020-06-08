@@ -428,6 +428,13 @@ class Queries {
     const res = await axios.get(`/api/${id}`);
     return res.data;
   };
+
+  getFilteredUsers = async (page, query) => {
+    const res = await axios.get('/api/admin/users', {
+      params: { page: Number(page), ...(query ? { query } : {}) },
+    });
+    return res.data;
+  };
 }
 
 export default new Queries();

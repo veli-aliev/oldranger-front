@@ -63,14 +63,14 @@ const AlbumCard = styled.div`
 `;
 
 const AlbumShadow = styled.div`
-    color: #fff;
-    box-sizing: border-box;
-    position: absolute; 
-    bottom: 0;
-    width: 100%;
-    padding: 35px 12px 9px;
-    background: url(/shadow.png);
-}`;
+  color: #fff;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 35px 12px 9px;
+  background: url(/shadow.png);
+`;
 
 const AlbumTitle = styled.span`
   word-break: break-all;
@@ -120,11 +120,13 @@ class TopicAddFileModal extends React.Component {
   loadAlbums = async () => {
     const allAlbums = await queries.getAlbums();
     const promises = allAlbums.map(album => {
-      return queries.getPhotosFromAlbum(album.id).then(data => {
-        const images = data.map(image => ({
-          src: `${photoTempUrl}${image.id}?type=original`,
-          id: image.id,
-        }));
+      return queries.getPhotosFromAlbum(album.photoAlbumId).then(data => {
+        const images = data.map(image => {
+          return {
+            src: `${photoTempUrl}${image.photoID}?type=original`,
+            id: image.photoID,
+          };
+        });
         return { ...album, selected: false, images };
       });
     });
@@ -136,7 +138,7 @@ class TopicAddFileModal extends React.Component {
   toggleFullAlbum = id => async () => {
     const { albums } = this.state;
     const newAlbums = albums.map(item => {
-      if (item.id === id) {
+      if (item.photoAlbumId === id) {
         return { ...item, selected: !item.selected };
       }
       return { ...item, selected: false };
@@ -148,21 +150,18 @@ class TopicAddFileModal extends React.Component {
     const { fileList } = this.state;
     const { setFileList } = this.props;
     const formData = new FormData();
-
     fileList.forEach(file => {
-      formData.append('photos', file);
+      formData.append(`photos`, file);
     });
     // Необходимо добавить функционал загрузки изображений
     // в топик по id на бэкенде
     // http://localhost:8888/api/securedPhoto/photoFromAlbum/id'
-
     setFileList(formData);
   };
 
   render() {
     const { fileList, albums } = this.state;
     const { handleCloseModal, toggleImageToUpload, imagesToUpload } = this.props;
-
     const selectedAlbum = albums.find(album => album.selected);
     const uploadProps = {
       accept: '.jpg, .jpeg, .png',
@@ -200,15 +199,15 @@ class TopicAddFileModal extends React.Component {
           <Gallery>
             {albums.map(album => (
               <AlbumCard
-                key={album.id}
-                onClick={this.toggleFullAlbum(album.id)}
-                selected={selectedAlbum && album.id === selectedAlbum.id}
+                key={album.photoAlbumId}
+                onClick={this.toggleFullAlbum(album.photoAlbumId)}
+                selected={selectedAlbum && album.photoAlbumId === selectedAlbum.photoAlbumId}
               >
                 <BGImage
                   src={
-                    album.originalThumbImage === 'thumb_image_placeholder'
-                      ? '/defaultAlbumPicture.jpg'
-                      : `${url}img/chat/${album.originalThumbImage}`
+                    album.thumbImageId
+                      ? `${photoTempUrl}${album.thumbImageId}?type=original`
+                      : '/defaultAlbumPicture.jpg'
                   }
                 />
                 <AlbumShadow>
@@ -234,7 +233,7 @@ class TopicAddFileModal extends React.Component {
                     <ChoosePhotoButton
                       shape="circle"
                       icon={imagesToUpload.includes(image.id) ? 'check' : undefined}
-                      onClick={toggleImageToUpload(image.id)}
+                      onClick={toggleImageToUpload(image.id, selectedAlbum.photoAlbumId)}
                     />
                   </ImageCard>
                 ))}
@@ -246,7 +245,7 @@ class TopicAddFileModal extends React.Component {
               type="primary"
               onClick={this.handleUpload}
               disabled={fileList.length === 0 && imagesToUpload.length === 0}
-              style={{ marginBottom: 10 }}
+              style={{ marginBottom: '10px' }}
             >
               Выбрать фотографии
             </Button>

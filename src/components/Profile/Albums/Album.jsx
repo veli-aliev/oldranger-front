@@ -60,7 +60,7 @@ export const StyledImage = styled.img`
 
 const AlbumWrapper = styled.div`
   display: flex;
-  flex-direction: columns;
+  flex-direction: row;
   flex-wrap: wrap;
   margin-bottom: 50px;
   margin-top: 30px;

@@ -69,7 +69,7 @@ const AlbumShadow = styled.div`
   bottom: 0;
   width: 100%;
   padding: 35px 12px 9px;
-  background: url(/shadow.png);
+  background: url('/shadow.png');
 `;
 
 const AlbumTitle = styled.span`
@@ -153,9 +153,6 @@ class TopicAddFileModal extends React.Component {
     fileList.forEach(file => {
       formData.append(`photos`, file);
     });
-    // Необходимо добавить функционал загрузки изображений
-    // в топик по id на бэкенде
-    // http://localhost:8888/api/securedPhoto/photoFromAlbum/id'
     setFileList(formData);
   };
 

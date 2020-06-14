@@ -191,7 +191,9 @@ class TopicCreate extends React.Component {
                   type={count > 0 ? 'dashed' : 'default'}
                   onClick={this.handleToggleModal(true)}
                 >
-                  {count > 0 ? `Выбрано ${count + imagesToUpload.length} фото` : 'Добавить фото'}
+                  {count + imagesToUpload.length > 0
+                    ? `Выбрано ${count + imagesToUpload.length} фото`
+                    : 'Добавить фото'}
                 </Button>
               </Row>
               <Row type="flex" justify="center">

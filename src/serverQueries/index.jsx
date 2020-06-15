@@ -55,6 +55,25 @@ class Queries {
     return res.data;
   };
 
+  editEmailProfile = async (newEmail, password) => {
+    const username = localStorage.getItem('nickName');
+    const res = await axios.post(
+      '/api/profile/editEmail',
+      {},
+      {
+        params: {
+          password,
+          newEmail,
+        },
+        auth: {
+          Username: username,
+          Password: password,
+        },
+      }
+    );
+    return res;
+  };
+
   createArticle = async (data, params) => {
     const res = await axios.post('/api/article/add', data, { params });
     return res.data;

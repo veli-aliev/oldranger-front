@@ -373,8 +373,23 @@ class Queries {
     return res.data;
   };
 
+  prohibitionWrite = async (id, banType, dateUnblock = new Date()) => {
+    console.log(id, banType, dateUnblock);
+    const res = await axios.post('/api/admin/writingBan', {
+      id,
+      banType,
+      dateUnblock: new Date(dateUnblock).toISOString(),
+    });
+    return res.data;
+  };
+
   unblockUser = async id => {
     const res = await axios.post('/api/admin/unblocking', { id });
+    return res.data;
+  };
+
+  unmuteUser = async id => {
+    const res = await axios.post('/api/admin/unmute', { id });
     return res.data;
   };
 

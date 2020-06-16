@@ -78,14 +78,33 @@ const Header = ({ countMessages }) => {
               <Button style={{ marginLeft: '0' }}>
                 <Link to="/admin-panel">Панель администратора</Link>
               </Button>
-            )}
-            {isLogin ? (
-              <>
-                <Button>
-                  <Link to="/profile">Профиль</Link>
+              {isLogin && (
+                <>
+                  <Button disabled={muteChat} type="primary">
+                    <Link to="/chat">Чат</Link>
+                  </Button>
+                  <Button>
+                    <Link to="/articles">Статьи</Link>
+                  </Button>
+                </>
+              )}
+              {isLogin && user.role === 'ROLE_ADMIN' && (
+                <Button style={{ marginLeft: '0' }}>
+                  <Link to="/admin-panel">Панель администратора</Link>
                 </Button>
-                <Button type="danger" onClick={logOut}>
-                  Выйти
+              )}
+              {isLogin ? (
+                <>
+                  <Button>
+                    <Link to="/profile">Профиль</Link>
+                  </Button>
+                  <Button type="danger" onClick={logOut}>
+                    Выйти
+                  </Button>
+                </>
+              ) : (
+                <Button type="link">
+                  <Link to="/login">Войти</Link>
                 </Button>
               </>
             ) : (
@@ -101,6 +120,7 @@ const Header = ({ countMessages }) => {
           </Menu>
         </StyledHeader>
       )}
+
     </Context.Consumer>
   );
 };

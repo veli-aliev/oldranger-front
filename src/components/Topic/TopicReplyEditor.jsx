@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './styled/quill.css';
+import context from '../Context';
 
 const modules = {
   toolbar: [
@@ -13,6 +14,10 @@ const modules = {
 
 const TopicReplyEditor = props => {
   const [clazz, setClazz] = useState('');
+  const {
+    user: { mute },
+  } = useContext(context);
+  console.log(mute);
   const { value, onChange, replyRef, ...rest } = props;
   return (
     <ReactQuill

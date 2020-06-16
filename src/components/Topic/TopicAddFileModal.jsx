@@ -24,6 +24,10 @@ const ModalOverlay = styled.div`
 
 const Form = styled.form`
   position: relative;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  overflow: hidden;
   padding: 10px;
   padding-top: 42px;
   margin: 0 auto;
@@ -39,6 +43,17 @@ const Gallery = styled.div`
   flex-wrap: wrap;
   margin: 10px auto;
   align-items: flex-start;
+`;
+
+const StyledRow = styled(Row)`
+  display: flex;
+  flex-flow: column;
+  margin-top: 20px;
+  align-items: center;
+  & span {
+    display: inline-block;
+    max-width: 350px;
+  }
 `;
 
 const CloseModalButton = styled(Button)`
@@ -185,14 +200,14 @@ class TopicAddFileModal extends React.Component {
           <CloseModalButton onClick={handleCloseModal(false)}>
             <Icon type="close" />
           </CloseModalButton>
-          <Row type="flex" justify="center">
+          <StyledRow type="flex" justify="center">
             <Upload {...uploadProps}>
               <Button>
                 <Icon type="upload" />
                 <span>Перетащите сюда или выберите фотографии</span>
               </Button>
             </Upload>
-          </Row>
+          </StyledRow>
           <Gallery>
             {albums.map(album => (
               <AlbumCard

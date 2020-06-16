@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button, Badge } from 'antd';
 import logo from '../../media/img/logo.png';
 
 import Context from '../Context';
@@ -34,29 +35,48 @@ const Menu = styled.div`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
+
+  .ant-btn {
+    margin-right: 8%;
+  }
 
   .ant-badge {
     position: absolute;
-    right: 0;
-    top: 0;
+    right: -10px;
+    top: -5px;
   }
 `;
 
-const Header = () => {
+const Header = ({ countMessages }) => {
   return (
     <Context.Consumer>
-      {({ isLogin, logOut, user }) => {
-        const muteChat = user.mute && user.mute.includes('ON_CHAT');
-        return (
-          <StyledHeader>
-            <WrapLogo>
-              <Logo src={logo} alt='Клуб "Старый следопыт"' />
-              <LogoText>Клуб &quot;Старый следопыт&quot;</LogoText>
-            </WrapLogo>
-            <Menu>
-              <Button type="primary">
-                <Link to="/">Главная</Link>
+      {({ isLogin, logOut, user }) => (
+        <StyledHeader>
+          <WrapLogo>
+            <Logo src={logo} alt='Клуб "Старый следопыт"' />
+            <LogoText>Клуб &quot;Старый следопыт&quot;</LogoText>
+          </WrapLogo>
+          <Menu>
+            <Button type="primary">
+              <Link to="/">Главная</Link>
+            </Button>
+            {isLogin && (
+              <>
+                <Button type="primary">
+                  <Link to="/chat">
+                    Чат
+                    <Badge count={countMessages} />
+                  </Link>
+                </Button>
+                <Button>
+                  <Link to="/articles">Статьи</Link>
+                </Button>
+              </>
+            )}
+            {isLogin && user.role === 'ROLE_ADMIN' && (
+              <Button style={{ marginLeft: '0' }}>
+                <Link to="/admin-panel">Панель администратора</Link>
               </Button>
               {isLogin && (
                 <>
@@ -86,13 +106,31 @@ const Header = () => {
                 <Button type="link">
                   <Link to="/login">Войти</Link>
                 </Button>
-              )}
-            </Menu>
-          </StyledHeader>
-        );
-      }}
+              </>
+            ) : (
+              <Button type="link">
+                <Link to="/login">Войти</Link>
+              </Button>
+            )}
+            {isLogin || (
+              <Button type="primary">
+                <Link to="/request-invite">Запросить регистрацию</Link>
+              </Button>
+            )}
+          </Menu>
+        </StyledHeader>
+      )}
+
     </Context.Consumer>
   );
+};
+
+Header.defaultProps = {
+  countMessages: 0,
+};
+
+Header.propTypes = {
+  countMessages: PropTypes.number,
 };
 
 export default Header;

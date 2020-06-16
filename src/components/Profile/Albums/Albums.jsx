@@ -154,10 +154,8 @@ class Albums extends React.Component {
 
   editPhotoAlbum = album => async event => {
     event.stopPropagation();
-    const {
-      history,
-      location: { pathname },
-    } = this.props;
+    const { history } = this.props;
+    const pathname = '/profile/albums';
     const url = `${pathname}/editAlbum/${album.photoAlbumId}`;
     history.push({
       pathname: url,

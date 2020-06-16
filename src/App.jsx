@@ -49,6 +49,7 @@ class App extends React.Component {
     if (isLogin) {
       await this.connect();
     }
+    this.сonnect();
   };
 
   connect = async () => {
@@ -56,7 +57,7 @@ class App extends React.Component {
     if (currentUser.username) {
       const socket = new SockJS(`${url}ws`, null, {});
       this.stompClient = Stomp.over(socket);
-      this.stompClient.debug = null;
+      // this.stompClient.debug = null;
       this.stompClient.connect({}, this.onConnected, () => {});
       this.setState({ stompClient: this.stompClient });
     }
@@ -66,9 +67,12 @@ class App extends React.Component {
     this.setState({ isJoinChat: isJoin, countMessages: 0 });
   };
 
+  сonnect = () => {
+    this.setState({ connect: true });
+  };
+
   onConnected = () => {
     this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});
-    this.setState({ connect: true });
   };
 
   disconnect = () => {

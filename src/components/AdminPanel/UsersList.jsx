@@ -3,6 +3,7 @@ import { Table } from 'antd';
 import serverQueries from '../../serverQueries';
 import { dateToDateDistance } from '../../utils';
 import LinkToUserPage from './LinkToUserPage';
+import UserBanStatus from './UserBanStatus';
 
 const UsersList = () => {
   const [usersList, setUsersList] = useState([]);
@@ -19,9 +20,8 @@ const UsersList = () => {
   const fetch = (params = {}) => {
     setLoading(true);
     const queryParamsList = [];
-    const { name, sortOrder, sortField, current } = params;
-    const isFilteredBanned = name === undefined ? false : name.length !== 0;
-
+    const { ban, sortOrder, sortField, current } = params;
+    const isFilteredBanned = ban === undefined ? false : ban.length !== 0;
     if (isFilteredBanned) {
       queryParamsList.push('banned');
     }
@@ -49,12 +49,18 @@ const UsersList = () => {
 
   const columns = [
     {
+      title: 'Бан',
+      dataIndex: 'ban',
+      key: 'ban',
+      render: (text, { userStatisticId }) => <UserBanStatus id={userStatisticId} />,
+      filters: [{ text: 'Только забаненные', value: true }],
+      onFilter: value => value,
+    },
+    {
       title: 'Никнейм',
       dataIndex: 'name',
       key: 'name',
       render: (text, { userStatisticId }) => <LinkToUserPage id={userStatisticId} />,
-      filters: [{ text: 'Только забаненные', value: true }],
-      onFilter: value => value,
       sorter: true,
     },
     {

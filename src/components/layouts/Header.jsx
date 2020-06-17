@@ -51,7 +51,7 @@ const Menu = styled.div`
 const Header = ({ countMessages }) => {
   return (
     <Context.Consumer>
-      {({ isLogin, logOut, user }) => (
+      {({ isLogin, logOut, user, muteChat }) => (
         <StyledHeader>
           <WrapLogo>
             <Logo src={logo} alt='Клуб "Старый следопыт"' />
@@ -63,7 +63,7 @@ const Header = ({ countMessages }) => {
             </Button>
             {isLogin && (
               <>
-                <Button type="primary">
+                <Button disabled={muteChat} type="primary">
                   <Link to="/chat">
                     Чат
                     <Badge count={countMessages} />
@@ -78,33 +78,14 @@ const Header = ({ countMessages }) => {
               <Button style={{ marginLeft: '0' }}>
                 <Link to="/admin-panel">Панель администратора</Link>
               </Button>
-              {isLogin && (
-                <>
-                  <Button disabled={muteChat} type="primary">
-                    <Link to="/chat">Чат</Link>
-                  </Button>
-                  <Button>
-                    <Link to="/articles">Статьи</Link>
-                  </Button>
-                </>
-              )}
-              {isLogin && user.role === 'ROLE_ADMIN' && (
-                <Button style={{ marginLeft: '0' }}>
-                  <Link to="/admin-panel">Панель администратора</Link>
+            )}
+            {isLogin ? (
+              <>
+                <Button>
+                  <Link to="/profile">Профиль</Link>
                 </Button>
-              )}
-              {isLogin ? (
-                <>
-                  <Button>
-                    <Link to="/profile">Профиль</Link>
-                  </Button>
-                  <Button type="danger" onClick={logOut}>
-                    Выйти
-                  </Button>
-                </>
-              ) : (
-                <Button type="link">
-                  <Link to="/login">Войти</Link>
+                <Button type="danger" onClick={logOut}>
+                  Выйти
                 </Button>
               </>
             ) : (
@@ -120,7 +101,6 @@ const Header = ({ countMessages }) => {
           </Menu>
         </StyledHeader>
       )}
-
     </Context.Consumer>
   );
 };

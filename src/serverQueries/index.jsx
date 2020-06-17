@@ -374,7 +374,6 @@ class Queries {
   };
 
   prohibitionWrite = async (id, banType, dateUnblock = new Date()) => {
-    console.log(id, banType, dateUnblock);
     const res = await axios.post('/api/admin/writingBan', {
       id,
       banType,

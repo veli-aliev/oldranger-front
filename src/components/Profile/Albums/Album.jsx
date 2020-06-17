@@ -281,7 +281,8 @@ class Album extends React.Component {
 }
 
 Album.defaultProps = {
-  topicPageProp: undefined,
+  topicPageProp: null,
+  location: null,
 };
 
 Album.propTypes = {
@@ -300,7 +301,7 @@ Album.propTypes = {
         slice: PropTypes.func.isRequired,
       }),
     }),
-  }).isRequired,
+  }),
 };
 
 export default withRouter(Album);

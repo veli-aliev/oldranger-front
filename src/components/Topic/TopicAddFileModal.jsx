@@ -45,14 +45,30 @@ const Gallery = styled.div`
   align-items: flex-start;
 `;
 
+const StyledButton = styled(Button)`
+  width: 100%;
+  display: flex;
+  justify-self: center;
+  align-items: center;
+`;
+
 const StyledRow = styled(Row)`
   display: flex;
   flex-flow: column;
   margin-top: 20px;
   align-items: center;
+
   & span {
-    display: inline-block;
     max-width: 350px;
+  }
+
+  & .ant-upload {
+    max-width: 350px;
+  }
+
+  & .ant-upload-list-item {
+    display: inline-block;
+    width: 100%;
   }
 `;
 
@@ -125,6 +141,7 @@ class TopicAddFileModal extends React.Component {
     this.state = {
       albums: [],
       fileList: [],
+      previewFileList: [],
     };
   }
 
@@ -172,27 +189,32 @@ class TopicAddFileModal extends React.Component {
   };
 
   render() {
-    const { fileList, albums } = this.state;
+    const { fileList, albums, previewFileList } = this.state;
     const { handleCloseModal, toggleImageToUpload, imagesToUpload } = this.props;
     const selectedAlbum = albums.find(album => album.selected);
     const uploadProps = {
       accept: '.jpg, .jpeg, .png',
+      listType: 'picture',
       multiple: true,
       onRemove: file => {
         const index = fileList.indexOf(file);
         const newFileList = fileList.slice();
         newFileList.splice(index, 1);
         this.setState({
-          fileList: newFileList,
+          fileList,
         });
       },
-      beforeUpload: file => {
+      // eslint-disable-next-line no-shadow
+      onChange: ({ file, fileList }) => {
         this.setState(state => ({
           fileList: [...state.fileList, file],
+          previewFileList: fileList,
         }));
+      },
+      beforeUpload: () => {
         return false;
       },
-      fileList,
+      fileList: previewFileList,
     };
     return (
       <>
@@ -202,10 +224,10 @@ class TopicAddFileModal extends React.Component {
           </CloseModalButton>
           <StyledRow type="flex" justify="center">
             <Upload {...uploadProps}>
-              <Button>
+              <StyledButton>
                 <Icon type="upload" />
                 <span>Перетащите сюда или выберите фотографии</span>
-              </Button>
+              </StyledButton>
             </Upload>
           </StyledRow>
           <Gallery>

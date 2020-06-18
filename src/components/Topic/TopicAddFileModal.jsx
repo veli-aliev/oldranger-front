@@ -100,7 +100,7 @@ const AlbumShadow = styled.div`
   bottom: 0;
   width: 100%;
   padding: 35px 12px 9px;
-  background: url('/shadow.png');
+  background: url(/shadow.png);
 `;
 
 const AlbumTitle = styled.span`

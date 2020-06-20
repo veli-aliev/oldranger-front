@@ -56,7 +56,6 @@ class Queries {
   };
 
   editEmailProfile = async (newEmail, password) => {
-    const username = localStorage.getItem('nickName');
     const res = await axios.post(
       '/api/profile/editEmail',
       {},
@@ -65,12 +64,20 @@ class Queries {
           password,
           newEmail,
         },
-        auth: {
-          Username: username,
-          Password: password,
-        },
       }
     );
+    if (res.data === 0) {
+      throw Error('Что-то не так, не удалось изменить email');
+    }
+    return res;
+  };
+
+  editEmailConfirm = async key => {
+    const res = await axios.get(`/api/editEmail`, {
+      params: {
+        key,
+      },
+    });
     return res;
   };
 

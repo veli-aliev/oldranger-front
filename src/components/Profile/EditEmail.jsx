@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, Input, Form, message } from 'antd';
+import { Button, Input, Form, message, Modal } from 'antd';
 import { Field, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -14,9 +14,9 @@ const Wrapper = styled.div`
 `;
 
 const StyledButton = styled(Button)`
+  display: inline-block;
   margin-top: 10px;
   margin-bottom: 5px;
-  width: 100px;
 `;
 
 const StyledInput = styled(Input)`
@@ -66,89 +66,106 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().required('Поле не заполнено'),
 });
 
-const EditEmail = () => {
-  return (
-    <Formik
-      initialValues={{
-        newEmail: '',
-        password: '',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={async ({ newEmail, password }) => {
-        try {
-          await queries.editEmailProfile(newEmail, password);
-          // this.setState({});
-          message.success('Email успешно изменен.');
-          // history.push('/profile');
-        } catch (err) {
-          // this.setState({});
-          message.error('Что-то не так, не удалось изменить email.');
-        }
-      }}
-    >
-      {({ values, errors, touched, handleChange, handleSubmit, isSubmitting }) => (
-        <Wrapper>
-          <StyledForm onSubmit={handleSubmit}>
-            <Label>
-              New Email<Symbol>*</Symbol>
-              <Form.Item
-                validateStatus={touched.newEmail && errors.newEmail ? 'error' : 'validate'}
-                help={touched.newEmail && errors.newEmail ? errors.newEmail : null}
-              >
-                <Field
-                  onPressEnter={handleSubmit}
-                  onChange={event => {
-                    handleChange(event);
-                  }}
-                  value={values.newEmail}
-                  name="newEmail"
-                  id="newEmail"
-                  type="email"
-                  component={StyledInput}
-                />
-              </Form.Item>
-            </Label>
-            <Label>
-              Password<Symbol>*</Symbol>
-              <Form.Item
-                validateStatus={touched.password && errors.password ? 'error' : 'validate'}
-                help={touched.password && errors.password ? errors.password : null}
-              >
-                <Field
-                  onPressEnter={handleSubmit}
-                  onChange={event => {
-                    handleChange(event);
-                  }}
-                  value={values.password}
-                  name="password"
-                  visibilityToggle
-                  id="password"
-                  type="password"
-                  component={StyledInputPassword}
-                />
-              </Form.Item>
-            </Label>
-            <StyledButton type="primary" onClick={handleSubmit} loading={isSubmitting}>
-              Отправить
-            </StyledButton>
-            {/* {emailOrPassword ? ( */}
-            {/*	<div */}
-            {/*		style={{ color: "red" }} */}
-            {/*	>{`Email or password ${emailOrPassword}`}</div> */}
-            {/* ) : null} */}
-            <StyledLink to="/profile">Вернуться в профиль</StyledLink>
-          </StyledForm>
-        </Wrapper>
-      )}
-    </Formik>
-  );
-};
+class EditEmail extends Component {
+  async componentDidMount() {
+    const { history } = this.props;
+    if (history.location.search) {
+      try {
+        const key = new URLSearchParams(history.location.search).get('key');
+        await queries.editEmailConfirm(key);
+        Modal.success({
+          title: 'Подтверждение.',
+          content: 'Ваш Email успешно изменен.',
+        });
+        history.push('/profile');
+      } catch {
+        message.error('Что-то не так, не удалось изменить email.');
+      }
+    }
+  }
+
+  render() {
+    return (
+      <Formik
+        initialValues={{
+          newEmail: '',
+          password: '',
+        }}
+        validationSchema={validationSchema}
+        onSubmit={async ({ newEmail, password }, { resetForm }) => {
+          try {
+            await queries.editEmailProfile(newEmail, password);
+            Modal.info({
+              title: 'Мы выслали Вам сообщение!',
+              content: 'Для подтверждения Вам необходимо зайти на почту.',
+            });
+            resetForm();
+          } catch (err) {
+            if (err.message === 'Что-то не так, не удалось изменить email') {
+              message.error(err.message);
+            }
+          }
+        }}
+      >
+        {({ values, errors, touched, handleChange, handleSubmit, isSubmitting }) => (
+          <Wrapper>
+            <StyledForm onSubmit={handleSubmit}>
+              <Label>
+                Новый Email<Symbol>*</Symbol>
+                <Form.Item
+                  validateStatus={touched.newEmail && errors.newEmail ? 'error' : 'validating'}
+                  help={touched.newEmail && errors.newEmail ? errors.newEmail : null}
+                >
+                  <Field
+                    onPressEnter={handleSubmit}
+                    onChange={event => {
+                      handleChange(event);
+                    }}
+                    value={values.newEmail}
+                    name="newEmail"
+                    id="newEmail"
+                    type="email"
+                    component={StyledInput}
+                  />
+                </Form.Item>
+              </Label>
+              <Label>
+                Пароль<Symbol>*</Symbol>
+                <Form.Item
+                  validateStatus={touched.password && errors.password ? 'error' : 'validating'}
+                  help={touched.password && errors.password ? errors.password : null}
+                >
+                  <Field
+                    onPressEnter={handleSubmit}
+                    onChange={event => {
+                      handleChange(event);
+                    }}
+                    value={values.password}
+                    name="password"
+                    visibilityToggle
+                    id="password"
+                    type="password"
+                    component={StyledInputPassword}
+                  />
+                </Form.Item>
+              </Label>
+              <StyledButton type="primary" onClick={handleSubmit} loading={isSubmitting}>
+                Отправить
+              </StyledButton>
+              <StyledLink to="/profile">Вернуться в профиль</StyledLink>
+            </StyledForm>
+          </Wrapper>
+        )}
+      </Formik>
+    );
+  }
+}
 
 EditEmail.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
     location: PropTypes.shape({
-      pathname: PropTypes.string,
+      search: PropTypes.string,
     }),
   }).isRequired,
 };

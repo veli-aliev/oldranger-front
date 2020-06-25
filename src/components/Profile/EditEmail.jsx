@@ -98,7 +98,7 @@ class EditEmail extends Component {
           try {
             await queries.editEmailProfile(newEmail, password);
             Modal.info({
-              title: 'Мы выслали Вам сообщение!',
+              title: 'Мы выслали Вам сообщение.',
               content: 'Для подтверждения Вам необходимо зайти на почту.',
             });
             resetForm();

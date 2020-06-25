@@ -55,6 +55,32 @@ class Queries {
     return res.data;
   };
 
+  editEmailProfile = async (newEmail, password) => {
+    const res = await axios.post(
+      '/api/profile/editEmail',
+      {},
+      {
+        params: {
+          password,
+          newEmail,
+        },
+      }
+    );
+    if (res.data === 0) {
+      throw Error('Что-то не так, не удалось изменить email');
+    }
+    return res;
+  };
+
+  editEmailConfirm = async key => {
+    const res = await axios.get(`/api/editEmail`, {
+      params: {
+        key,
+      },
+    });
+    return res;
+  };
+
   createArticle = async (data, params) => {
     const res = await axios.post('/api/article/add', data, { params });
     return res.data;

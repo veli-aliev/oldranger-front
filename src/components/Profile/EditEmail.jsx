@@ -72,12 +72,14 @@ class EditEmail extends Component {
     if (history.location.search) {
       try {
         const key = new URLSearchParams(history.location.search).get('key');
-        await queries.editEmailConfirm(key);
-        Modal.success({
-          title: 'Подтверждение!',
-          content: 'Ваш Email успешно изменен.',
-        });
-        history.push('/profile');
+        const res = await queries.editEmailConfirm(key);
+        if (res.status === 200) {
+          Modal.success({
+            title: 'Подтверждение!',
+            content: 'Ваш Email успешно изменен.',
+          });
+          history.push('/profile');
+        }
       } catch {
         message.error('Что-то не так, не удалось изменить email.');
       }

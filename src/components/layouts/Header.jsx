@@ -60,7 +60,7 @@ const MenuUser = styled.div`
   justify-content: flex-end;
 `;
 
-const MenuUserUpBtn = styled.div`
+const MenuUserFirstRow = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
@@ -96,7 +96,7 @@ const Header = ({ countMessages }) => {
               )}
             </MenuMain>
             <MenuUser>
-              <MenuUserUpBtn>
+              <MenuUserFirstRow>
                 {isLogin ? (
                   <>
                     <Button style={{ marginRight: '8%' }}>
@@ -111,7 +111,7 @@ const Header = ({ countMessages }) => {
                     <Link to="/login">Войти</Link>
                   </Button>
                 )}
-              </MenuUserUpBtn>
+              </MenuUserFirstRow>
               {isLogin || (
                 <Button type="primary">
                   <Link to="/request-invite">Запросить регистрацию</Link>

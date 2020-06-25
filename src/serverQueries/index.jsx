@@ -2,6 +2,7 @@ import axios from 'axios';
 import { message } from 'antd';
 import { BASE_URL } from '../constants';
 import { paramsSerializer } from '../utils';
+import AuthorizationStatusEmitter from '../EventEmitter/EventEmmiter';
 
 class Queries {
   constructor() {
@@ -26,6 +27,7 @@ class Queries {
 
     if (error.response.status === 401) {
       message.error('Пользователь не авторизован');
+      AuthorizationStatusEmitter.emit(false);
     }
 
     message.error(error.message);

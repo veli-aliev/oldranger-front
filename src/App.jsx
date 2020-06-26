@@ -76,8 +76,11 @@ class App extends React.Component {
   };
 
   disconnect = () => {
-    this.stompClient.unsubscribe(`/channel/public`);
-    this.stompClient.disconnect();
+    const { stompClient } = this.state;
+    if (stompClient) {
+      this.stompClient.unsubscribe(`/channel/public`);
+      this.stompClient.disconnect();
+    }
   };
 
   onCheckMessage = payload => {

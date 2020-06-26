@@ -54,6 +54,32 @@ class Queries {
     return res.data;
   };
 
+  editEmailProfile = async (newEmail, password) => {
+    const res = await axios.post(
+      '/api/profile/editEmail',
+      {},
+      {
+        params: {
+          password,
+          newEmail,
+        },
+      }
+    );
+    if (res.data === 0) {
+      throw Error('Что-то не так, не удалось изменить email');
+    }
+    return res;
+  };
+
+  editEmailConfirm = async key => {
+    const res = await axios.get(`/api/editEmail`, {
+      params: {
+        key,
+      },
+    });
+    return res;
+  };
+
   createArticle = async (data, params) => {
     const res = await axios.post('/api/article/add', data, { params });
     return res.data;
@@ -372,8 +398,22 @@ class Queries {
     return res.data;
   };
 
+  prohibitionWrite = async (id, banType, dateUnblock = new Date()) => {
+    const res = await axios.post('/api/admin/writingBan', {
+      id,
+      banType,
+      dateUnblock: new Date(dateUnblock).toISOString(),
+    });
+    return res.data;
+  };
+
   unblockUser = async id => {
     const res = await axios.post('/api/admin/unblocking', { id });
+    return res.data;
+  };
+
+  unmuteUser = async id => {
+    const res = await axios.post('/api/admin/unmute', { id });
     return res.data;
   };
 
@@ -434,6 +474,13 @@ class Queries {
 
   getAnotherUserData = async id => {
     const res = await axios.get(`/api/${id}`);
+    return res.data;
+  };
+
+  getFilteredUsers = async (page, query) => {
+    const res = await axios.get('/api/admin/users', {
+      params: { page: Number(page), ...(query ? { query } : {}) },
+    });
     return res.data;
   };
 }

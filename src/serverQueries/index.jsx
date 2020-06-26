@@ -124,6 +124,11 @@ class Queries {
     return res.data;
   };
 
+  deleteArticle = async id => {
+    const res = await axios.delete(`/api/article/delete?idArticle=${id}`);
+    return res.data;
+  };
+
   getArticleById = async params => {
     const res = await axios.get(`/api/article/comments`, { params });
     return res.data;

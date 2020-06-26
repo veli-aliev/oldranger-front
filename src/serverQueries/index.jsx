@@ -33,7 +33,8 @@ class Queries {
   };
 
   logIn = async formData => {
-    await axios.post('login', formData);
+    const res = await axios.post('login', formData);
+    return res.data;
   };
 
   logOut = async () => {

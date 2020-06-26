@@ -27,7 +27,6 @@ class Queries {
     if (error.response.status === 401) {
       message.error('Пользователь не авторизован');
     }
-
     message.error(error.message);
   };
 

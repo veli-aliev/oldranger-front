@@ -66,11 +66,20 @@ class App extends React.Component {
   connect = async () => {
     const currentUser = await queries.getCurrentUser();
     if (currentUser.username) {
-      const socket = new SockJS(`${url}ws`, null, {});
-      this.stompClient = Stomp.over(socket);
-      // this.stompClient.debug = null;
+      const socket = await new SockJS(`${url}ws`, null, {});
+      this.stompClient = await Stomp.over(socket);
       this.stompClient.connect({}, this.onConnected, () => {});
-      this.setState({ stompClient: this.stompClient });
+      const waitConnection = () => {
+        const timeoutID = setTimeout(() => {
+          if (this.stompClient.ws.readyState === 1) {
+            this.setState({ stompClient: this.stompClient });
+            clearTimeout(timeoutID);
+          } else {
+            waitConnection();
+          }
+        }, 200);
+      };
+      waitConnection();
     }
   };
 
@@ -82,8 +91,8 @@ class App extends React.Component {
     this.setState({ connect: true });
   };
 
-  onConnected = () => {
-    this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});
+  onConnected = async () => {
+    await this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});
   };
 
   disconnect = () => {

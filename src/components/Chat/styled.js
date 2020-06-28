@@ -19,14 +19,20 @@ const Li = styled.li`
 `;
 
 export const ChatContainer = styled.div`
-  max-width: 700px;
+  width: ${({ pathname }) => (pathname !== '/chat' ? '550px' : '100%')};
+  display: block;
   margin: 10px auto 0;
   background-color: #fff;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
-  height: calc(100% - 60px);
+  height: ${({ pathname }) => (pathname === '/chat' ? 'auto' : 'calc(100% - 60px);')};
   max-height: 700px;
-  position: relative;
+  position: ${({ pathname }) => (pathname !== '/chat' ? 'fixed' : 'relative')};
+  bottom: ${({ pathname }) => (pathname !== '/chat' ? '0' : 'none')};
+  right: ${({ pathname }) => (pathname !== '/chat' ? '0' : 'none')};
   border-radius: 10px;
+  @media (max-width: 2400px) {
+    display: ${({ pathname }) => (pathname !== '/chat' ? 'none' : 'block')};
+  }
 `;
 
 export const Header = styled.header`

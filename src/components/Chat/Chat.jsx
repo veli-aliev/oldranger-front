@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { throttle } from 'lodash';
 
 import { Input, Button, message as systemMessage, Icon, Tooltip } from 'antd';
+import { withRouter } from 'react-router-dom';
 import { BASE_URL } from '../../constants';
 import {
   ChatContainer,
@@ -181,11 +182,19 @@ class Chat extends React.Component {
   };
 
   render() {
-    const { handleDisconnect, messages, usersOnline, label } = this.props;
+    const {
+      handleDisconnect,
+      messages,
+      usersOnline,
+      label,
+      history: {
+        location: { pathname },
+      },
+    } = this.props;
     const { message, filePath, hasScrolled } = this.state;
     return (
       <section>
-        <ChatContainer>
+        <ChatContainer pathname={pathname}>
           <Header>
             <h2>{label}</h2>
             <CloseButton onClick={handleDisconnect} />
@@ -243,9 +252,14 @@ class Chat extends React.Component {
   }
 }
 
-export default Chat;
+export default withRouter(Chat);
 
 Chat.propTypes = {
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string,
+    }),
+  }),
   sendMessage: PropTypes.func.isRequired,
   deleteCurrentMessage: PropTypes.func.isRequired,
   getMessages: PropTypes.func.isRequired,
@@ -260,6 +274,7 @@ Chat.propTypes = {
 };
 
 Chat.defaultProps = {
+  history: null,
   user: null,
   usersOnline: {},
   messages: [],

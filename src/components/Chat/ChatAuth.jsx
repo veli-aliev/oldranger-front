@@ -44,7 +44,7 @@ class ChatAuth extends React.Component {
     }
   };
 
-  onConnected = async () => {
+  onConnected = () => {
     this.setState({ isJoin: true });
     const { stompClient } = this.props;
     const { user } = this.state;

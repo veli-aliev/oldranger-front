@@ -91,8 +91,8 @@ class App extends React.Component {
     this.setState({ connect: true });
   };
 
-  onConnected = async () => {
-    await this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});
+  onConnected = () => {
+    this.stompClient.subscribe(`/channel/public`, this.onCheckMessage, {});
   };
 
   disconnect = () => {

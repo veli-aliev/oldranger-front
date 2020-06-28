@@ -171,7 +171,7 @@ class App extends React.Component {
         {/* eslint-disable-next-line no-undef */}
         {connect ? (
           <ChatRoute
-            path="/chat"
+            path="/"
             isLogin={isLogin}
             changeJoinChat={this.changeJoinChat}
             stompClient={stompClient}

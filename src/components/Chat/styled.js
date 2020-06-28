@@ -21,16 +21,15 @@ const Li = styled.li`
 export const ChatContainer = styled.div`
   width: ${({ pathname }) => (pathname !== '/chat' ? '550px' : '100%')};
   display: block;
-  margin: 10px auto 0;
+  margin: 10px auto 20px;
   background-color: #fff;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
-  height: ${({ pathname }) => (pathname === '/chat' ? 'auto' : 'calc(100% - 60px);')};
-  max-height: 700px;
+  height: ${({ pathname }) => (pathname === '/chat' ? '100%' : 'auto')};
   position: ${({ pathname }) => (pathname !== '/chat' ? 'fixed' : 'relative')};
   bottom: ${({ pathname }) => (pathname !== '/chat' ? '0' : 'none')};
   right: ${({ pathname }) => (pathname !== '/chat' ? '0' : 'none')};
   border-radius: 10px;
-  @media (max-width: 2400px) {
+  @media (max-width: 2200px) {
     display: ${({ pathname }) => (pathname !== '/chat' ? 'none' : 'block')};
   }
 `;
@@ -76,7 +75,7 @@ export const CloseButton = styled.button`
 
 export const Main = styled.div`
   display: flex;
-  height: 350px;
+  height: ${({ pathname }) => (pathname === '/chat' ? '100%' : '300px')};
 `;
 
 export const UserListTitle = styled.h3`
@@ -127,6 +126,7 @@ export const UserLink = styled.a`
 `;
 
 export const MessageList = styled(Ul)`
+  padding: 0;
   width: 100%;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -138,8 +138,9 @@ export const Message = styled(Li)`
   position: relative;
   display: flex;
   justify-content: space-between;
-  padding: 10px 0 10px 68px;
+  padding: 10px 0 0 45px;
   color: black;
+  line-height: 1rem;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: ${props => (props.toMe ? '#128ff2' : '#f4f4f4')};
@@ -151,8 +152,8 @@ export const EventMessage = styled(Li)`
 
 export const MessageAvatar = styled.img`
   position: absolute;
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
   left: 10px;
   top: 10px;
   border: 1px solid #128ff2;
@@ -164,11 +165,11 @@ export const MessageAvatar = styled.img`
 
 export const MessageAuthor = styled.div`
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.8rem;
 `;
 
 export const MessageImage = styled.img`
-  margin: 10px 0;
+  margin: 0 0;
   max-height: 250px;
 `;
 
@@ -179,7 +180,7 @@ export const MessageDate = styled.span`
 `;
 
 export const MessageText = styled.p`
-  margin: 0;
+  margin: 5px 0;
   word-break: break-all;
 `;
 
@@ -187,7 +188,6 @@ export const MessageInner = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 5px;
-
   .message-delete {
     cursor: pointer;
     padding: none;
@@ -201,8 +201,8 @@ export const ScrollToTopButton = styled.button`
   top: 80px;
   left: 50%;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 1.5rem;
+  height: 1.5rem;
   padding: 0;
   background-color: #fff;
   border: 1px solid #128ff2;

@@ -199,7 +199,7 @@ class Chat extends React.Component {
             <h2>{label}</h2>
             <CloseButton onClick={handleDisconnect} />
           </Header>
-          <Main>
+          <Main pathname={pathname}>
             <div style={{ width: '20%' }}>
               <OnlineLED />
               <UserListTitle>Online:</UserListTitle>

@@ -203,7 +203,7 @@ class Chat extends React.Component {
             <div style={{ width: '20%' }}>
               <OnlineLED />
               <UserListTitle>Online:</UserListTitle>
-              <UserList>
+              <UserList pathname={pathname}>
                 {Object.entries(usersOnline).map(user => {
                   const [username, id] = user;
                   return (

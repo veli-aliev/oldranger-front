@@ -6,7 +6,6 @@ const Ul = styled.ul`
   overflow: auto;
   overflow-y: scroll;
   padding: 0 20px 0 20px;
-  height: 100%;
   width: 80%;
   border-left: 1px solid #e8e8e8;
 `;
@@ -19,24 +18,19 @@ const Li = styled.li`
 `;
 
 export const ChatContainer = styled.div`
-  width: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? '550px' : '100%'};
+  width: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? '550px' : '100%')};
   display: block;
   margin: 10px auto 20px;
   background-color: #fff;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
-  height: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? 'auto' : '100%'};
-  position: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? 'fixed' : 'relative'};
-  bottom: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? '0' : 'none'};
-  right: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? '0' : 'none'};
+  height: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? 'auto' : '100%')};
+  position: ${({ state }) =>
+    state !== 'mainChat' && state !== 'privateChat' ? 'fixed' : 'relative'};
+  bottom: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? '0' : 'none')};
+  right: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? '0' : 'none')};
   border-radius: 10px;
   @media (max-width: 2200px) {
-    display: ${({ pathname }) =>
-      pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? 'none' : 'block'};
+    display: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? 'none' : 'block')};
   }
 `;
 
@@ -81,8 +75,7 @@ export const CloseButton = styled.button`
 
 export const Main = styled.div`
   display: flex;
-  max-height: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? '300px' : '100%'};
+  height: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? '300px' : '400px')};
 `;
 
 export const UserListTitle = styled.h3`
@@ -116,8 +109,7 @@ export const OnlineLED = styled.span`
 
 export const UserList = styled(Ul)`
   border: none;
-  height: ${({ pathname }) =>
-    pathname !== '/chat' && pathname.slice(0, 8) !== '/private' ? 'auto' : '100%'};
+  height: ${({ state }) => (state !== 'mainChat' && state !== 'privateChat' ? '300px' : '350px')};
   width: 100%;
 `;
 

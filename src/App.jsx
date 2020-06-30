@@ -3,7 +3,8 @@ import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
 import { Spin } from 'antd';
 import 'antd/dist/antd.css';
-
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import queries from './serverQueries';
 import {
   ArticleDraft,
@@ -138,6 +139,11 @@ class App extends React.Component {
       stompClient,
       connect,
     } = this.state;
+    const {
+      history: {
+        location: { state },
+      },
+    } = this.props;
     return (
       <Context.Provider
         value={{
@@ -167,30 +173,29 @@ class App extends React.Component {
         <SearchRoute />
         <ArticleDraft />
         <ArticlesRoute isLogin={isLogin} role={role} />
-        {/* TODO delete eslint disable */}
-        {/* eslint-disable-next-line no-undef */}
         {connect ? (
           <ChatRoute
-            path="/"
+            path={state === 'privateChat' ? '/private/:id' : '/'}
             isLogin={isLogin}
             changeJoinChat={this.changeJoinChat}
             stompClient={stompClient}
             user={user}
-            component={ChatAuth}
+            component={state === 'privateChat' ? PrivateChat : ChatAuth}
           />
         ) : (
           <Spin />
         )}
-        <ChatRoute
-          exact
-          path="/private/:id"
-          isLogin={isLogin}
-          user={user}
-          component={PrivateChat}
-        />
       </Context.Provider>
     );
   }
 }
 
-export default App;
+App.propTypes = {
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      state: PropTypes.string,
+    }),
+  }).isRequired,
+};
+
+export default withRouter(App);

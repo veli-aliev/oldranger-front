@@ -188,22 +188,22 @@ class Chat extends React.Component {
       usersOnline,
       label,
       history: {
-        location: { pathname },
+        location: { state },
       },
     } = this.props;
     const { message, filePath, hasScrolled } = this.state;
     return (
       <section>
-        <ChatContainer pathname={pathname}>
+        <ChatContainer state={state}>
           <Header>
             <h2>{label}</h2>
             <CloseButton onClick={handleDisconnect} />
           </Header>
-          <Main pathname={pathname}>
+          <Main state={state}>
             <div style={{ width: '20%' }}>
               <OnlineLED />
               <UserListTitle>Online:</UserListTitle>
-              <UserList pathname={pathname}>
+              <UserList state={state}>
                 {Object.entries(usersOnline).map(user => {
                   const [username, id] = user;
                   return (
@@ -257,7 +257,7 @@ export default withRouter(Chat);
 Chat.propTypes = {
   history: PropTypes.shape({
     location: PropTypes.shape({
-      pathname: PropTypes.string,
+      state: PropTypes.string,
     }),
   }),
   sendMessage: PropTypes.func.isRequired,

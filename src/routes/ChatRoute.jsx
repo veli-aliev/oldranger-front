@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 
-const ChatRoute = ({ isLogin, user, path, changeJoinChat, stompClient, component: Component }) => {
+const ChatRoute = ({ isLogin, user, path, changeJoinChat, component: Component, stompClient }) => {
   if (stompClient && stompClient.connected) {
     return (
       <Route path={path}>

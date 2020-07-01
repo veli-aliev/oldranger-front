@@ -78,7 +78,7 @@ class App extends React.Component {
           } else {
             waitConnection();
           }
-        }, 200);
+        }, 100);
       };
       waitConnection();
     }

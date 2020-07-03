@@ -26,14 +26,14 @@ class Queries {
     }
 
     if (error.response.status === 401) {
-      message.error('Пользователь не авторизован');
       AuthorizationStatusEmitter.emit(false);
+      throw error;
     }
-    message.error(error.message);
   };
 
   logIn = async formData => {
-    await axios.post('login', formData);
+    const res = await axios.post('login', formData);
+    return res.data;
   };
 
   logOut = async () => {

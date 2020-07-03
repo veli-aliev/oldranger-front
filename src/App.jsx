@@ -89,7 +89,7 @@ class App extends React.Component {
   disconnect = () => {
     const { stompClient } = this.state;
     if (stompClient) {
-      this.stompClient.unsubscribe('/channel/public');
+      this.stompClient.unsubscribe(`/channel/public`);
       this.stompClient.disconnect();
     }
   };

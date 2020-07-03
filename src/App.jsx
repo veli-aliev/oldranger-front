@@ -1,7 +1,6 @@
 import React from 'react';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
-import { Spin } from 'antd';
 import 'antd/dist/antd.css';
 
 import queries from './serverQueries';
@@ -169,9 +168,7 @@ class App extends React.Component {
             user={user}
             component={ChatAuth}
           />
-        ) : (
-          <Spin />
-        )}
+        ) : null}
         <ChatRoute
           exact
           path="/private/:id"

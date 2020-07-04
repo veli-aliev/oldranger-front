@@ -23,7 +23,10 @@ import PrivateChat from './components/Chat/PrivateChat';
 import AdminPanel from './components/AdminPanel';
 import ProfileAnotherUser from './components/Profile/ProfileAnotherUser';
 import { BASE_URL } from './constants';
+import MainAlbums from './components/hoc/MainAlbums';
+import Albums from './components/Profile/Albums/Albums';
 import AuthorizationStatusEmitter from './EventEmitter/EventEmmiter';
+
 
 const url = BASE_URL;
 
@@ -128,6 +131,7 @@ class App extends React.Component {
       stompClient,
       connect,
     } = this.state;
+
     return (
       <Context.Provider
         value={{
@@ -152,11 +156,18 @@ class App extends React.Component {
           path="/admin-panel"
           component={AdminPanel}
         />
+        <PrivateRoute
+          isAllowed={isLogin}
+          exact
+          path="/albums"
+          component={() => MainAlbums(Albums)}
+        />
         <TopicRoute isLogin={isLogin} role={role} />
         <SubsectionRoute />
         <SearchRoute />
         <ArticleDraft />
         <ArticlesRoute isLogin={isLogin} role={role} />
+
         {/* TODO delete eslint disable */}
         {/* eslint-disable-next-line no-undef */}
         {connect ? (

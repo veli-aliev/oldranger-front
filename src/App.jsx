@@ -25,7 +25,10 @@ import PrivateChat from './components/Chat/PrivateChat';
 import AdminPanel from './components/AdminPanel';
 import ProfileAnotherUser from './components/Profile/ProfileAnotherUser';
 import { BASE_URL } from './constants';
+import MainAlbums from './components/hoc/MainAlbums';
+import Albums from './components/Profile/Albums/Albums';
 import AuthorizationStatusEmitter from './EventEmitter/EventEmmiter';
+
 
 const url = BASE_URL;
 
@@ -134,6 +137,7 @@ class App extends React.Component {
         location: { state },
       },
     } = this.props;
+
     return (
       <Context.Provider
         value={{
@@ -157,6 +161,12 @@ class App extends React.Component {
           isAllowed={isLogin && role === 'ROLE_ADMIN'}
           path="/admin-panel"
           component={AdminPanel}
+        />
+        <PrivateRoute
+          isAllowed={isLogin}
+          exact
+          path="/albums"
+          component={() => MainAlbums(Albums)}
         />
         <TopicRoute isLogin={isLogin} role={role} />
         <SubsectionRoute />

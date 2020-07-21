@@ -77,6 +77,8 @@ const MenuUserFirstRow = styled.div`
 const Header = ({ countMessages, location: { pathname } }) => {
   const [isForumHeader, setHeaderState] = useState(pathname === '/');
 
+  const muteChat = false;
+
   const switchForumSitePart = bool => {
     setHeaderState(bool);
   };

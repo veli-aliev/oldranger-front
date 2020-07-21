@@ -452,8 +452,19 @@ class Queries {
     return res;
   };
 
+  getPrivateMessages = async () => {
+    const res = await axios.get('/api/private/allchats');
+    // console.log(res, 'RESSSSSS');
+    return res;
+  };
+
   deleteMessage = async id => {
     const res = await axios.delete(`/api/chat/messages/${id}`);
+    return res.status;
+  };
+
+  deletePrivateMessage = async id => {
+    const res = await axios.delete(`/api/private/message/${id}`);
     return res.status;
   };
 

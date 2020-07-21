@@ -87,7 +87,7 @@ const ProfileData = ({ user, self, id }) => {
       </Link>
     </>
   ) : (
-    <Link to={`/private/${id}`}>
+    <Link to={`/profile/private/${id}`}>
       <Button type="primary" block className="button">
         Написать
       </Button>

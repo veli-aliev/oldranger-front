@@ -27,7 +27,6 @@ import MainAlbums from './components/hoc/MainAlbums';
 import Albums from './components/Profile/Albums/Albums';
 import AuthorizationStatusEmitter from './EventEmitter/EventEmmiter';
 
-
 const url = BASE_URL;
 
 class App extends React.Component {
@@ -182,7 +181,7 @@ class App extends React.Component {
         ) : null}
         <ChatRoute
           exact
-          path="/private/:id"
+          path="/profile/private/:id"
           isLogin={isLogin}
           user={user}
           component={PrivateChat}

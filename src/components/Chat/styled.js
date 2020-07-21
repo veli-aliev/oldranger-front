@@ -20,7 +20,7 @@ const Li = styled.li`
 
 export const ChatContainer = styled.div`
   max-width: 700px;
-  margin: 10px auto 0;
+  margin: 10px auto 30px;
   background-color: #fff;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
   height: calc(100% - 60px);
@@ -220,4 +220,38 @@ export const Footer = styled.footer`
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
+`;
+
+export const MessageContainer = styled.div`
+  display: flex;
+  min-width: 100%;
+  padding: 10px;
+  border-bottom: 1px solid #bebebe;
+  cursor: pointer;
+  &:hover {
+    background-color: #cfcfcf;
+  }
+`;
+
+export const Avatar = styled.img`
+  width: 42px;
+  height: 42px;
+  left: 10px;
+  top: 10px;
+  border: 1px solid #128ff2;
+  border-radius: 50%;
+`;
+
+export const PrivateChatContainer = styled.div`
+  max-width: 700px;
+  max-height: 50vh;
+  overflow: auto;
+  margin: 10px auto 30px;
+  background-color: #fff;
+  box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+  border-radius: 10px;
+`;
+
+export const PrivateMessage = styled.span`
+  color: black;
 `;

@@ -49,7 +49,7 @@ const TagsMenu = ({ location }) => {
     if (tags.length === 0 && result.length !== 0) {
       return result;
     }
-    
+
     if (tags.length === 0) {
       return (
         <li>
@@ -103,7 +103,7 @@ const TagsMenu = ({ location }) => {
 
   return (
     <StyledMenu>
-      {!loading.tags ? (
+      {!loading.tags || menuItems.length === 0 ? (
         <Menu mode="inline">{buildTreeMenu(menuItems.filter(el => el.parentId === null))}</Menu>
       ) : (
         <Spin />

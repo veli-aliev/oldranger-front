@@ -11,34 +11,37 @@ const TagsMenu = ({ location }) => {
   const history = useHistory();
   const [activeId, setActiveId] = useState(null);
   const hierarchy = useQuery().tags;
-  const [loading, setLoading] = useState({});
-
+  const [isLoading, setIsLoading] = useState(false);
   const addActiveTag = tags => {
     const activeTag = tags.find(tag => hierarchy === tag.tagsHierarchy.join('_')) || {};
     setActiveId(activeTag.id);
   };
 
   useEffect(() => {
-    setLoading({
-      ...loading,
-      tags: true,
-    });
-
-    queries.getTagsDtoTree().then(el => {
-      const tags = el || [];
-
-      setMenuItems(tags);
-      addActiveTag(tags);
-
-      setLoading({
-        ...loading,
-        tags: false,
-      });
-    });
+    const fetchTags = async () => {
+      setIsLoading(true);
+      queries
+        .getTagsDtoTree()
+        .then(el => {
+          if (el) {
+            setMenuItems(el);
+            addActiveTag(el);
+          }
+        })
+        .catch(() => {
+          setMenuItems([]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    };
+    fetchTags();
   }, []);
 
   useEffect(() => {
-    addActiveTag(menuItems);
+    if (Array.isArray(menuItems)) {
+      addActiveTag(menuItems);
+    }
   }, [location]);
 
   const showArticles = tags => () => {
@@ -103,7 +106,7 @@ const TagsMenu = ({ location }) => {
 
   return (
     <StyledMenu>
-      {!loading.tags || menuItems.length === 0 ? (
+      {menuItems.length > 0 || !isLoading ? (
         <Menu mode="inline">{buildTreeMenu(menuItems.filter(el => el.parentId === null))}</Menu>
       ) : (
         <Spin />

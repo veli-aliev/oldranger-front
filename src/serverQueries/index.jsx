@@ -372,6 +372,11 @@ class Queries {
     return res;
   };
 
+  getSecuredPhoto = async id => {
+    const res = await axios.get(`/api/securedPhoto/photoFromAlbum/${id}`);
+    return res.data;
+  };
+
   addPhotosInAlbum = async (albumId, photosArr) => {
     const res = await axios.post(`/api/photos/${albumId}`, photosArr);
     return res;
@@ -428,6 +433,11 @@ class Queries {
 
   unmuteUser = async id => {
     const res = await axios.post('/api/admin/unmute', { id });
+    return res;
+  };
+
+  sendPhotos = async (formData, config) => {
+    const res = await axios.post('api/photos/imageDownload', formData, config);
     return res;
   };
 

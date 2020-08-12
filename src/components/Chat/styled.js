@@ -234,7 +234,7 @@ export const MessageContainer = styled.div`
 `;
 
 export const Avatar = styled.img`
-  width: 42px;
+  width: '40px'
   height: 42px;
   left: 10px;
   top: 10px;
@@ -254,4 +254,12 @@ export const PrivateChatContainer = styled.div`
 
 export const PrivateMessage = styled.span`
   color: black;
+`;
+
+export const AvatarSection = styled.div`
+  width: '10%';
+`;
+
+export const MessageSection = styled.div`
+  width: '85%';
 `;

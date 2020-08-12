@@ -1,24 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { uniqueId } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Badge } from 'antd';
-import { PrivateChatContainer, MessageContainer, Avatar, PrivateMessage } from './styled';
-import queries from '../../serverQueries';
+import {
+  PrivateChatContainer,
+  MessageContainer,
+  Avatar,
+  PrivateMessage,
+  AvatarSection,
+  MessageSection,
+} from './styled';
+// import queries from '../../serverQueries';
 import { BASE_URL as url } from '../../constants';
+import testArray from './testData';
 
 export default function PrivateChatlist() {
-  // нет функционала на бэке
-  useEffect(() => queries.getPrivateMessages(), []);
-
-  const testMessageData = (unread, text = 'Текст cообщения', author = 'Moderator') => {
-    return {
-      avatar: '',
-      author,
-      messageShort: text,
-      unreadCount: unread,
-      // clearHistory: (this.id) => {//нет функционала}
-    };
-  };
+  // queries.getPrivateMessages();
 
   const renderChatItems = dialogues => {
     return dialogues.map(dialogue => {
@@ -35,13 +32,13 @@ export default function PrivateChatlist() {
       return (
         <Link key={uniqueId('id_')} to="/profile/private/2">
           <MessageContainer>
-            <div style={{ width: '10%' }}>
+            <AvatarSection>
               <Avatar src={`${url}img/default-sm.png`} alt="" style={{ width: '40px' }} />
-            </div>
-            <div style={{ width: '85%' }}>
+            </AvatarSection>
+            <MessageSection>
               <h3 style={{ margin: '0' }}>{author}</h3>
               <PrivateMessage>{message}</PrivateMessage>
-            </div>
+            </MessageSection>
             {unreadCount > 0 ? (
               <Badge style={{ position: 'absolute' }} count={unreadCount} />
             ) : null}
@@ -53,25 +50,8 @@ export default function PrivateChatlist() {
 
   return (
     <PrivateChatContainer>
-      {renderChatItems([
-        testMessageData(0),
-        testMessageData(
-          0,
-          'Очень длинный текст 111111111111111111112222222222222fghjdfelirfglierjgerjglierjgoierjgoijrg'
-        ),
-        testMessageData(100, 'Текст с непрочитанными'),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-        testMessageData(0),
-      ])}
+      {/* <button onClick={queries.getPrivateMessages}>запрос</button> */}
+      {renderChatItems(testArray)}
     </PrivateChatContainer>
   );
 }

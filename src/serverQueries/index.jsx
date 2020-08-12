@@ -27,8 +27,8 @@ class Queries {
 
     if (error.response.status === 401) {
       AuthorizationStatusEmitter.emit(false);
-      throw error;
     }
+    throw error;
   };
 
   logIn = async formData => {
@@ -454,7 +454,7 @@ class Queries {
 
   getPrivateMessages = async () => {
     const res = await axios.get('/api/private/allchats');
-    // console.log(res, 'RESSSSSS');
+    // console.log(res, 'RES');
     return res;
   };
 

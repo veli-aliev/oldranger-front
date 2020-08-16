@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { Formik, Field } from 'formik';
 import { Form, Input, Icon, Button, Alert } from 'antd';
+import Select from 'react-select';
 import serverQueries from '../../serverQueries';
 import Context from '../Context';
 
@@ -15,12 +16,23 @@ const SendMailBlock = styled.div`
 const SubmitButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
+  margin-top: 10px;
 `;
 
 const formStyles = { width: '500px' };
 
 const MailingLetters = () => {
   const [sendingStatus, setSendingStatus] = useState('');
+  const select = [
+    { value: 'ROLE_ALL', label: 'всем' },
+    { value: 'ROLE_ADMIN', label: 'администратору' },
+    { value: 'ROLE_MODERATOR', label: 'модератору' },
+    { value: 'ROLE_USER', label: 'новичкам' },
+    { value: 'ROLE_PROSPECT', label: 'постояльцам' },
+    { value: 'ROLE_OLD_TIMER', label: 'старожилам' },
+    { value: 'ROLE_VETERAN', label: 'ветеранам' },
+  ];
+
   const normalizeData = (values, user) => {
     const data = new Date();
     const res = {
@@ -30,7 +42,15 @@ const MailingLetters = () => {
         message: values.message,
         lastEditDate: data,
       },
-      roles: [user.role],
+      roles: values.roles
+        .map(rol => {
+          if (rol.value === 'ROLE_ALL') {
+            const rolAll = select.map(rolInit => rolInit.value);
+            return rolAll;
+          }
+          return rol.value;
+        })
+        .flat(),
     };
     return res;
   };
@@ -44,10 +64,9 @@ const MailingLetters = () => {
       {({ user }) => {
         return (
           <SendMailBlock>
-            <h2>Отправить сообщение всем пользователям</h2>
             <Formik
               validationSchema={validationSchema}
-              initialValues={{ subject: '', message: '' }}
+              initialValues={{ subject: '', message: '', roles: '' }}
               onSubmit={(values, { setSubmitting, resetForm }) => {
                 setSubmitting(true);
                 const dataMessage = normalizeData(values, user);
@@ -73,6 +92,7 @@ const MailingLetters = () => {
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                setFieldValue,
               }) => (
                 <Form onSubmit={handleSubmit} style={formStyles}>
                   <Form.Item
@@ -104,6 +124,22 @@ const MailingLetters = () => {
                       onBlur={handleBlur}
                     />
                   </Form.Item>
+                  <h2 style={{ textAlign: 'center' }}>Выбирите кому отправить сообщения</h2>
+                  <Field
+                    name="roles"
+                    component={({ field }) => (
+                      <Select
+                        type="roles"
+                        id="roles"
+                        name="roles"
+                        options={select}
+                        placeholder="Выберите кому отправить сообщения"
+                        value={values.roles}
+                        isMulti
+                        onChange={option => setFieldValue(field.name, option)}
+                      />
+                    )}
+                  />
                   <Form.Item>
                     <SubmitButtonWrapper>
                       <Button type="primary" htmlType="submit" disabled={isSubmitting}>

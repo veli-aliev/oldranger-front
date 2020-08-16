@@ -125,6 +125,7 @@ class Album extends React.Component {
     const changeProp = topicPageProp || location;
     const { state } = changeProp;
     const albumId = state.photoAlbumId;
+
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
       this.setState({ photos });
@@ -163,11 +164,7 @@ class Album extends React.Component {
 
   render() {
     const { photos, photoTempUlr, selectedIndex, currentComments, visible } = this.state;
-    const {
-      location: {
-        state: { photoAlbumId, title },
-      },
-    } = this.props;
+    const { photoAlbumId, title } = this.state;
 
     const SortableItem = SortableElement(({ value }) => {
       const { photoID } = value;

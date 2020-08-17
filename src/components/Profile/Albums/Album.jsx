@@ -164,7 +164,11 @@ class Album extends React.Component {
 
   render() {
     const { photos, photoTempUlr, selectedIndex, currentComments, visible } = this.state;
-    const { photoAlbumId, title } = this.state;
+    const {
+      topicPageProp: {
+        state: { photoAlbumId, title },
+      },
+    } = this.props;
 
     const SortableItem = SortableElement(({ value }) => {
       const { photoID } = value;
@@ -243,6 +247,7 @@ Album.propTypes = {
     state: PropTypes.shape({
       topicPageProp: PropTypes.string,
       title: PropTypes.string,
+      photoAlbumId: PropTypes.number,
     }),
   }),
   location: PropTypes.shape({

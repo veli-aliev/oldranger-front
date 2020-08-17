@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Select from 'react-select';
 import { throttle } from 'lodash';
 
 import { Input, Button, message as systemMessage, Icon, Tooltip } from 'antd';
@@ -30,10 +31,20 @@ import {
   Footer,
   MinimizeButton,
   StyledBadge,
+  WrapperSelect,
   Title,
 } from './styled';
 
 const url = BASE_URL;
+const options = [
+  { value: '30', label: '30 минут' },
+  { value: '60', label: '1 час' },
+  { value: '120', label: '2 часа' },
+  { value: '360', label: '6 часов' },
+  { value: '1440', label: '1 день' },
+  { value: '2880', label: '2 дня' },
+  { value: '10080', label: '1 неделя' },
+];
 
 class Chat extends React.Component {
   constructor(props) {
@@ -45,6 +56,7 @@ class Chat extends React.Component {
       replyTo: null,
       hasScrolled: false,
       minimizeChat: true,
+      select: options,
     };
   }
 
@@ -86,6 +98,10 @@ class Chat extends React.Component {
     const formData = new FormData(form);
     const file = await postFile(formData);
     this.setState({ file });
+  };
+
+  handleChangeTimeMessage = value => {
+    return value;
   };
 
   resetForm = () => {
@@ -214,10 +230,10 @@ class Chat extends React.Component {
   render() {
     const { messages, usersOnline, label, chatState } = this.props;
     const fixedChat = chatState !== 'mainChat' && chatState !== 'privateChat';
-    const { message, filePath, hasScrolled, minimizeChat } = this.state;
+    const { message, filePath, hasScrolled, minimizeChat, select } = this.state;
     return (
       <Context.Consumer>
-        {({ countMessages, changeJoinChat }) => {
+        {({ user, countMessages, changeJoinChat }) => {
           return (
             <section>
               <ChatContainer fixedChat={fixedChat}>
@@ -232,13 +248,23 @@ class Chat extends React.Component {
                 </Header>
                 <Main minimizeChat={minimizeChat} fixedChat={fixedChat}>
                   <div style={{ width: '20%' }}>
+                    {user.role === 'ROLE_ADMIN' && (
+                      <WrapperSelect>
+                        <p>Время хранения сообщений</p>
+                        <Select
+                          options={select}
+                          defaultValue={select[1]}
+                          onChange={this.handleChangeTimeMessage}
+                        />
+                      </WrapperSelect>
+                    )}
                     <OnlineLED />
                     <UserListTitle>Online:</UserListTitle>
                     <UserList fixedChat={fixedChat}>
-                      {Object.entries(usersOnline).map(user => {
-                        const [username, id] = user;
+                      {Object.entries(usersOnline).map(userOn => {
+                        const [username, id] = userOn;
                         return (
-                          <User key={user}>
+                          <User key={userOn}>
                             <UserLink href={`/anotheruser/${id}`}>{username}</UserLink>
                           </User>
                         );

@@ -24,7 +24,6 @@ const formStyles = { width: '500px' };
 const MailingLetters = () => {
   const [sendingStatus, setSendingStatus] = useState('');
   const select = [
-    { value: 'ROLE_ALL', label: 'всем' },
     { value: 'ROLE_ADMIN', label: 'администратору' },
     { value: 'ROLE_MODERATOR', label: 'модератору' },
     { value: 'ROLE_USER', label: 'новичкам' },
@@ -42,16 +41,8 @@ const MailingLetters = () => {
         message: values.message,
         lastEditDate: data,
       },
-      roles: values.roles
-        .map(rol => {
-          if (rol.value === 'ROLE_ALL') {
-            const rolAll = select.map(rolInit => rolInit.value);
-            return rolAll;
-          }
-          return rol.value;
-        })
-        .flat(),
-    };
+      roles: values.roles.map(rol => rol.value)
+    }
     return res;
   };
   const validationSchema = Yup.object().shape({

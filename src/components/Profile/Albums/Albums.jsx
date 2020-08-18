@@ -170,17 +170,24 @@ class Albums extends React.Component {
       location: { pathname },
       isMainPage,
     } = this.props;
+    const { photoAlbumId, photosCounter, thumbImageId, title } = album;
+    const newPhotoAlbumId = {
+      id: photoAlbumId,
+      photosCounter,
+      thumbImageId,
+      title,
+    };
     if (isMainPage) {
       history.push({
         pathname: `/profile/albums/${album.photoAlbumId}`,
-        state: album,
+        state: { photoAlbumId: newPhotoAlbumId },
       });
       return;
     }
     const url = `${pathname}/${album.photoAlbumId}`;
     history.push({
       pathname: url,
-      state: album,
+      state: { photoAlbumId: newPhotoAlbumId },
     });
   };
 

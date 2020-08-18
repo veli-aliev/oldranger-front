@@ -147,14 +147,20 @@ class TopicPage extends React.Component {
     }
 
     [messageComentsEntity.image1, messageComentsEntity.image2] = files;
+    const {
+      topic: { photoAlbum },
+    } = this.state;
     try {
       await queries.addComment(this.normalizeData(messageComentsEntity));
       const lastPage = Math.floor(topic.messageCount / 10 + 1);
-      history.push(`${history.location.pathname}?page=${lastPage}`);
       this.getTopics(lastPage);
       message.success('Ваше сообщение успешно добавлено');
       this.setState({ reply: null, answerId: null, files: [], uploading: false });
       resetForm();
+      history.push({
+        pathname: `${history.location.pathname}?page=${lastPage}`,
+        state: { photoAlbumId: photoAlbum },
+      });
     } catch {
       message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
       this.setState({ uploading: false });

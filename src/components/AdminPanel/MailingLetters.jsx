@@ -41,8 +41,8 @@ const MailingLetters = () => {
         message: values.message,
         lastEditDate: data,
       },
-      roles: values.roles.map(rol => rol.value)
-    }
+      roles: values.roles.map(rol => rol.value),
+    };
     return res;
   };
   const validationSchema = Yup.object().shape({

@@ -85,7 +85,7 @@ class TopicPage extends React.Component {
     this.replyForm.focus();
   };
 
-  normalizeData = newComment => {
+  transformComment = newComment => {
     const formData = new FormData();
     formData.set('idTopic', newComment.idTopic);
     formData.set('idUser', newComment.idUser);
@@ -151,7 +151,7 @@ class TopicPage extends React.Component {
       topic: { photoAlbum },
     } = this.state;
     try {
-      await queries.addComment(this.normalizeData(messageComentsEntity));
+      await queries.addComment(this.transformComment(messageComentsEntity));
       const lastPage = Math.floor(topic.messageCount / 10 + 1);
       this.getTopics(lastPage);
       message.success('Ваше сообщение успешно добавлено');

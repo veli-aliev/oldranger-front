@@ -211,13 +211,11 @@ class Queries {
   };
 
   getProfileData = async () => {
-    const res = await axios.get('/api/currentUser');
-    return res;
+    return axios.get('/api/currentUser');
   };
 
   getUserProfileData = async () => {
-    const res = await axios.get('/api/profile');
-    return res;
+    return axios.get('/api/profile');
   };
 
   getSubsectionTopics = async (id, page = 0) => {
@@ -259,8 +257,7 @@ class Queries {
   };
 
   addComment = async formData => {
-    const res = await axios.post('/api/comment/add', formData);
-    return res;
+    return axios.post('/api/comment/add', formData);
   };
 
   updateComment = async editingComment => {

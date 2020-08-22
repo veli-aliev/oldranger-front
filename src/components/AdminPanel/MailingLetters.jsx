@@ -32,7 +32,8 @@ const MailingLetters = () => {
     { value: 'ROLE_VETERAN', label: 'ветеранам' },
   ];
 
-  const normalizeData = (values, user) => {
+  const transformMessage = (values, user) => {
+    console.log(values, user)
     const data = new Date();
     const res = {
       emailDraft: {
@@ -60,7 +61,7 @@ const MailingLetters = () => {
               initialValues={{ subject: '', message: '', roles: '' }}
               onSubmit={(values, { setSubmitting, resetForm }) => {
                 setSubmitting(true);
-                const dataMessage = normalizeData(values, user);
+                const dataMessage = transformMessage(values, user);
                 serverQueries
                   .sendMailToAllUsers(dataMessage)
                   .then(() => {

@@ -33,7 +33,6 @@ const MailingLetters = () => {
   ];
 
   const transformMessage = (values, user) => {
-    console.log(values, user)
     const data = new Date();
     const res = {
       emailDraft: {

@@ -74,9 +74,9 @@ class Album extends React.Component {
   }
 
   showModal = async photoID => {
-    const res = await queries.getPhotoWithData(photoID);
     try {
-      const comments = res.data.commentDto.content;
+      const res = await queries.getPhotoWithData(photoID);
+      const comments = res.commentDto.content;
       this.setState({
         selectedIndex: photoID,
         currentComments: comments,

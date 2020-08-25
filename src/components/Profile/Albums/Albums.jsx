@@ -4,6 +4,9 @@ import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import queries from '../../../serverQueries';
+import Context from '../../Context';
+import { BASE_URL } from '../../../constants';
+import CreateAlbumPrompt from './CreateAlbumPrompt';
 
 const DeletePhotoButton = styled(Button)`
   display: none;
@@ -24,6 +27,7 @@ const StyledAlbumCard = styled.div`
   width: 239px;
   margin: 3px;
   background-size: cover;
+  cursor: pointer;
   &:hover ${DeletePhotoButton} {
     display: block;
   }
@@ -34,14 +38,14 @@ const StyledAlbumCard = styled.div`
   }
 `;
 const AlbomShadow = styled.div`
-    color: #fff;
-    box-sizing: border-box;
-    position: absolute; 
-    bottom: 0;
-    width: 100%;
-    padding: 35px 12px 9px;
-    background: url(/shadow.png);
-}`;
+  color: #fff;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 35px 12px 9px;
+  background: url(/shadow.png);
+`;
 const PhotoCounter = styled.span`
   position: absolute;
   bottom: 0;
@@ -79,27 +83,31 @@ class Albums extends React.Component {
     super(props);
     this.state = {
       albums: [],
+      visible: false,
     };
   }
 
   componentDidMount() {
-    this.loadAlbums();
+    const { isLogin } = this.context;
+    if (isLogin) {
+      this.loadAlbums();
+    }
   }
 
   loadAlbums = async () => {
-    const allAlbums = await queries.getAlbums();
-    this.setState({ albums: allAlbums });
+    const { isMainPage } = this.props;
+    try {
+      const albums = isMainPage ? await queries.getAllAlbums() : await queries.getAlbums();
+      if (albums) {
+        this.setState({ albums });
+      }
+    } catch (error) {
+      queries.handleError(error);
+    }
   };
 
-  createNewAlbum = async () => {
+  createNewAlbum = async title => {
     const { albums } = this.state;
-    // eslint-disable-next-line no-alert
-    const title = prompt('Название альбома');
-    if (!title) {
-      /* eslint-disable-next-line no-alert */
-      message.error('Необходимо указать название для альбома');
-      return;
-    }
     try {
       const NewAlbum = await queries.createNewAlbum(title);
       this.setState({ albums: [...albums, NewAlbum] });
@@ -147,10 +155,8 @@ class Albums extends React.Component {
 
   editPhotoAlbum = album => async event => {
     event.stopPropagation();
-    const {
-      history,
-      location: { pathname },
-    } = this.props;
+    const { history } = this.props;
+    const pathname = '/profile/albums';
     const url = `${pathname}/editAlbum/${album.photoAlbumId}`;
     history.push({
       pathname: url,
@@ -178,16 +184,16 @@ class Albums extends React.Component {
     });
   };
 
-  render() {
+  renderAlbums = () => {
     const { albums } = this.state;
     const { isMainPage } = this.props;
     return (
       <>
-        {isMainPage ? (
+        {isMainPage && (
           <Row type="flex" justify="center">
             <h2>Альбомы</h2>
           </Row>
-        ) : null}
+        )}
         {albums.length > 0 ? (
           <StyledAlbumWrapper>
             {albums.map(album => (
@@ -195,7 +201,7 @@ class Albums extends React.Component {
                 <AlbomBackgroundImage
                   src={
                     album.thumbImageId
-                      ? `http://localhost:8888/api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
+                      ? `${BASE_URL}api/securedPhoto/photoFromAlbum/${album.thumbImageId}`
                       : `/defaultAlbumPicture.jpg`
                   }
                 />
@@ -226,26 +232,68 @@ class Albums extends React.Component {
             <h4>Пока альбомов нет</h4>
           </Row>
         )}
-        {isMainPage ? null : (
-          <Row type="flex" justify="center">
-            <Button type="primary" onClick={this.createNewAlbum}>
-              Создать новый альбом
-            </Button>
-          </Row>
-        )}
       </>
+    );
+  };
+
+  renderAddAlbumButton = () => {
+    const { isMainPage } = this.props;
+    const { visible } = this.state;
+    return (
+      !isMainPage && (
+        <Row type="flex" justify="center">
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                this.setState({ visible: true });
+              }}
+            >
+              Создать альбом
+            </Button>
+            <CreateAlbumPrompt
+              visible={visible}
+              onCreate={this.createNewAlbum}
+              onCancel={() => {
+                this.setState({ visible: false });
+              }}
+            />
+          </div>
+        </Row>
+      )
+    );
+  };
+
+  render() {
+    return (
+      <Context.Consumer>
+        {({ user: { role } }) => {
+          return (
+            <>
+              {this.renderAlbums()}
+              {role === 'ROLE_ADMIN' && this.renderAddAlbumButton()}
+            </>
+          );
+        }}
+      </Context.Consumer>
     );
   }
 }
+
+Albums.contextType = Context;
 
 Albums.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
   }).isRequired,
-  isMainPage: PropTypes.bool.isRequired,
+  isMainPage: PropTypes.bool,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+Albums.defaultProps = {
+  isMainPage: false,
 };
 
 export default withRouter(Albums);

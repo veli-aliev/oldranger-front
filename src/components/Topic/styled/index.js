@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Col, Row, Icon, Alert, Upload } from 'antd';
+import { Button, Col, Row, Icon, Alert, Upload, Typography } from 'antd';
 
 export const StyledTopicUserInfo = styled(Row)`
   min-height: 120px;
@@ -46,4 +46,22 @@ export const UploadViewOnly = styled(Upload)`
 export const ListItem = styled.li`
   padding: 5px 0;
   border-bottom: 1px solid #e8e8e8;
+`;
+
+export const DeletedMessageText = styled(Typography.Text)`
+  font-size: 12px;
+`;
+
+export const StyledCenteredContainer = styled.div`
+  display: flex;
+  min-height: 500px;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const StyledHeader = styled.h1`
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
 `;

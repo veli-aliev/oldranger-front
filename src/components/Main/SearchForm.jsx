@@ -12,11 +12,18 @@ const InputGroup = Input.Group;
 const { Option } = Select;
 
 const validationSchema = Yup.object({
-  searchRequest: Yup.string().min(3, 'Введите не меннее 3-х символов'),
+  searchRequest: Yup.string()
+    .min(3, 'Введите не меннее 3-х символов')
+    .matches(/[\S]+(\s[\S]+)*/, 'Поле поиска должно быть заполнено')
+    .required('Поле поиска должно быть заполнено'),
 });
 
 const SearchForm = ({ history }) => {
-  const { isLogin } = useContext(Context);
+  const {
+    isLogin,
+    user: { mute },
+  } = useContext(Context);
+  const muteForumMess = mute && mute.includes('ON_FORUM_MESS');
   return (
     <Formik
       initialValues={{
@@ -35,11 +42,11 @@ const SearchForm = ({ history }) => {
               help={touched.searchRequest ? errors.searchRequest : ''}
             >
               <ButtonGroup>
-                {isLogin ? (
-                  <Button>
+                {isLogin && (
+                  <Button disabled={muteForumMess}>
                     <Link to="/topic/add">Создать тему</Link>
                   </Button>
-                ) : null}
+                )}
                 <InputGroup compact>
                   <SimpleInput placeholder="Поиск по Форуму" name="searchRequest" type="text" />
                   <FormikField name="searchBy">

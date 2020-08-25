@@ -1,33 +1,15 @@
 import React from 'react';
-import { Row, Button, Icon, message } from 'antd';
+import { Row, Button, Icon, message, Modal } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import Carousel, { Modal, ModalGateway } from 'react-images';
 import { Link, withRouter } from 'react-router-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
 import UploadPhoto from './UploadPhoto';
+import ModalPhoto from './ModalPhoto';
 
-const CloseModalButton = styled(Button)`
-position:absolute;
-top:20px;
-padding:5px
-right:20px;
-width:44px;
-opacity: 0.7;
-z-index: 1;
-`;
-
-const DeletePhotoModalButton = styled(Button)`
-position:absolute;
-top:20px;
-right:64px;
-padding:5px
-width:44px;
-opacity: 0.7;
-z-index: 1;
-`;
+import { BASE_URL } from '../../../constants';
 
 const DeletePhotoButton = styled(Button)`
   position: absolute;
@@ -41,8 +23,10 @@ const DeletePhotoButton = styled(Button)`
 export const ImageWrapper = styled.div`
   display: inline-block;
   position: relative;
-  width: 239px;
+  width: ${({ topicPageProp }) => (topicPageProp ? 'auto' : '239px')};
   margin: 3px;
+  cursor: pointer;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   &:hover ${DeletePhotoButton} {
     display: block;
   }
@@ -53,13 +37,13 @@ const AlbumNavigation = styled.div`
 export const StyledImage = styled.img`
   object-fit: cover;
   object-position: top center;
-  width: 239px;
-  height: 150px;
+  width: ${({ topicPageProp }) => (topicPageProp ? 'auto' : '239px')};
+  height: ${({ topicPageProp }) => (topicPageProp ? '100px' : '150px')};
 `;
 
 const AlbumWrapper = styled.div`
   display: flex;
-  flex-direction: columns;
+  flex-direction: row;
   flex-wrap: wrap;
   margin-bottom: 50px;
   margin-top: 30px;
@@ -77,10 +61,11 @@ class Album extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      photoTempUlr: 'http://localhost:8888/api/securedPhoto/photoFromAlbum/',
+      photoTempUlr: `${BASE_URL}api/securedPhoto/photoFromAlbum/`,
       photos: [],
-      selectedIndex: 0,
-      lightboxIsOpen: false,
+      currentComments: [],
+      selectedIndex: null,
+      visible: false,
     };
   }
 
@@ -88,18 +73,57 @@ class Album extends React.Component {
     this.loadPhotos();
   }
 
-  toggleLightbox = selectedIndex => {
-    this.setState(state => ({
-      lightboxIsOpen: !state.lightboxIsOpen,
-      selectedIndex,
-    }));
+  showModal = async photoID => {
+    const res = await queries.getPhotoWithData(photoID);
+    try {
+      const comments = res.data.commentDto.content;
+      this.setState({
+        selectedIndex: photoID,
+        currentComments: comments,
+        visible: true,
+      });
+    } catch (error) {
+      /* eslint-disable-next-line no-console */
+      console.error(error.response);
+      message.error('что-то пошло не так');
+    }
+  };
+
+  handleOk = () => {
+    this.setState({
+      selectedIndex: null,
+      visible: false,
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      selectedIndex: null,
+      visible: false,
+    });
+  };
+
+  addComment = async data => {
+    const { currentComments } = this.state;
+    try {
+      const newComment = await queries.addCommentToPhoto(data);
+      const newArrComments = [...currentComments, newComment];
+      this.setState({
+        currentComments: newArrComments,
+      });
+    } catch (error) {
+      this.setState({
+        selectedIndex: null,
+        visible: false,
+      });
+    }
   };
 
   loadPhotos = async () => {
-    const {
-      location: { state },
-    } = this.props;
-
+    const { topicPageProp } = this.props;
+    const { location } = this.props;
+    const changeProp = topicPageProp || location;
+    const { state } = changeProp;
     const albumId = state.photoAlbumId;
     try {
       const photos = await queries.getPhotosFromAlbum(albumId);
@@ -138,101 +162,42 @@ class Album extends React.Component {
   };
 
   render() {
-    const { photos, lightboxIsOpen, selectedIndex, photoTempUlr } = this.state;
+    const { photos, photoTempUlr, selectedIndex, currentComments, visible } = this.state;
     const {
       location: {
         state: { photoAlbumId, title },
       },
     } = this.props;
-    const images = photos.reduce((acc, photo) => {
-      return [...acc, { src: `${photoTempUlr}${photo.photoID}?type=original` }];
-    }, []);
 
-    const CustomHeader = ({ currentIndex, isModal, modalProps: { onClose } }) =>
-      isModal ? (
-        <div>
-          <CloseModalButton onClick={onClose} title="close">
-            <Icon type="close" />
-          </CloseModalButton>
-          <DeletePhotoModalButton
-            title="delete"
-            onClick={event => {
-              this.deletePhoto(photos[currentIndex].photoID)(event);
-              onClose();
-            }}
-          >
-            <Icon type="delete" title="delete" />
-          </DeletePhotoModalButton>
-        </div>
-      ) : null;
-
-    if (window.matchMedia('(max-width: 479px)').matches) {
+    const SortableItem = SortableElement(({ value }) => {
+      const { photoID } = value;
       return (
-        <>
-          <AlbumNavigation>
-            <Link to="/profile/albums">Альбомы</Link>
-            <span>{` > ${title}`}</span>
-          </AlbumNavigation>
-          <AlbumWrapper>
-            {photos.length > 0 ? (
-              <>
-                {photos.map((photo, index) => (
-                  <ImageWrapper onClick={() => this.toggleLightbox(index)} key={photo.photoID}>
-                    <StyledImage
-                      title={photo.title}
-                      alt="userPhoto"
-                      src={`${photoTempUlr}${photo.photoID}?type=original`}
-                    />
-                    <DeletePhotoButton
-                      type="default"
-                      title="Удалить Фотографию"
-                      onClick={this.deletePhoto(photo.photoID)}
-                    >
-                      <Icon type="delete" style={{ color: 'red' }} />
-                    </DeletePhotoButton>
-                  </ImageWrapper>
-                ))}
-                <ModalGateway>
-                  {lightboxIsOpen ? (
-                    <Modal onClose={this.toggleLightbox}>
-                      <Carousel
-                        views={images}
-                        currentIndex={selectedIndex}
-                        components={{ Header: CustomHeader }}
-                      />
-                    </Modal>
-                  ) : null}
-                </ModalGateway>
-              </>
-            ) : (
-              <StyledRow type="flex" justify="center">
-                <h4>Альбом пуст</h4>
-              </StyledRow>
-            )}
-          </AlbumWrapper>
-          <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
-        </>
+        <ImageWrapper onClick={() => this.showModal(photoID)}>
+          <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${photoID}`} />
+          <DeletePhotoButton
+            type="default"
+            title="Удалить Фотографию"
+            onClick={this.deletePhoto(photoID)}
+          >
+            <Icon type="delete" style={{ color: 'red' }} />
+          </DeletePhotoButton>
+        </ImageWrapper>
       );
-    }
-
-    const SortableItem = SortableElement(({ value, photoNum }) => (
-      <ImageWrapper onClick={() => this.toggleLightbox(photoNum)}>
-        <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${value.photoID}`} />
-        <DeletePhotoButton
-          type="default"
-          title="Удалить Фотографию"
-          onClick={this.deletePhoto(value.photoID)}
-        >
-          <Icon type="delete" style={{ color: 'red' }} />
-        </DeletePhotoButton>
-      </ImageWrapper>
-    ));
+    });
 
     const SortableList = SortableContainer(({ items }) => (
       <AlbumWrapper>
-        {items.map((photo, index) => (
-          <SortableItem key={photo.photoID} index={index} value={photo} photoNum={index} />
-        ))}
+        {items.map(photo => {
+          const { photoID } = photo;
+          return (
+            <SortableItem
+              key={photoID}
+              photoId={photoID}
+              value={photo}
+              onClick={() => this.showModal(photoID)}
+            />
+          );
+        })}
       </AlbumWrapper>
     ));
     return (
@@ -242,32 +207,47 @@ class Album extends React.Component {
           <span>{` > ${title}`}</span>
         </AlbumNavigation>
         {photos.length > 0 ? (
-          <>
-            <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} distance={1} />
-            <ModalGateway>
-              {lightboxIsOpen ? (
-                <Modal onClose={this.toggleLightbox}>
-                  <Carousel
-                    views={images}
-                    currentIndex={selectedIndex}
-                    components={{ Header: CustomHeader }}
-                  />
-                </Modal>
-              ) : null}
-            </ModalGateway>
-          </>
+          <SortableList axis="xy" items={photos} onSortEnd={this.onSortEnd} distance={1} />
         ) : (
           <StyledRow type="flex" justify="center">
             <h4>Альбом пуст</h4>
           </StyledRow>
         )}
+
+        <Modal
+          title=""
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          footer={null}
+          width={820}
+        >
+          <ModalPhoto
+            idPhoto={selectedIndex}
+            src={`${photoTempUlr}${selectedIndex}`}
+            currentComments={currentComments}
+            addComment={this.addComment}
+          />
+        </Modal>
+
         <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
       </>
     );
   }
 }
 
+Album.defaultProps = {
+  topicPageProp: null,
+  location: null,
+};
+
 Album.propTypes = {
+  topicPageProp: PropTypes.shape({
+    state: PropTypes.shape({
+      topicPageProp: PropTypes.string,
+      title: PropTypes.string,
+    }),
+  }),
   location: PropTypes.shape({
     state: PropTypes.shape({
       photoAlbumId: PropTypes.number.isRequired,
@@ -277,7 +257,7 @@ Album.propTypes = {
         slice: PropTypes.func.isRequired,
       }),
     }),
-  }).isRequired,
+  }),
 };
 
 export default withRouter(Album);

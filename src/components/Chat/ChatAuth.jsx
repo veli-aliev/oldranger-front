@@ -1,14 +1,11 @@
 /* eslint-disable no-await-in-loop */
 import uniqueId from 'lodash/uniqueId';
 import React from 'react';
-import Stomp from 'stompjs';
-import SockJS from 'sockjs-client';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { Spin } from 'antd';
 import Chat from './Chat';
-import Greeting from './Greeting';
 import queries from '../../serverQueries';
-
-const url = process.env.BASE_URL || 'http://localhost:8888/';
 
 class ChatAuth extends React.Component {
   constructor(props) {
@@ -21,49 +18,39 @@ class ChatAuth extends React.Component {
     this.disconnect();
   };
 
-  connect = async event => {
-    event.preventDefault();
+  componentDidMount = async () => {
+    await this.connect();
+  };
+
+  connect = async () => {
     const isForb = await queries.isForbidden();
     if (isForb) {
       // banned user
-    } else {
-      const currentUser = await queries.getCurrentUser();
-      if (currentUser.username) {
-        const socket = new SockJS(`${url}ws`, null, {});
-        this.stompClient = Stomp.over(socket);
-        this.stompClient.connect({}, this.onConnected, () => {});
-      }
     }
+    this.onConnected();
   };
 
-  disconnect = () => {
+  disconnect = evt => {
     const { user } = this.state;
-    if (this.stompClient) {
-      this.stompClient.send(
-        `chat/delUser`,
-        {},
-        JSON.stringify({ sender: user.nickName, type: 'LEAVE' })
-      );
-      this.stompClient.unsubscribe(`/channel/public`);
-      this.stompClient.disconnect();
-    }
+    const { history, stompClient, changeJoinChat } = this.props;
+    changeJoinChat(false);
+    stompClient.send(`chat/delUser`, {}, JSON.stringify({ sender: user.nickName, type: 'LEAVE' }));
     this.setState({ isJoin: false });
+    if (evt) {
+      history.push('/');
+    }
   };
 
   onConnected = () => {
     this.setState({ isJoin: true });
-    this.stompClient.subscribe(`/channel/public`, this.onMessageRecieved, {});
+    const { stompClient } = this.props;
     const { user } = this.state;
     this.getMessages();
-    this.stompClient.send(
-      `/chat/addUser`,
-      {},
-      JSON.stringify({ sender: user.nickName, type: 'JOIN' })
-    );
+    stompClient.subscribe('/channel/public', this.onMessageRecieved);
+    stompClient.send('/chat/addUser', {}, JSON.stringify({ sender: user.nickName, type: 'JOIN' }));
   };
 
   getUsersOnline = async () => {
-    // this.setState({ usersOnline: {} });
     const usersOnline = await queries.getAllUsers();
     this.setState({ usersOnline });
   };
@@ -87,6 +74,7 @@ class ChatAuth extends React.Component {
   };
 
   sendMessage = (msg, file, replyTo = null) => {
+    const { stompClient } = this.props;
     if (msg || file) {
       const { user } = this.props;
       const message = {
@@ -97,13 +85,12 @@ class ChatAuth extends React.Component {
         type: 'MESSAGE',
         ...file,
       };
-      this.stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
+      stompClient.send(`/chat/sendMessage`, {}, JSON.stringify(message));
     }
   };
 
   onMessageRecieved = payload => {
     const message = JSON.parse(payload.body);
-
     // fakeId - это костыль, чтобы избежать постоянного перерендера
     // т.к. уникального ключа для событий c type JOIN/LEAVE нет
     if (!message.id) {
@@ -114,37 +101,57 @@ class ChatAuth extends React.Component {
       messages: [...state.messages, message],
     }));
     this.getUsersOnline();
-    setTimeout(() => {
-      const lastMessage = document.querySelector('.message-list li:last-of-type');
+    const lastMessage = document.querySelector('.message-list li:last-of-type');
+    if (lastMessage) {
       lastMessage.scrollIntoView();
-    }, 200);
+    }
+  };
+
+  deleteCurrentMessage = async id => {
+    const { messages } = this.state;
+    queries.deleteMessage(id);
+    this.setState({ messages: messages.filter(msg => msg.id !== id) });
   };
 
   render() {
     const { isJoin, messages, usersOnline } = this.state;
-    const { user } = this.props;
-    return !isJoin ? (
-      <Greeting handleConnect={this.connect} />
-    ) : (
+    const {
+      user,
+      changeJoinChat,
+      history: {
+        location: { state },
+      },
+    } = this.props;
+    return isJoin ? (
       <Chat
+        chatState={state}
+        changeJoinChat={changeJoinChat}
         handleDisconnect={this.disconnect}
+        deleteCurrentMessage={this.deleteCurrentMessage}
         usersOnline={usersOnline}
         messages={messages}
         sendMessage={this.sendMessage}
         user={user}
         getMessages={this.getMessages}
+        postFile={queries.postFile}
+        label="Общий чат"
       />
+    ) : (
+      <Spin />
     );
   }
 }
 
-export default ChatAuth;
+export default withRouter(ChatAuth);
 
 ChatAuth.propTypes = {
   user: PropTypes.shape({
     nickName: PropTypes.string,
     avatar: PropTypes.string,
   }),
+  stompClient: PropTypes.objectOf().isRequired,
+  history: PropTypes.objectOf(PropTypes.func).isRequired,
+  changeJoinChat: PropTypes.func.isRequired,
 };
 
 ChatAuth.defaultProps = {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import queries from '../../serverQueries';
 import ArticleForm from '../forms/ArticleForm';
-import { StyledHeader } from './styled';
+import { StyledHeader } from '../Articles/styled';
 
 const createArticle = async values => {
   const { title, text, ...params } = values;
@@ -12,7 +12,6 @@ const createArticle = async values => {
 
 const ArticleCreate = () => {
   const history = useHistory();
-
   return (
     <>
       <StyledHeader>Создание статьи</StyledHeader>

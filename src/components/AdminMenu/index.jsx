@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Menu, Dropdown, Icon, Modal, Button } from 'antd';
+import { Menu, Dropdown, Icon, Modal, Button, message } from 'antd';
 import context from '../Context';
+import { convertTimeToMilliseconds } from '../../utils';
 import serverQueries from '../../serverQueries';
 
 const AdminMenu = ({ user, updateUser }) => {
@@ -14,10 +15,43 @@ const AdminMenu = ({ user, updateUser }) => {
     return null;
   }
 
+  const handleMut = (dt, mutType) => () =>
+    serverQueries
+      .prohibitionWrite(user.id, mutType, Date.now() + dt)
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Замутить не удалось.'));
+
   const handleBan = dt => () =>
     serverQueries
       .blackListRequest(user.id, Date.now() + dt)
-      .then(({ id: userId }) => serverQueries.getUserById(userId).then(updateUser));
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Заблокировать не удалось.'));
+
+  const handleUnban = () => {
+    serverQueries
+      .unblockUser(user.id)
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Разблокировать не удалось.'));
+  };
+
+  const handleUnmute = () => {
+    serverQueries
+      .unmuteUser(user.id)
+      .then(({ dateUnblock }) => {
+        const accountNonLocked = dateUnblock === null;
+        updateUser({ ...user, accountNonLocked });
+      })
+      .catch(() => message.error('Похоже, что-то не так. Разблокировать не удалось.'));
+  };
 
   const openConfirm = (action, content) => () => {
     Modal.confirm({
@@ -31,19 +65,101 @@ const AdminMenu = ({ user, updateUser }) => {
     });
   };
 
-  const oneHour = 60 * 60 * 1000;
-
   const menu = (
     <Menu>
-      <Menu.Item onClick={openConfirm(handleBan(24 * oneHour), 'бан на 24 часа')}>
-        бан на 24 часа
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleBan(7 * 24 * oneHour), 'бан на 7 дней')}>
-        бан на 7 дней
-      </Menu.Item>
-      <Menu.Item onClick={openConfirm(handleBan(9999 * 24 * oneHour), 'перманентный бан')}>
-        перманентный бан
-      </Menu.Item>
+      <Menu.SubMenu title="Бан">
+        <Menu.Item onClick={openConfirm(handleBan(convertTimeToMilliseconds()), 'бан на 24 часа')}>
+          бан на 24 часа
+        </Menu.Item>
+        <Menu.Item onClick={openConfirm(handleBan(convertTimeToMilliseconds(7)), 'бан на 7 дней')}>
+          бан на 7 дней
+        </Menu.Item>
+        <Menu.Item
+          onClick={openConfirm(handleBan(convertTimeToMilliseconds(9999)), 'перманентный бан')}
+        >
+          перманентный бан
+        </Menu.Item>
+      </Menu.SubMenu>
+      <Menu.SubMenu title="Запрет">
+        <Menu.SubMenu title="Запрет чата">
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(), 'ON_CHAT'),
+              'запрет на 24 часа'
+            )}
+          >
+            запрет на 24 часа
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(7), 'ON_CHAT'),
+              'запрет на 7 дней'
+            )}
+          >
+            запрет на 7 дней
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(9999), 'ON_CHAT'),
+              'пермаментный запрет чата'
+            )}
+          >
+            пермаментный запрет чата
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu title="Запрет на комментирование">
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(), 'ON_COMMENTS'),
+              'запрет на 24 часа'
+            )}
+          >
+            запрет на 24 часа
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(7), 'ON_COMMENTS'),
+              'запрет на 7 дней'
+            )}
+          >
+            запрет на 7 дней
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(9999), 'ON_COMMENTS'),
+              'пермаментный запрет'
+            )}
+          >
+            пермаментный запрет
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu title="Запрет на создание тем">
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(), 'ON_FORUM_MESS'),
+              'запрет на 24 часа'
+            )}
+          >
+            запрет на 24 часа
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(7), 'ON_FORUM_MESS'),
+              'запрет на 7 дней'
+            )}
+          >
+            запрет на 7 дней
+          </Menu.Item>
+          <Menu.Item
+            onClick={openConfirm(
+              handleMut(convertTimeToMilliseconds(9999), 'ON_FORUM_MESS'),
+              'пермаментный запрет'
+            )}
+          >
+            пермаментный запрет
+          </Menu.Item>
+        </Menu.SubMenu>
+      </Menu.SubMenu>
     </Menu>
   );
 
@@ -55,7 +171,10 @@ const AdminMenu = ({ user, updateUser }) => {
       </Button>
     </Dropdown>
   ) : (
-    <Button onClick={openConfirm(handleBan(Date.now()), 'unban')}>Раблокировать</Button>
+    <>
+      <Button onClick={openConfirm(handleUnban, 'unban')}>Разблокировать</Button>
+      <Button onClick={openConfirm(handleUnmute, 'unmute')}>Размутить</Button>
+    </>
   );
 };
 

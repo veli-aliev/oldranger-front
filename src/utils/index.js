@@ -45,3 +45,15 @@ export const createTreeBuildFunction = (childKey = 'id', parentKey = 'parentId')
   });
   return tree;
 };
+
+export const formatDateToLocalTimeZone = date => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const dates = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  return new Date(Date.UTC(year, month, dates, hours, minutes, seconds));
+};
+
+export const convertTimeToMilliseconds = (time = 1) => time * 24 * 60 * 60 * 1000;

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { InputNumber } from 'formik-antd';
+import { Form as AntForm } from 'antd';
 
 export const StyledMenu = styled.div`
   height: fit-content;
@@ -10,6 +11,7 @@ export const StyledMenu = styled.div`
 export const Column = styled.div`
   display: flex;
   margin-left: 20px;
+  margin-bottom: 20px;
   width: 100%;
   flex-direction: column;
   justify-content: flex-start;
@@ -49,6 +51,7 @@ export const StyledMeta = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 10px 5px;
+  overflow: hidden;
 `;
 
 export const StyledArticle = styled.article`
@@ -79,4 +82,32 @@ export const StyledHeader = styled.h1`
   text-align: center;
   font-weight: 600;
   font-size: 24px;
+`;
+export const TagsItem = styled.p`
+  cursor: ${props => (props.cursor === 'default' ? 'default' : 'pointer')};
+  margin: 0;
+  display: flex;
+  height: 40px;
+  flex-direction: row;
+  align-items: center;
+  transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    border-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    padding 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+  padding-left: ${props => `${props.pad * 20}px`};
+  color: ${props => (props.active === props.activeId ? '#1890ff' : 'black')};
+  background-color: ${props => (props.active === props.activeId ? '#e6f7ff' : 'white')};
+  border-right: 3px solid ${props => (props.active === props.activeId ? '#1890ff' : 'white')};
+`;
+
+export const StyledForm = styled(AntForm)`
+  text-align: right;
+  .ant-form-item-children-icon {
+    display: none;
+  }
+`;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;

@@ -24,3 +24,5 @@ yarn-error.log*
 
 .idea/
 .prettierrc
+debug.log
+prettierrc.json

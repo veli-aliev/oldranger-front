@@ -1,4 +1,6 @@
-// тут мы избавляемся от смешения при появлении полосы прокрутки
+@import '~react-quill/dist/quill.snow.css';
+
+/* тут мы избавляемся от смешения при появлении полосы прокрутки */
 html {
   overflow-x: hidden;
   width: 100vw !important;

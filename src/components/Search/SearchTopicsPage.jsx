@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spin } from 'antd';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import queries from '../../serverQueries';
@@ -11,15 +12,24 @@ class SearchTopicsPage extends React.Component {
     super(props);
     this.state = {
       topics: [],
-      // hasMore: true,
-      // page: 1,
+      messageError: null,
+      loading: true,
     };
   }
 
   componentDidMount() {
-    this.getTopics(0).then(data => {
-      if (data) this.setState({ topics: data.topics });
-    });
+    const firstPage = 1;
+
+    this.getTopics(firstPage)
+      .then(data => {
+        if (data) this.setState({ topics: data.topics, loading: false });
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 404) {
+          this.setState({ messageError: error.response.data, loading: false });
+        }
+        this.setState({ loading: false });
+      });
   }
 
   getTopics = async page => {
@@ -28,12 +38,17 @@ class SearchTopicsPage extends React.Component {
   };
 
   render() {
-    const { topics } = this.state;
+    const { topics, messageError, loading } = this.state;
     const {
       match: {
         params: { searchRequest },
       },
     } = this.props;
+
+    if (loading) {
+      return <Spin />;
+    }
+
     return topics.length > 0 ? (
       <TopicsList
         itemComponent={item => <TopicsListItem topicData={{ topic: item }} />}
@@ -41,9 +56,12 @@ class SearchTopicsPage extends React.Component {
         title={`Результы поиска в темах по запросу ${searchRequest}`}
       />
     ) : (
-      <StyledTitle>
-        Нет результатов по запросу <i>{searchRequest}</i>
-      </StyledTitle>
+      messageError && (
+        <StyledTitle>
+          {`${messageError} `}
+          <i>{searchRequest}</i>
+        </StyledTitle>
+      )
     );
   }
 }

@@ -18,6 +18,7 @@ const TopicCommentListItem = ({
   contentEditingForm,
   contentCommentText,
   contentReplyText,
+  muteComments,
 }) => {
   const commentDateTooltipString = comment.commentUpdateTime
     ? `Создан ${dataToFormatedDate(comment.commentDateTime)}, отредактирован ${dataToFormatedDate(
@@ -30,10 +31,11 @@ const TopicCommentListItem = ({
         true
       )}, отредактирован ${dateToDateDistance(comment.commentUpdateTime, true)}`
     : `Создан ${dateToDateDistance(comment.commentDateTime, true)}`;
+
   return (
-    <ListItem id={comment.positionInTopic + 1}>
+    <ListItem id={comment.positionInTopic}>
       <Comment
-        actions={withActions ? commentActions : null}
+        actions={withActions && !muteComments ? commentActions : null}
         author={
           !contentReplyText ? (
             comment.author.nickName
@@ -71,10 +73,12 @@ TopicCommentListItem.defaultProps = {
   withActions: false,
   convertedImages: null,
   contentReplyText: null,
+  muteComments: false,
 };
 
 TopicCommentListItem.propTypes = {
   withActions: PropTypes.bool,
+  muteComments: PropTypes.bool,
   toggleEdeting: PropTypes.bool.isRequired,
   commentActions: PropTypes.node.isRequired,
   contentEditingForm: PropTypes.node.isRequired,

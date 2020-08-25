@@ -50,16 +50,26 @@ class Invite extends React.Component {
 
   submitForm = async (values, { setStatus }) => {
     this.setState({ loading: true });
-    const status = await queries.sendInviteCode(values);
+    try {
+      const status = await queries.sendInviteCode(values);
 
-    switch (status) {
-      case 1:
-        setStatus('Приглашение успешно отправлено.');
-        break;
+      switch (status) {
+        case 1:
+          setStatus({
+            text: 'Приглашение успешно отправлено.',
+            type: 'strong',
+          });
+          break;
 
-      default:
-        setStatus('Извините, но сервис отправки приглашений временно не работает.');
-        break;
+        default:
+          setStatus({
+            text: 'Извините, но сервис отправки приглашений временно не работает.',
+            type: 'danger',
+          });
+          break;
+      }
+    } catch (error) {
+      // continue regardless of error
     }
 
     this.setState({ loading: false });
@@ -95,8 +105,8 @@ class Invite extends React.Component {
 
               {status && (
                 <Row type="flex" justify="center">
-                  <Title level={4} type="danger">
-                    {status}
+                  <Title level={4} type={status.type}>
+                    {status.text}
                   </Title>
                 </Row>
               )}

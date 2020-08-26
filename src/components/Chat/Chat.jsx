@@ -57,6 +57,7 @@ class Chat extends React.Component {
       hasScrolled: false,
       minimizeChat: true,
       select: options,
+      disabled: false,
     };
   }
 
@@ -105,11 +106,12 @@ class Chat extends React.Component {
   };
 
   resetForm = () => {
-    this.setState({ message: '', file: null, filePath: '' });
+    this.setState({ message: '', file: null, filePath: '', disabled: false });
   };
 
   handleSubmit = async event => {
     event.preventDefault();
+    this.setState({ disabled: true });
     await this.uploadFile();
     const { sendMessage } = this.props;
     const { message, file, replyTo } = this.state;
@@ -230,7 +232,7 @@ class Chat extends React.Component {
   render() {
     const { messages, usersOnline, label, chatState } = this.props;
     const fixedChat = chatState !== 'mainChat' && chatState !== 'privateChat';
-    const { message, filePath, hasScrolled, minimizeChat, select } = this.state;
+    const { message, filePath, hasScrolled, minimizeChat, select, disabled } = this.state;
     return (
       <Context.Consumer>
         {({ user, countMessages, changeJoinChat }) => {
@@ -303,7 +305,12 @@ class Chat extends React.Component {
                       value={filePath}
                       name="file-input"
                     />
-                    <Button type="primary" className="send-button" htmlType="submit">
+                    <Button
+                      type="primary"
+                      disabled={disabled}
+                      className="send-button"
+                      htmlType="submit"
+                    >
                       Отправить
                     </Button>
                   </Footer>

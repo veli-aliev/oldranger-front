@@ -4,17 +4,15 @@ import { Menu, Spin } from 'antd';
 import { useHistory, withRouter } from 'react-router-dom';
 import { StyledMenu, TagsItem } from '../styled';
 import queries from '../../../serverQueries/index';
-import useQuery from '../../../hooks/useQuery';
 
-const TagsMenu = ({ location }) => {
+const TagsMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const history = useHistory();
   const [activeId, setActiveId] = useState(null);
-  const hierarchy = useQuery().tags;
   const [isLoading, setIsLoading] = useState(false);
-  const addActiveTag = tags => {
-    const activeTag = tags.find(tag => hierarchy === tag.tagsHierarchy.join('_')) || {};
-    setActiveId(activeTag.id);
+
+  const addActiveTag = id => {
+    setActiveId(id);
   };
 
   useEffect(() => {
@@ -25,7 +23,9 @@ const TagsMenu = ({ location }) => {
         .then(el => {
           if (el) {
             setMenuItems(el);
-            addActiveTag(el);
+          }
+          if (history.location.state !== undefined) {
+            addActiveTag(history.location.state.articleId);
           }
         })
         .catch(() => {
@@ -38,14 +38,12 @@ const TagsMenu = ({ location }) => {
     fetchTags();
   }, []);
 
-  useEffect(() => {
-    if (Array.isArray(menuItems)) {
-      addActiveTag(menuItems);
-    }
-  }, [location]);
-
-  const showArticles = tags => () => {
-    history.push(`articles?tags=${tags.join('_')}`);
+  const showArticles = (tags, id) => () => {
+    addActiveTag(id);
+    history.push({
+      search: `tags=${id}`,
+      state: { articleId: id },
+    });
   };
 
   const buildTreeMenu = (tags, result = []) => {
@@ -63,15 +61,6 @@ const TagsMenu = ({ location }) => {
       );
     }
 
-    if (tags.length === 0) {
-      return (
-        <li>
-          <TagsItem active={false} cursor="default" pad={1}>
-            Нет тегов
-          </TagsItem>
-        </li>
-      );
-    }
     const [first, ...rest] = tags;
     if (menuItems.some(el => el.parentId === first.id)) {
       return buildTreeMenu(rest, [

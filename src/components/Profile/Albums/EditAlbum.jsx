@@ -166,15 +166,9 @@ class EditAlbum extends React.Component {
     const {
       location: { state },
     } = this.props;
-    const { history } = this.props;
     // TODO: сделать нормально
     const { photoAlbumId } = state;
     const { photoTempUlr, photos, photosToDelete, thumbImageId, visible, title } = this.state;
-    const newPhotoAlbumId = {
-      id: photoAlbumId,
-      title,
-      thumbImageId,
-    };
 
     return (
       <div>
@@ -194,13 +188,13 @@ class EditAlbum extends React.Component {
         </Modal>
 
         <div>
-          <Link to="/profile/albums">Альбомы </Link>
+          <Link to="/profile/albums">Альбooooомы </Link>
           {'>'}
           <Link
-            to={history.push({
+            to={{
               pathname: `/profile/albums/${photoAlbumId}`,
-              state: { photoAlbumId: newPhotoAlbumId },
-            })}
+              state,
+            }}
           >
             {' '}
             {`${title}`}{' '}

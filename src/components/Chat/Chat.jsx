@@ -105,11 +105,12 @@ class Chat extends React.Component {
   };
 
   resetForm = () => {
-    this.setState({ message: '', file: null, filePath: '' });
+    this.setState({ message: '', file: null, filePath: '', disabled: false });
   };
 
   handleSubmit = async event => {
     event.preventDefault();
+    this.setState({ disabled: true });
     await this.uploadFile();
     const { sendMessage } = this.props;
     const { message, file, replyTo } = this.state;
@@ -303,7 +304,12 @@ class Chat extends React.Component {
                       value={filePath}
                       name="file-input"
                     />
-                    <Button type="primary" className="send-button" htmlType="submit">
+                    <Button
+                      type="primary"
+                      disabled={disabled}
+                      className="send-button"
+                      htmlType="submit"
+                    >
                       Отправить
                     </Button>
                   </Footer>

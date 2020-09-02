@@ -73,7 +73,7 @@ class TopicCommentItem extends React.Component {
     const { isLogin } = this.context;
     const convertedImages = comment.photos.map(photo => {
       const url = isLogin
-        ? `${SECURED_ALBUM_URL}${photo.id}?type=small`
+        ? `${SECURED_ALBUM_URL}${photo.id}?type=original`
         : `${DEFAULT_COMMENT_PICTURE}`;
       return {
         uid: `-${String(photo.id)}`,

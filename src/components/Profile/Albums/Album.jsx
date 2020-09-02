@@ -98,7 +98,6 @@ class Album extends React.Component {
 
   handleCancel = () => {
     this.setState({
-      selectedIndex: null,
       visible: false,
     });
   };

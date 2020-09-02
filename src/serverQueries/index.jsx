@@ -294,10 +294,9 @@ class Queries {
   };
 
   addCommentToPhoto = async params => {
-    const res = await axios.post('/api/photo/comment/add', null, {
+    return axios.post('/api/photo/comment/add', null, {
       params,
     });
-    return res.data;
   };
 
   getPhotoWithData = async id => {
@@ -357,7 +356,7 @@ class Queries {
 
   getSecuredPhoto = async id => {
     const res = await axios.get(`/api/securedPhoto/photoFromAlbum/${id}`);
-    return res.data;
+    return res;
   };
 
   addPhotosInAlbum = async (albumId, photosArr) => {

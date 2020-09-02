@@ -49,10 +49,6 @@ class App extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { isLogin } = this.state;
-    if (isLogin) {
-      await this.connect();
-    }
     this.сonnect();
 
     AuthorizationStatusEmitter.subscribe(isAuthorized => {

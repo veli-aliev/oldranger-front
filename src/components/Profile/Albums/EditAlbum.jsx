@@ -194,7 +194,7 @@ class EditAlbum extends React.Component {
         </Modal>
 
         <div>
-          <Link to="/profile/albums">Альбомы </Link>
+          <Link to="/profile/albums">Альбooooомы </Link>
           {'>'}
           <Link
             to={history.push({

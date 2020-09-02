@@ -118,7 +118,7 @@ const StyledImage = styled.img`
 
 ModalPhoto.propTypes = {
   idPhoto: PropTypes.number.isRequired,
-  currentComments: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string])),
+  currentComments: PropTypes.arrayOf(PropTypes.object),
   src: PropTypes.string.isRequired,
   addComment: PropTypes.func.isRequired,
 };

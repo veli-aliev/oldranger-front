@@ -74,9 +74,9 @@ class Album extends React.Component {
   }
 
   showModal = async photoID => {
-    const res = await queries.getPhotoWithData(photoID);
     try {
-      const comments = res.data.commentDto.content;
+      const res = await queries.getPhotoWithData(photoID);
+      const comments = res.commentDto.content;
       this.setState({
         selectedIndex: photoID,
         currentComments: comments,
@@ -120,13 +120,17 @@ class Album extends React.Component {
   };
 
   loadPhotos = async () => {
-    const { topicPageProp } = this.props;
-    const { location } = this.props;
-    const changeProp = topicPageProp || location;
-    const { state } = changeProp;
-    const albumId = state.photoAlbumId;
+    const {
+      history: {
+        location: {
+          state: {
+            photoAlbumId: { id },
+          },
+        },
+      },
+    } = this.props;
     try {
-      const photos = await queries.getPhotosFromAlbum(albumId);
+      const photos = await queries.getPhotosFromAlbum(id);
       this.setState({ photos });
     } catch (error) {
       /* eslint-disable-next-line no-console */
@@ -164,10 +168,15 @@ class Album extends React.Component {
   render() {
     const { photos, photoTempUlr, selectedIndex, currentComments, visible } = this.state;
     const {
-      location: {
-        state: { photoAlbumId, title },
+      history: {
+        location: {
+          state: {
+            photoAlbumId: { id, title },
+          },
+        },
       },
     } = this.props;
+    const photoAlbumId = id;
 
     const SortableItem = SortableElement(({ value }) => {
       const { photoID } = value;
@@ -242,20 +251,18 @@ Album.defaultProps = {
 };
 
 Album.propTypes = {
+  history: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.func,
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
+  location: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   topicPageProp: PropTypes.shape({
     state: PropTypes.shape({
       topicPageProp: PropTypes.string,
       title: PropTypes.string,
-    }),
-  }),
-  location: PropTypes.shape({
-    state: PropTypes.shape({
-      photoAlbumId: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      fileList: PropTypes.shape({
-        indexOf: PropTypes.func.isRequired,
-        slice: PropTypes.func.isRequired,
-      }),
+      photoAlbumId: PropTypes.number,
     }),
   }),
 };

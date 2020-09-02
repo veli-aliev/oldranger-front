@@ -41,6 +41,13 @@ export const Header = styled.header`
   border-bottom: 1px solid #e8e8e8;
 `;
 
+export const WrapperSelect = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
+`;
+
 export const Title = styled.h2`
   position: relative;
   display: inline-block;

@@ -219,8 +219,7 @@ class Queries {
   };
 
   getUserProfileData = async () => {
-    const { data } = await axios.get('/api/profile');
-    return data;
+    return axios.get('/api/profile');
   };
 
   getSubsectionTopics = async (id, page = 0) => {
@@ -261,27 +260,8 @@ class Queries {
     return res;
   };
 
-  addComment = async newComment => {
-    // TODO Перенести в компонент
-    const formData = new FormData();
-    formData.set('idTopic', newComment.idTopic);
-    formData.set('idUser', newComment.idUser);
-    formData.set('text', newComment.text);
-
-    if (newComment.answerID) {
-      formData.set('answerID', newComment.answerID);
-    }
-
-    if (newComment.image1) {
-      formData.set('image1', newComment.image1.originFileObj, newComment.image1.name);
-    }
-
-    if (newComment.image2) {
-      formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
-    }
-
-    const res = await axios.post('/api/comment/add', formData);
-    return res;
+  addComment = async formData => {
+    return axios.post('/api/comment/add', formData);
   };
 
   updateComment = async editingComment => {

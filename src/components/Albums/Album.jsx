@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
-import queries from '../../../serverQueries';
+import queries from '../../serverQueries';
 import UploadPhoto from './UploadPhoto';
 import ModalPhoto from './ModalPhoto';
-
-import { BASE_URL } from '../../../constants';
+import Context from '../Context';
+import { BASE_URL, userRoles } from '../../constants';
 
 const DeletePhotoButton = styled(Button)`
   position: absolute;
@@ -123,13 +123,13 @@ class Album extends React.Component {
       history: {
         location: {
           state: {
-            photoAlbumId: { id },
+            photoAlbumId: { photoAlbumId },
           },
         },
       },
     } = this.props;
     try {
-      const photos = await queries.getPhotosFromAlbum(id);
+      const photos = await queries.getPhotosFromAlbum(photoAlbumId);
       this.setState({ photos });
     } catch (error) {
       /* eslint-disable-next-line no-console */
@@ -175,21 +175,34 @@ class Album extends React.Component {
         },
       },
     } = this.props;
+    const { isMainPage } = this.props;
     const photoAlbumId = id;
 
     const SortableItem = SortableElement(({ value }) => {
       const { photoID } = value;
       return (
-        <ImageWrapper onClick={() => this.showModal(photoID)}>
-          <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${photoID}`} />
-          <DeletePhotoButton
-            type="default"
-            title="Удалить Фотографию"
-            onClick={this.deletePhoto(photoID)}
-          >
-            <Icon type="delete" style={{ color: 'red' }} />
-          </DeletePhotoButton>
-        </ImageWrapper>
+        <Context.Consumer>
+          {({ user: { role } }) => {
+            return (
+              <ImageWrapper onClick={() => this.showModal(photoID)}>
+                <StyledImage
+                  title={value.title}
+                  alt="userPhoto"
+                  src={`${photoTempUlr}${photoID}`}
+                />
+                {role === userRoles.admin && (
+                  <DeletePhotoButton
+                    type="default"
+                    title="Удалить Фотографию"
+                    onClick={this.deletePhoto(photoID)}
+                  >
+                    <Icon type="delete" style={{ color: 'red' }} />
+                  </DeletePhotoButton>
+                )}
+              </ImageWrapper>
+            );
+          }}
+        </Context.Consumer>
       );
     });
 
@@ -211,7 +224,7 @@ class Album extends React.Component {
     return (
       <>
         <AlbumNavigation>
-          <Link to="/profile/albums">Альбомы</Link>
+          <Link to="./">Альбомы</Link>
           <span>{` > ${title}`}</span>
         </AlbumNavigation>
         {photos.length > 0 ? (
@@ -238,7 +251,7 @@ class Album extends React.Component {
           />
         </Modal>
 
-        <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />
+        {!isMainPage && <UploadPhoto albumId={photoAlbumId} loadPhotos={this.loadPhotos} />}
       </>
     );
   }
@@ -247,6 +260,7 @@ class Album extends React.Component {
 Album.defaultProps = {
   topicPageProp: null,
   location: null,
+  isMainPage: false,
 };
 
 Album.propTypes = {
@@ -256,6 +270,7 @@ Album.propTypes = {
     PropTypes.number,
     PropTypes.string,
   ]).isRequired,
+  isMainPage: PropTypes.bool,
   location: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   topicPageProp: PropTypes.shape({
     state: PropTypes.shape({

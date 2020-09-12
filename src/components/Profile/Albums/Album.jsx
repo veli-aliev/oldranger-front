@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Button, Icon, message, Modal } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, Redirect } from 'react-router-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import queries from '../../../serverQueries';
@@ -119,6 +119,10 @@ class Album extends React.Component {
   };
 
   loadPhotos = async () => {
+    // eslint-disable-next-line react/destructuring-assignment
+    if (!this.props.history.location.state) {
+      return;
+    }
     const {
       history: {
         location: {
@@ -165,6 +169,11 @@ class Album extends React.Component {
   };
 
   render() {
+    // eslint-disable-next-line react/destructuring-assignment
+    if (!this.props.history.location.state) {
+      message.error('Такого альбома нет.');
+      return <Redirect to="/albums/" />;
+    }
     const { photos, photoTempUlr, selectedIndex, currentComments, visible } = this.state;
     const {
       history: {

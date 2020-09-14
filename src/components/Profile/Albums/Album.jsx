@@ -119,8 +119,12 @@ class Album extends React.Component {
   };
 
   loadPhotos = async () => {
-    // eslint-disable-next-line react/destructuring-assignment
-    if (!this.props.history.location.state) {
+    const {
+      history: {
+        location: { state },
+      },
+    } = this.props;
+    if (!state) {
       return;
     }
     const {
@@ -169,8 +173,12 @@ class Album extends React.Component {
   };
 
   render() {
-    // eslint-disable-next-line react/destructuring-assignment
-    if (!this.props.history.location.state) {
+    const {
+      history: {
+        location: { state },
+      },
+    } = this.props;
+    if (!state) {
       message.error('Такого альбома нет.');
       return <Redirect to="/albums/" />;
     }

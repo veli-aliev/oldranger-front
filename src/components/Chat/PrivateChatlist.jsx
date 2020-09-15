@@ -10,7 +10,7 @@ import {
   AvatarSection,
   MessageSection,
 } from './styled';
-// import queries from '../../serverQueries';
+import queries from '../../serverQueries';
 import { BASE_URL as url } from '../../constants';
 import testArray from './testData';
 
@@ -50,7 +50,7 @@ export default function PrivateChatlist() {
 
   return (
     <PrivateChatContainer>
-      {/* <button onClick={queries.getPrivateMessages}>запрос</button> */}
+      <button onClick={queries.getPrivateMessages}>запрос</button>
       {renderChatItems(testArray)}
     </PrivateChatContainer>
   );

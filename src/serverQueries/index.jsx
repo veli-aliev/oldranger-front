@@ -454,7 +454,7 @@ class Queries {
 
   getPrivateMessages = async () => {
     const res = await axios.get('/api/private/allchats');
-    // console.log(res, 'RES');
+    console.log(res, 'RES');
     return res;
   };
 

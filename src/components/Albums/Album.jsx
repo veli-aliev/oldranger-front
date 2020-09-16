@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Row, Button, Icon, message, Modal } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -180,29 +180,22 @@ class Album extends React.Component {
 
     const SortableItem = SortableElement(({ value }) => {
       const { photoID } = value;
+      const {
+        user: { role },
+      } = useContext(Context);
       return (
-        <Context.Consumer>
-          {({ user: { role } }) => {
-            return (
-              <ImageWrapper onClick={() => this.showModal(photoID)}>
-                <StyledImage
-                  title={value.title}
-                  alt="userPhoto"
-                  src={`${photoTempUlr}${photoID}`}
-                />
-                {role === userRoles.admin && (
-                  <DeletePhotoButton
-                    type="default"
-                    title="Удалить Фотографию"
-                    onClick={this.deletePhoto(photoID)}
-                  >
-                    <Icon type="delete" style={{ color: 'red' }} />
-                  </DeletePhotoButton>
-                )}
-              </ImageWrapper>
-            );
-          }}
-        </Context.Consumer>
+        <ImageWrapper onClick={() => this.showModal(photoID)}>
+          <StyledImage title={value.title} alt="userPhoto" src={`${photoTempUlr}${photoID}`} />
+          {role === userRoles.admin && (
+            <DeletePhotoButton
+              type="default"
+              title="Удалить Фотографию"
+              onClick={this.deletePhoto(photoID)}
+            >
+              <Icon type="delete" style={{ color: 'red' }} />
+            </DeletePhotoButton>
+          )}
+        </ImageWrapper>
       );
     });
 

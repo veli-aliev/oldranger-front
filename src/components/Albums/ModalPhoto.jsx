@@ -8,8 +8,8 @@ import { Comment, List, Tooltip, Popover } from 'antd';
 import { Form, SubmitButton, Input } from 'formik-antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { formatDateToLocalTimeZone } from '../../../utils';
-import UserAvatar from '../../commons/UserAvatar';
+import { formatDateToLocalTimeZone } from '../../utils';
+import UserAvatar from '../commons/UserAvatar';
 
 const validationSchema = Yup.object({ text: Yup.string().required('Введите текст комментария') });
 const initialValues = { text: '' };
@@ -87,22 +87,18 @@ function ModalPhoto(props) {
     </>
   );
 }
-
 const StyledImage = styled.img`
   object-fit: cover;
   object-position: top center;
   width: 100%;
 `;
-
 ModalPhoto.propTypes = {
   idPhoto: PropTypes.number.isRequired,
   currentComments: PropTypes.arrayOf(PropTypes.object),
   src: PropTypes.string.isRequired,
   addComment: PropTypes.func.isRequired,
 };
-
 ModalPhoto.defaultProps = {
   currentComments: [],
 };
-
 export default withRouter(ModalPhoto);

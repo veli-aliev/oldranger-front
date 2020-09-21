@@ -27,7 +27,6 @@ const CommentForm = ({
   onSubmitError,
   startText = '',
 }) => {
-
   const [files, setFiles] = useState([]);
 
   const handleAddFile = info => {

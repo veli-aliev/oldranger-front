@@ -27,10 +27,11 @@ const CommentForm = ({
   onSubmitError,
   startText = '',
 }) => {
+
   const [files, setFiles] = useState([]);
 
   const handleAddFile = info => {
-    setFiles({ files: info.fileList });
+    setFiles(info.fileList);
     if (info.file.status !== 'removed') {
       message.success(`Файл ${info.file.name} успешно добавлен`);
     }

@@ -31,8 +31,7 @@ class MainPage extends React.Component {
 
   render() {
     const { rootSections, actualTopics, errorOnLoading } = this.state;
-
-    const topics = (
+const topics = (
       <>
         {actualTopics.length > 0 && rootSections.length > 0 ? (
           <>
@@ -40,7 +39,7 @@ class MainPage extends React.Component {
               itemComponent={item => <TopicsListItem topicData={item} />}
               items={actualTopics}
               title="Актуальные темы"
-            />
+            />       
             {rootSections.map(section => (
               <SubSectionsList section={section} key={section.section.id} />
             ))}

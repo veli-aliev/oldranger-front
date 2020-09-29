@@ -294,6 +294,7 @@ class Queries {
     return res.status;
   };
 
+  /* -- -- */
   addCommentToPhoto = async params => {
     return axios.post('/api/photo/comment/add', null, {
       params,

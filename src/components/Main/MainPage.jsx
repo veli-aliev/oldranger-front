@@ -31,7 +31,6 @@ class MainPage extends React.Component {
 
   render() {
     const { rootSections, actualTopics, errorOnLoading } = this.state;
-
     const topics = (
       <>
         {actualTopics.length > 0 && rootSections.length > 0 ? (

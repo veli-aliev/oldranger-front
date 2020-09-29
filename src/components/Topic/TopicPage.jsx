@@ -123,21 +123,6 @@ class TopicPage extends React.Component {
   };
 
   handleSubmitComment = async (messageText, resetForm) => {
-    let errorMsg = null;
-    if (!messageText.length) {
-      errorMsg = 'Сообщение не может быть пустым';
-    }
-    if (messageText.length > 50000) {
-      errorMsg = 'Превышна максимальная длина сообщения';
-    }
-    if (errorMsg) {
-      notification.open({
-        message: errorMsg,
-        icon: <GoldIcon type="warning" />,
-      });
-      return;
-    }
-
     this.setState({ uploading: true });
     const { topic, answerId, files } = this.state;
     const { user } = this.context;
@@ -145,7 +130,7 @@ class TopicPage extends React.Component {
     const messageComentsEntity = {
       idTopic: topic.id,
       idUser: user.id,
-      text: messageText.trim(),
+      text: messageText.length ? messageText : '<br>',
     };
 
     if (answerId) {

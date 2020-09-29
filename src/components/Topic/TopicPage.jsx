@@ -64,7 +64,10 @@ class TopicPage extends React.Component {
           });
         })
         .catch(() => {
-          this.setState({ error: true, loading: false });
+          this.setState({ error: true });
+        })
+        .finally(() => {
+          this.setState({ loading: false });
         });
     } else {
       queries

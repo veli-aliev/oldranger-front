@@ -254,14 +254,17 @@ const formikTopicCreate = withFormik({
     fileList.forEach(file => {
       formData.append('photos', file);
     });
-    const response = await queries.createNewTopic(formData);
-    if (response.status === 200) {
+    try {
+      const response = await queries.createNewTopic(formData);
       setSubmitting(false);
       history.push({
-        pathname: `/topic/${response.data.id}`,
-        state: { imagesToUpload, photoAlbumIds },
+        pathname: `/topic/${response.id}`,
+        state: { photoAlbumId: response.photoAlbum },
       });
       resetForm();
+    } catch (error) {
+      /* eslint-disable-next-line no-console */
+      console.error(error.response);
     }
   },
 })(TopicCreate);

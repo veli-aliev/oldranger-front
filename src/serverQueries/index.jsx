@@ -13,7 +13,7 @@ class Queries {
   }
 
   handleSuccess = response => {
-    return response?.data;
+    return response.data;
   };
 
   handleError = error => {
@@ -37,8 +37,9 @@ class Queries {
     return res;
   };
 
-  logOut = async () => {
+  logOut = async history => {
     const res = await axios.get('api/logout');
+    await history.push('/');
     return res;
   };
 
@@ -111,6 +112,10 @@ class Queries {
   updateTagsTree = async params => {
     const res = await axios.put(`/api/tags/node/update`, {}, { params });
     return res;
+  };
+
+  updateTreeAll = async tree => {
+    return axios.put(`/api/tags/node/updateAll`, tree);
   };
 
   deleteTags = async params => {
@@ -211,13 +216,11 @@ class Queries {
   };
 
   getProfileData = async () => {
-    const res = await axios.get('/api/currentUser');
-    return res;
+    return axios.get('/api/currentUser');
   };
 
   getUserProfileData = async () => {
-    const { data } = await axios.get('/api/profile');
-    return data;
+    return axios.get('/api/profile');
   };
 
   getSubsectionTopics = async (id, page = 0) => {
@@ -258,27 +261,8 @@ class Queries {
     return res;
   };
 
-  addComment = async newComment => {
-    // TODO Перенести в компонент
-    const formData = new FormData();
-    formData.set('idTopic', newComment.idTopic);
-    formData.set('idUser', newComment.idUser);
-    formData.set('text', newComment.text);
-
-    if (newComment.answerID) {
-      formData.set('answerID', newComment.answerID);
-    }
-
-    if (newComment.image1) {
-      formData.set('image1', newComment.image1.originFileObj, newComment.image1.name);
-    }
-
-    if (newComment.image2) {
-      formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
-    }
-
-    const res = await axios.post('/api/comment/add', formData);
-    return res;
+  addComment = async formData => {
+    return axios.post('/api/comment/add', formData);
   };
 
   updateComment = async editingComment => {
@@ -310,11 +294,11 @@ class Queries {
     return res.status;
   };
 
+  /* -- -- */
   addCommentToPhoto = async params => {
-    const res = await axios.post('/api/photo/comment/add', null, {
+    return axios.post('/api/photo/comment/add', null, {
       params,
     });
-    return res.data;
   };
 
   getPhotoWithData = async id => {
@@ -349,7 +333,7 @@ class Queries {
 
   getAllAlbums = async () => {
     const res = await axios.get('/api/albums/all');
-    return res.data;
+    return res;
   };
 
   createNewAlbum = async data => {
@@ -374,7 +358,7 @@ class Queries {
 
   getSecuredPhoto = async id => {
     const res = await axios.get(`/api/securedPhoto/photoFromAlbum/${id}`);
-    return res.data;
+    return res;
   };
 
   addPhotosInAlbum = async (albumId, photosArr) => {

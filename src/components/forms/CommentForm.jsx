@@ -1,8 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { Button, Form } from 'antd';
+import { Button, Form, message } from 'antd';
 import { Formik } from 'formik';
+import TopicPhotoList from '../Topic/TopicPhotoList';
 import { EditorField, FormItemLabel } from './fields';
 
 const validationSchema = Yup.object({
@@ -26,6 +27,15 @@ const CommentForm = ({
   onSubmitError,
   startText = '',
 }) => {
+  const [files, setFiles] = useState([]);
+
+  const handleAddFile = info => {
+    setFiles(info.fileList);
+    if (info.file.status !== 'removed') {
+      message.success(`Файл ${info.file.name} успешно добавлен`);
+    }
+  };
+
   const onSubmitWrapper = useCallback(
     () => async (data, { resetForm, setSubmitting }) => {
       try {
@@ -57,6 +67,13 @@ const CommentForm = ({
             <FormItemLabel wrapperCol={{ span: 24 }} name="text">
               <EditorField name="text" className="comment-editor" modules={editorModules} />
             </FormItemLabel>
+            <Form.Item>
+              <TopicPhotoList
+                handleChangePicturesState={handleAddFile}
+                fileList={files}
+                canUpload
+              />
+            </Form.Item>
             <Form.Item>
               <Button
                 type="primary"

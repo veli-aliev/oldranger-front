@@ -1,7 +1,6 @@
 import React from 'react';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
-import { Spin } from 'antd';
 import 'antd/dist/antd.css';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -16,6 +15,7 @@ import {
   SearchRoute,
   ArticlesRoute,
   ChatRoute,
+  AlbumsRoute,
 } from './routes';
 import Context from './components/Context';
 import Header from './components/layouts/Header';
@@ -25,8 +25,6 @@ import PrivateChat from './components/Chat/PrivateChat';
 import AdminPanel from './components/AdminPanel';
 import ProfileAnotherUser from './components/Profile/ProfileAnotherUser';
 import { BASE_URL } from './constants';
-import MainAlbums from './components/hoc/MainAlbums';
-import Albums from './components/Profile/Albums/Albums';
 import AuthorizationStatusEmitter from './EventEmitter/EventEmmiter';
 
 const url = BASE_URL;
@@ -49,11 +47,7 @@ class App extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { isLogin } = this.state;
-    if (isLogin) {
-      await this.connect();
-    }
-    this.сonnect();
+    this.connect();
 
     AuthorizationStatusEmitter.subscribe(isAuthorized => {
       if (!isAuthorized) {
@@ -72,15 +66,12 @@ class App extends React.Component {
       const socket = await new SockJS(`${url}ws`, null, {});
       this.stompClient = await Stomp.over(socket);
       await this.stompClient.connect({}, this.onConnected);
+      this.setState({ connect: true });
     }
   };
 
   changeJoinChat = isJoin => {
     this.setState({ isJoinChat: isJoin, countMessages: 0 });
-  };
-
-  сonnect = () => {
-    this.setState({ connect: true });
   };
 
   onConnected = () => {
@@ -115,9 +106,9 @@ class App extends React.Component {
     this.setState({ user: { ...data } });
   };
 
-  logOut = async () => {
+  logOut = async history => {
     localStorage.removeItem('user');
-    queries.logOut();
+    queries.logOut(history);
     this.disconnect();
     this.setState({ isLogin: false, user: {} });
   };
@@ -129,7 +120,6 @@ class App extends React.Component {
       user,
       countMessages,
       stompClient,
-      connect,
     } = this.state;
     const {
       history: {
@@ -162,30 +152,21 @@ class App extends React.Component {
           path="/admin-panel"
           component={AdminPanel}
         />
-        <PrivateRoute
-          isAllowed={isLogin}
-          exact
-          path="/albums"
-          component={() => MainAlbums(Albums)}
-        />
         <TopicRoute isLogin={isLogin} role={role} />
         <SubsectionRoute />
         <SearchRoute />
         <ArticleDraft />
         <ArticlesRoute isLogin={isLogin} role={role} />
-        {connect ? (
-          <ChatRoute
-            path={state === 'privateChat' ? '/private/:id' : '/'}
-            countMessages={countMessages}
-            isLogin={isLogin}
-            changeJoinChat={this.changeJoinChat}
-            stompClient={stompClient}
-            user={user}
-            component={state === 'privateChat' ? PrivateChat : ChatAuth}
-          />
-        ) : (
-          <Spin />
-        )}
+        <AlbumsRoute isLogin={isLogin} role={role} />
+        <ChatRoute
+          path={state === 'privateChat' ? '/private/:id' : '/'}
+          countMessages={countMessages}
+          isLogin={isLogin}
+          changeJoinChat={this.changeJoinChat}
+          stompClient={stompClient}
+          user={user}
+          component={state === 'privateChat' ? PrivateChat : ChatAuth}
+        />
       </Context.Provider>
     );
   }
@@ -194,7 +175,7 @@ class App extends React.Component {
 App.propTypes = {
   history: PropTypes.shape({
     location: PropTypes.shape({
-      state: PropTypes.string,
+      state: PropTypes.object,
     }),
   }).isRequired,
 };

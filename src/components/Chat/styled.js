@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { Badge } from 'antd';
+import { Link } from 'react-router-dom';
 
 const Ul = styled.ul`
   list-style: none;
@@ -9,6 +10,7 @@ const Ul = styled.ul`
   padding: 0 20px 0 20px;
   width: 80%;
   border-left: 1px solid #e8e8e8;
+  badding-bottom: 114px;
 `;
 
 const Li = styled.li`
@@ -39,6 +41,13 @@ export const Header = styled.header`
   padding: 15px;
   padding-bottom: 0;
   border-bottom: 1px solid #e8e8e8;
+`;
+
+export const WrapperSelect = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
 `;
 
 export const Title = styled.h2`
@@ -116,7 +125,7 @@ export const User = styled(Li)`
   padding: 5px;
 `;
 
-export const UserLink = styled.a`
+export const UserLink = styled(Link)`
   color: #333;
   &:hover {
     color: #128ff2;
@@ -217,8 +226,11 @@ export const Arrow = styled.span`
 `;
 
 export const Form = styled.form`
-  display: ${({ minimizeChat, fixedChat }) => (minimizeChat && fixedChat ? 'none' : 'block')};
+  display: ${({ minimizeChat, fixedChat }) => (minimizeChat && fixedChat ? 'none' : 'flex')};
   padding: 20px;
+  flex-direction: column;
+  margin-left: auto;
+  width: 80%;
 `;
 
 export const Footer = styled.footer`

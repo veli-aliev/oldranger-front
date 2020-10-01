@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Badge } from 'antd';
 import logo from '../../media/img/logo.png';
@@ -77,6 +77,7 @@ const MenuUserFirstRow = styled.div`
 const Header = ({ countMessages, location: { pathname } }) => {
   const [isForumHeader, setHeaderState] = useState(pathname === '/');
 
+  const history = useHistory();
   const switchForumSitePart = bool => {
     setHeaderState(bool);
   };
@@ -137,7 +138,12 @@ const Header = ({ countMessages, location: { pathname } }) => {
                     <Button>
                       <Link to="/profile">Профиль</Link>
                     </Button>
-                    <Button type="danger" onClick={logOut}>
+                    <Button
+                      type="danger"
+                      onClick={() => {
+                        logOut(history);
+                      }}
+                    >
                       Выйти
                     </Button>
                   </>

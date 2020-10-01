@@ -9,7 +9,13 @@ import { dateToDateDistance } from '../../utils';
 
 const TopicsListItem = ({ topicData, history }) => {
   const topicClickHandler = () => {
-    history.push(`/topic/${topicData.topic.id}`);
+    const {
+      topic: { photoAlbum },
+    } = topicData;
+    history.push({
+      pathname: `/topic/${topicData.topic.id}`,
+      state: { photoAlbumId: photoAlbum },
+    });
   };
   return (
     <ClickableItemWrapper clickHandler={topicClickHandler}>

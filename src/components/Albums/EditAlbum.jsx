@@ -3,9 +3,9 @@ import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { message, Button, Input, Modal } from 'antd';
 import styled from 'styled-components';
-import queries from '../../../serverQueries';
+import queries from '../../serverQueries';
 import { StyledImage } from './Album';
-import { BASE_URL } from '../../../constants';
+import { BASE_URL } from '../../constants';
 
 const EditSection = styled.div`
   justify-content: space-around;
@@ -166,9 +166,16 @@ class EditAlbum extends React.Component {
     const {
       location: { state },
     } = this.props;
+    const { history } = this.props;
     // TODO: сделать нормально
     const { photoAlbumId } = state;
     const { photoTempUlr, photos, photosToDelete, thumbImageId, visible, title } = this.state;
+    const newPhotoAlbumId = {
+      id: photoAlbumId,
+      title,
+      thumbImageId,
+    };
+
     return (
       <div>
         <Modal
@@ -187,13 +194,13 @@ class EditAlbum extends React.Component {
         </Modal>
 
         <div>
-          <Link to="/profile/albums">Альбомы </Link>
+          <Link to="/profile/albums">Альбooooомы </Link>
           {'>'}
           <Link
-            to={{
+            to={history.push({
               pathname: `/profile/albums/${photoAlbumId}`,
-              state,
-            }}
+              state: { photoAlbumId: newPhotoAlbumId },
+            })}
           >
             {' '}
             {`${title}`}{' '}

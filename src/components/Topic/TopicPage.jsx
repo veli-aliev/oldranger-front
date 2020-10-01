@@ -4,7 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { Breadcrumb, message, notification, Spin, Typography, Button, Result } from 'antd';
 import Comment from 'antd/es/comment';
 import { Markup } from 'interweave';
-import Album from '../Profile/Albums/Album';
+import Album from '../Albums/Album';
 import TopicCommentsList from './TopicCommentsList';
 import queries from '../../serverQueries';
 import { GoldIcon, ReplyFloatButton, TopicCommentReplyAlert, TopicReplyWarning } from './styled';
@@ -85,6 +85,26 @@ class TopicPage extends React.Component {
     this.replyForm.focus();
   };
 
+  transformComment = newComment => {
+    const formData = new FormData();
+    formData.set('idTopic', newComment.idTopic);
+    formData.set('idUser', newComment.idUser);
+    formData.set('text', newComment.text);
+
+    if (newComment.answerID) {
+      formData.set('answerID', newComment.answerID);
+    }
+
+    if (newComment.image1) {
+      formData.set('image1', newComment.image1.originFileObj, newComment.image1.name);
+    }
+
+    if (newComment.image2) {
+      formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
+    }
+    return formData;
+  };
+
   handleQuoteComment = comment => () => {
     const { isLogin } = this.context;
     if (isLogin) {
@@ -103,15 +123,6 @@ class TopicPage extends React.Component {
   };
 
   handleSubmitComment = async (messageText, resetForm) => {
-    if (messageText === '') {
-      notification.open({
-        message: 'Сообщение не может быть пустым',
-        description: 'Максимальное количество символов 500000',
-        icon: <GoldIcon type="warning" />,
-      });
-      return;
-    }
-
     this.setState({ uploading: true });
     const { topic, answerId, files } = this.state;
     const { user } = this.context;
@@ -119,7 +130,7 @@ class TopicPage extends React.Component {
     const messageComentsEntity = {
       idTopic: topic.id,
       idUser: user.id,
-      text: messageText.trim(),
+      text: messageText.length ? messageText : '<br>',
     };
 
     if (answerId) {
@@ -127,14 +138,21 @@ class TopicPage extends React.Component {
     }
 
     [messageComentsEntity.image1, messageComentsEntity.image2] = files;
+    const {
+      topic: { photoAlbum },
+    } = this.state;
     try {
-      await queries.addComment(messageComentsEntity);
+      await queries.addComment(this.transformComment(messageComentsEntity));
       const lastPage = Math.floor(topic.messageCount / 10 + 1);
-      history.push(`${history.location.pathname}?page=${lastPage}`);
       this.getTopics(lastPage);
       message.success('Ваше сообщение успешно добавлено');
       this.setState({ reply: null, answerId: null, files: [], uploading: false });
       resetForm();
+      history.push({
+        pathname: `${history.location.pathname}`,
+        search: `page=${lastPage}`,
+        state: { photoAlbumId: photoAlbum },
+      });
     } catch {
       message.error('Похоже, что-то не так. Сообщение добавить не удалось.');
       this.setState({ uploading: false });

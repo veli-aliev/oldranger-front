@@ -142,6 +142,7 @@ class Queries {
     return res;
   };
 
+  /* -----my------ */
   createArticleComment = async (data, params) => {
     const res = await axios.post('/api/article/comment/add', data, {
       params,
@@ -260,8 +261,10 @@ class Queries {
     return res;
   };
 
+  /* -------- */
   addComment = async formData => {
-    return axios.post('/api/comment/add', formData);
+    const res = axios.post('/api/comment/add', formData);
+    return res;
   };
 
   updateComment = async editingComment => {
@@ -293,7 +296,6 @@ class Queries {
     return res.status;
   };
 
-  /* -- -- */
   addCommentToPhoto = async params => {
     return axios.post('/api/photo/comment/add', null, {
       params,

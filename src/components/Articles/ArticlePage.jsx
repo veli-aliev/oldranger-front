@@ -15,7 +15,6 @@ const buildCommentTreeFromFlat = createTreeBuildFunction('id', 'parentId');
 class ArticlePage extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       loading: true,
       error: null,
@@ -29,8 +28,14 @@ class ArticlePage extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
     this.fetchArticle();
   }
+
+  // updateData = (value) => {
+  //   console.log(value);
+  //   this.setState({ photos: value })
+  // }
 
   fetchArticle = async () => {
     // eslint-disable-next-line react/destructuring-assignment,react/prop-types
@@ -82,6 +87,7 @@ class ArticlePage extends React.Component {
       params.answerId = answerId;
     }
     const comment = await queries.createArticleComment(text, params);
+
     this.setState(
       ({ flatComments }) => ({
         flatComments: [...flatComments, comment],
@@ -220,6 +226,7 @@ class ArticlePage extends React.Component {
       commentWithOpenEditor,
       albumId,
     } = this.state;
+    console.log(this.state);
     if (error || loading) {
       return (
         <StyledCenteredContainer>

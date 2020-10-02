@@ -20,6 +20,7 @@ const editorModules = {
 };
 
 const CommentForm = ({
+  // updateData,
   initialValues,
   buttonText,
   onSubmit,
@@ -28,7 +29,6 @@ const CommentForm = ({
   startText = '',
 }) => {
   const [files, setFiles] = useState([]);
-
   const handleAddFile = info => {
     setFiles(info.fileList);
     if (info.file.status !== 'removed') {
@@ -36,6 +36,8 @@ const CommentForm = ({
     }
   };
 
+  // updateData(a);
+  console.log(files);
   const onSubmitWrapper = useCallback(
     () => async (data, { resetForm, setSubmitting }) => {
       try {
@@ -61,6 +63,7 @@ const CommentForm = ({
       validationSchema={validationSchema}
       onSubmit={onSubmitWrapper()}
     >
+      {}
       {({ touched, errors, handleSubmit, submitting }) => {
         return (
           <Form onSubmit={handleSubmit} labelAlign="left">

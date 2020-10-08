@@ -20,7 +20,7 @@ const editorModules = {
 };
 
 const CommentForm = ({
-  // updateData,
+  updateData,
   initialValues,
   buttonText,
   onSubmit,
@@ -29,6 +29,7 @@ const CommentForm = ({
   startText = '',
 }) => {
   const [files, setFiles] = useState([]);
+
   const handleAddFile = info => {
     setFiles(info.fileList);
     if (info.file.status !== 'removed') {
@@ -36,11 +37,10 @@ const CommentForm = ({
     }
   };
 
-  // updateData(a);
-  console.log(files);
   const onSubmitWrapper = useCallback(
     () => async (data, { resetForm, setSubmitting }) => {
       try {
+        updateData(files);
         const res = await onSubmit(data);
         setSubmitting(false);
         resetForm();
@@ -111,6 +111,7 @@ CommentForm.propTypes = {
   onSubmitSuccess: PropTypes.func,
   onSubmitError: PropTypes.func,
   startText: PropTypes.string,
+  updateData: PropTypes.func.isRequired,
 };
 
 export default CommentForm;

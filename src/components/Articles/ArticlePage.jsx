@@ -24,18 +24,19 @@ class ArticlePage extends React.Component {
       commentWithOpenEditor: null,
       eventType: 'reply',
       albumId: null,
+      photos: '',
     };
   }
 
   componentDidMount() {
-    console.log(this.props);
     this.fetchArticle();
   }
 
-  // updateData = (value) => {
-  //   console.log(value);
-  //   this.setState({ photos: value })
-  // }
+  updateData = files => {
+    this.setState({
+      photos: files,
+    });
+  };
 
   fetchArticle = async () => {
     // eslint-disable-next-line react/destructuring-assignment,react/prop-types
@@ -209,8 +210,13 @@ class ArticlePage extends React.Component {
 
   renderCommentForm() {
     const { isLogin } = this.context;
+    const { photos } = this.state;
     return isLogin ? (
-      <CommentForm onSubmit={this.handleCommentFormSubmit()} />
+      <CommentForm
+        onSubmit={this.handleCommentFormSubmit()}
+        updateData={this.updateData}
+        photos={photos}
+      />
     ) : (
       <div>Только авторизированные пользователи могут оставлять комментарии</div>
     );
@@ -226,7 +232,7 @@ class ArticlePage extends React.Component {
       commentWithOpenEditor,
       albumId,
     } = this.state;
-    console.log(this.state);
+
     if (error || loading) {
       return (
         <StyledCenteredContainer>

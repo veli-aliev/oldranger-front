@@ -73,9 +73,10 @@ class ArticlePage extends React.Component {
     } catch (error) {}
   };
 
-  postComment = async (answerId, text) => {
+  postComment = async (answerId, commentText) => {
     const {
       article: { id },
+      photos,
     } = this.state;
 
     const {
@@ -87,7 +88,35 @@ class ArticlePage extends React.Component {
     if (answerId) {
       params.answerId = answerId;
     }
-    const comment = await queries.createArticleComment(text, params);
+
+    const data = {
+      idArticle: id,
+      idUser,
+      commentText,
+      image1: photos[0],
+      image2: photos[1],
+    };
+    const transformComment = newComment => {
+      const formData = new FormData();
+      formData.set('idArticle', newComment.idArticle);
+      formData.set('idUser', newComment.idUser);
+      formData.set('commentText', newComment.commentText);
+
+      if (newComment.answerID) {
+        formData.set('answerID', newComment.answerID);
+      }
+
+      if (newComment.image1) {
+        formData.set('image1', newComment.image1.originFileObj, newComment.image1.name);
+      }
+
+      if (newComment.image2) {
+        formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
+      }
+      return formData;
+    };
+
+    const comment = await queries.createArticleComment(transformComment(data), params);
 
     this.setState(
       ({ flatComments }) => ({
@@ -98,9 +127,10 @@ class ArticlePage extends React.Component {
         this.rebuildTree(); // перестраиваем дерево коментов
       }
     );
+    this.fetchArticle();
   };
 
-  editComment = async (commentId, text, parentId) => {
+  editComment = async (commentId, commentText, parentId) => {
     const {
       article: { id: idArticle },
     } = this.state;
@@ -114,7 +144,7 @@ class ArticlePage extends React.Component {
       data.answerId = parentId;
     }
 
-    const updatedComment = await queries.updateArticleComment(text, data);
+    const updatedComment = await queries.updateArticleComment(commentText, data);
     this.setState(
       ({ flatComments }) => {
         const comments = flatComments.reduce(
@@ -248,11 +278,11 @@ class ArticlePage extends React.Component {
         <Article articleInfo={article} />
         {albumId ? <ArticlesPhotoAlbum photoAlbumId={albumId} /> : null}
         <div>Комментарии ({commentsCount})</div>
-        {commentsTree.map(comment => (
+        {commentsTree.map(item => (
           <ArticleComment
             commentWithOpenEditor={commentWithOpenEditor}
-            key={comment.key}
-            comment={comment}
+            key={item.key}
+            comment={item}
             onOpenEditorClick={this.handleOpenEditorClick}
             onSubmitCommentForm={this.handleCommentFormSubmit}
             onDeleteComment={this.handleDeleteComment}

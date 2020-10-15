@@ -54,7 +54,7 @@ const CommentForm = ({
         }
       }
     },
-    [onSubmit, onSubmitSuccess, onSubmitError]
+    [files, onSubmit, onSubmitSuccess, onSubmitError]
   );
 
   return (

@@ -4,11 +4,12 @@ import ru from 'date-fns/locale/ru';
 import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import { Comment, Tooltip, Popover } from 'antd';
 import Context from '../Context';
-import roles from '../../constants';
+import roles, { SECURED_ALBUM_URL } from '../../constants';
 import { CommentContentView } from '../commons/HTMLContentViews';
 import TopicUserInfo from '../Topic/TopicUserInfo';
 import UserAvatar from '../commons/UserAvatar';
 import CommentForm from '../forms/CommentForm';
+import TopicPhotoList from '../Topic/TopicCommentsList';
 
 const ArticleComment = props => {
   const {
@@ -28,7 +29,9 @@ const ArticleComment = props => {
     author,
     nested,
     deleted,
+    photos,
   } = comment;
+
   const { user } = useContext(Context);
 
   const actionsArr = [];
@@ -84,6 +87,16 @@ const ArticleComment = props => {
     />
   ));
 
+  const convertedImages = photos.map(photo => {
+    const url = `${SECURED_ALBUM_URL}${photo.id}?type=original`;
+    return {
+      uid: `-${String(photo.id)}`,
+      url,
+      name: `Photo_name_${photo.description}`,
+      status: 'done',
+    };
+  });
+
   return (
     <Comment
       actions={deleted ? null : actionsArr}
@@ -116,6 +129,7 @@ const ArticleComment = props => {
         <CommentForm startText="" onSubmit={onSubmitCommentForm(commentId, parentId)} />
       )}
       {nestedComments}
+      {convertedImages.length > 0 && <TopicPhotoList fileList={convertedImages} />}
     </Comment>
   );
 };
@@ -133,6 +147,7 @@ ArticleComment.propTypes = {
     commentText: PropTypes.string,
     deleted: PropTypes.bool,
     parentId: PropTypes.number,
+    photos: PropTypes.array.isRequired,
   }).isRequired,
   // eslint-disable-next-line react/require-default-props
   commentWithOpenEditor: PropTypes.number,

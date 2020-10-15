@@ -132,26 +132,48 @@ class Queries {
     return res;
   };
 
-  getArticleById = async params => {
-    const res = await axios.get(`/api/article/comments`, { params });
-    return res;
-  };
-
   getArticleDraft = async () => {
     const res = await axios.get('/api/article/drafts');
     return res;
   };
 
   /* -----my------ */
-  createArticleComment = async (data, params) => {
-    const res = await axios.post('/api/article/comment/add', data, {
-      params,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
+  createArticleComment = async data => {
+    const res = await axios.post('/api/article/comment/add', data);
+    return res;
+  };
+
+  getArticleById = async params => {
+    const res = await axios.get(`/api/article/comments`, { params });
+    return res;
+  };
+
+  /* --------!!!!!!!!!!!!!!!!!!!!!!!---------- */
+  getTopic = async (id, page, limit) => {
+    const res = await axios.get(`/api/topic/${id}`, {
+      params: { page, limit },
     });
     return res;
   };
+
+  // /*------ test -------*/
+  // createArticleComment = async (data) => {
+  //   const { idArticle, idUser, commentText, image1, image2 } = data;
+  //   console.log(data);
+  //   let formData = new FormData();
+  //   formData.append("idArticle", idArticle);
+  //   formData.append("idUser", idUser);
+  //   formData.append("commentText", commentText);
+  //   formData.append("image1", JSON.stringify(image1.originFileObj));
+  //   formData.append("image2", image2);
+  //   const res = await axios.post('/api/article/comment/add', formData);
+  //   return res;
+  // };
+
+  // test = async () => {
+  //   const res = await axios.get('/api/securedPhoto/photoFromAlbum/41?type=original');
+  //   return res;
+  // }
 
   updateArticleComment = async (data, params) => {
     const res = await axios.put('/api/article/comment/update', data, {
@@ -185,13 +207,6 @@ class Queries {
 
   getProfileComments = async page => {
     const res = await axios.get(`/api/comments/`, { params: { page } });
-    return res;
-  };
-
-  getTopic = async (id, page, limit) => {
-    const res = await axios.get(`/api/topic/${id}`, {
-      params: { page, limit },
-    });
     return res;
   };
 

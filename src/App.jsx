@@ -32,6 +32,20 @@ const url = BASE_URL;
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    AuthorizationStatusEmitter.subscribe(isAuthorized => {
+      if (!isAuthorized) {
+        localStorage.clear();
+        this.setState({
+          isLogin: false,
+        });
+        this.disconnect();
+        return;
+      }
+
+      this.connect();
+    });
+
     let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
       const user = JSON.parse(localStorage.getItem('user') || {});
@@ -42,23 +56,11 @@ class App extends React.Component {
         countMessages: 0,
         stompClient: null,
       };
+
+      AuthorizationStatusEmitter.emit(true);
     }
     this.state = { ...initialState };
   }
-
-  componentDidMount = async () => {
-    this.connect();
-
-    AuthorizationStatusEmitter.subscribe(isAuthorized => {
-      if (!isAuthorized) {
-        localStorage.clear();
-        this.setState({
-          isLogin: false,
-        });
-        this.disconnect();
-      }
-    });
-  };
 
   connect = async () => {
     const currentUser = await queries.getCurrentUser();
@@ -109,8 +111,8 @@ class App extends React.Component {
   logOut = async history => {
     localStorage.removeItem('user');
     queries.logOut(history);
-    this.disconnect();
     this.setState({ isLogin: false, user: {} });
+    AuthorizationStatusEmitter.emit(false);
   };
 
   render() {
@@ -139,7 +141,7 @@ class App extends React.Component {
       >
         <Header countMessages={countMessages} />
         <CommonRoute />
-        <AuthRoute isLogin={isLogin} connect={this.connect} />
+        <AuthRoute isLogin={isLogin} connect={() => AuthorizationStatusEmitter.emit(true)} />
         <PrivateRoute isAllowed={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
           isAllowed={isLogin}

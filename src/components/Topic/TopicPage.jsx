@@ -271,8 +271,24 @@ class TopicPage extends React.Component {
     return albumProps;
   };
 
+  sortMessages = messages => {
+    const resolveArr = [];
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].replyText === null) {
+        resolveArr.push(messages[i]);
+      }
+      for (let j = 1; j < messages.length; j++) {
+        if (messages[i].commentText === messages[j].replyText) {
+          resolveArr.push(messages[j]);
+        }
+      }
+    }
+    return resolveArr;
+  };
+
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
+    const messagesArray = this.sortMessages(messages);
     const { userProfile } = this.props;
     const { isLogin } = this.context;
     const avatar = userProfile.avatar ? (
@@ -316,7 +332,7 @@ class TopicPage extends React.Component {
             )}
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
-              messages={messages}
+              messages={messagesArray}
               itemComponent={item => (
                 <TopicCommentItem
                   comment={item}

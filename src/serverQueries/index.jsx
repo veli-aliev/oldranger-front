@@ -138,8 +138,13 @@ class Queries {
   };
 
   /* -----my------ */
-  createArticleComment = async data => {
-    const res = await axios.post('/api/article/comment/add', data);
+  createArticleComment = async (data, params) => {
+    const res = await axios.post('/api/article/comment/add', data, {
+      params,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
     return res;
   };
 
@@ -148,7 +153,6 @@ class Queries {
     return res;
   };
 
-  /* --------!!!!!!!!!!!!!!!!!!!!!!!---------- */
   getTopic = async (id, page, limit) => {
     const res = await axios.get(`/api/topic/${id}`, {
       params: { page, limit },
@@ -156,32 +160,8 @@ class Queries {
     return res;
   };
 
-  // /*------ test -------*/
-  // createArticleComment = async (data) => {
-  //   const { idArticle, idUser, commentText, image1, image2 } = data;
-  //   console.log(data);
-  //   let formData = new FormData();
-  //   formData.append("idArticle", idArticle);
-  //   formData.append("idUser", idUser);
-  //   formData.append("commentText", commentText);
-  //   formData.append("image1", JSON.stringify(image1.originFileObj));
-  //   formData.append("image2", image2);
-  //   const res = await axios.post('/api/article/comment/add', formData);
-  //   return res;
-  // };
-
-  // test = async () => {
-  //   const res = await axios.get('/api/securedPhoto/photoFromAlbum/41?type=original');
-  //   return res;
-  // }
-
-  updateArticleComment = async (data, params) => {
-    const res = await axios.put('/api/article/comment/update', data, {
-      params,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
+  updateArticleComment = async data => {
+    const res = await axios.put('/api/article/comment/update', data);
     return res;
   };
 

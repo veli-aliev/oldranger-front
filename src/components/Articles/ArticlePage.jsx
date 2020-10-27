@@ -9,6 +9,7 @@ import CommentForm from '../forms/CommentForm';
 import queries from '../../serverQueries';
 import { createTreeBuildFunction } from '../../utils';
 import ArticlesPhotoAlbum from './ArticlesPhotoAlbum';
+import './Article.css';
 
 const buildCommentTreeFromFlat = createTreeBuildFunction('id', 'parentId');
 
@@ -25,6 +26,7 @@ class ArticlePage extends React.Component {
       eventType: 'reply',
       albumId: null,
       photos: '',
+      currentId: 0,
     };
   }
 
@@ -70,7 +72,9 @@ class ArticlePage extends React.Component {
       await fn(commentId, text, parentId);
       //  TODO
       // eslint-disable-next-line no-empty
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   postComment = async (answerId, commentText) => {
@@ -144,7 +148,30 @@ class ArticlePage extends React.Component {
       data.answerId = parentId;
     }
 
+    // const updateComment = async commentId => {
+    //   console.log(commentId)
+    //   // TODO Перенести в компонент
+    //   const formData = new FormData();
+    //   formData.set('idArticle', editingComment.idTopic);
+    //   formData.set('idUser', editingComment.idUser);
+    //   formData.set('commentText', editingComment.text);
+    //   formData.set('photoIdList', JSON.stringify(editingComment.photoIdList));
+    //   if (editingComment.image1) {
+    //     formData.set('image1', editingComment.image1.originFileObj, editingComment.image1.name);
+    //   }
+    //   if (editingComment.image2) {
+    //     formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
+    //   }
+    //   console.log(formData);
+    //   /*---------!!!!!!!!!!!!!!!!!-------- */
+    //   // const res = await axios.put('/api/comment/update', formData, {
+    //   //   params: { commentID: commentId },
+    //   // });
+    //   // return res;
+    // };
+
     const updatedComment = await queries.updateArticleComment(commentText, data);
+
     this.setState(
       ({ flatComments }) => {
         const comments = flatComments.reduce(
@@ -171,7 +198,11 @@ class ArticlePage extends React.Component {
   };
 
   handleOpenEditorClick = (id, eventType) => () => {
-    this.setState({ commentWithOpenEditor: id, eventType });
+    this.setState({
+      commentWithOpenEditor: id,
+      eventType,
+      currentId: id,
+    });
   };
 
   handleDeleteComment = (commentId, parentId) => async () => {
@@ -261,6 +292,7 @@ class ArticlePage extends React.Component {
       flatComments,
       commentWithOpenEditor,
       albumId,
+      currentId,
     } = this.state;
 
     if (error || loading) {
@@ -278,17 +310,24 @@ class ArticlePage extends React.Component {
         <Article articleInfo={article} />
         {albumId ? <ArticlesPhotoAlbum photoAlbumId={albumId} /> : null}
         <div>Комментарии ({commentsCount})</div>
-        {commentsTree.map(item => (
-          <ArticleComment
-            commentWithOpenEditor={commentWithOpenEditor}
-            key={item.key}
-            comment={item}
-            onOpenEditorClick={this.handleOpenEditorClick}
-            onSubmitCommentForm={this.handleCommentFormSubmit}
-            onDeleteComment={this.handleDeleteComment}
-            eventType={eventType}
-          />
-        ))}
+        {commentsTree.map(item => {
+          return (
+            <ArticleComment
+              className="ant-comment"
+              commentWithOpenEditor={commentWithOpenEditor}
+              key={item.key}
+              comment={item}
+              commentsTree={commentsTree}
+              onOpenEditorClick={this.handleOpenEditorClick}
+              onSubmitCommentForm={this.handleCommentFormSubmit}
+              onDeleteComment={this.handleDeleteComment}
+              eventType={eventType}
+              updateData={this.updateData}
+              currentId={currentId}
+              onClickComment={this.onClickComment}
+            />
+          );
+        })}
         {this.renderCommentForm()}
       </>
     );

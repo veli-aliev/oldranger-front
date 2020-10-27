@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Button, Form, message } from 'antd';
@@ -27,8 +27,13 @@ const CommentForm = ({
   onSubmitSuccess,
   onSubmitError,
   startText = '',
+  fileList = [],
 }) => {
   const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    setFiles(fileList);
+  }, []);
 
   const handleAddFile = info => {
     setFiles(info.fileList);
@@ -41,13 +46,14 @@ const CommentForm = ({
     () => async (data, { resetForm, setSubmitting }) => {
       try {
         updateData(files);
-        const res = await onSubmit(data);
+        await onSubmit(data);
         setSubmitting(false);
         resetForm();
         if (onSubmitSuccess) {
-          onSubmitSuccess(res);
+          onSubmitSuccess();
         }
       } catch (error) {
+        console.log(error);
         setSubmitting(false);
         if (onSubmitError) {
           onSubmitError(error);
@@ -63,18 +69,19 @@ const CommentForm = ({
       validationSchema={validationSchema}
       onSubmit={onSubmitWrapper()}
     >
-      {}
       {({ touched, errors, handleSubmit, submitting }) => {
         return (
           <Form onSubmit={handleSubmit} labelAlign="left">
             <FormItemLabel wrapperCol={{ span: 24 }} name="text">
               <EditorField name="text" className="comment-editor" modules={editorModules} />
             </FormItemLabel>
-            <Form.Item>
+            <Form.Item name="photo">
               <TopicPhotoList
+                name="photo"
                 handleChangePicturesState={handleAddFile}
                 fileList={files}
                 canUpload
+                defaultFileList={fileList}
               />
             </Form.Item>
             <Form.Item>
@@ -112,6 +119,7 @@ CommentForm.propTypes = {
   onSubmitError: PropTypes.func,
   startText: PropTypes.string,
   updateData: PropTypes.func.isRequired,
+  fileList: PropTypes.arrayOf.isRequired,
 };
 
 export default CommentForm;

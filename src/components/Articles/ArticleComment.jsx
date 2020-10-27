@@ -121,7 +121,7 @@ const ArticleComment = props => {
     </Tooltip>
   );
 
-  if (commentId === (currentId || commentWithOpenEditor) && eventType === 'edit') {
+  if (eventType === 'edit' && commentId === (currentId || commentWithOpenEditor)) {
     return (
       <Comment actions={actionsArr} author={author.nickName} datetime={Datetime} avatar={Avatar}>
         <div className="displayNone">

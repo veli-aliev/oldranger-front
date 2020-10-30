@@ -1,7 +1,6 @@
 import React from 'react';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
-import { Spin } from 'antd';
 import 'antd/dist/antd.css';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -33,6 +32,20 @@ const url = BASE_URL;
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    AuthorizationStatusEmitter.subscribe(isAuthorized => {
+      if (!isAuthorized) {
+        localStorage.clear();
+        this.setState({
+          isLogin: false,
+        });
+        this.disconnect();
+        return;
+      }
+
+      this.connect();
+    });
+
     let initialState = { user: {}, isLogin: false };
     if (localStorage.getItem('user')) {
       const user = JSON.parse(localStorage.getItem('user') || {});
@@ -43,23 +56,11 @@ class App extends React.Component {
         countMessages: 0,
         stompClient: null,
       };
+
+      AuthorizationStatusEmitter.emit(true);
     }
     this.state = { ...initialState };
   }
-
-  componentDidMount = async () => {
-    this.connect();
-
-    AuthorizationStatusEmitter.subscribe(isAuthorized => {
-      if (!isAuthorized) {
-        localStorage.clear();
-        this.setState({
-          isLogin: false,
-        });
-        this.disconnect();
-      }
-    });
-  };
 
   connect = async () => {
     const currentUser = await queries.getCurrentUser();
@@ -107,11 +108,11 @@ class App extends React.Component {
     this.setState({ user: { ...data } });
   };
 
-  logOut = async () => {
+  logOut = async history => {
     localStorage.removeItem('user');
-    queries.logOut();
-    this.disconnect();
+    queries.logOut(history);
     this.setState({ isLogin: false, user: {} });
+    AuthorizationStatusEmitter.emit(false);
   };
 
   render() {
@@ -121,7 +122,6 @@ class App extends React.Component {
       user,
       countMessages,
       stompClient,
-      connect,
     } = this.state;
     const {
       history: {
@@ -141,7 +141,7 @@ class App extends React.Component {
       >
         <Header countMessages={countMessages} />
         <CommonRoute />
-        <AuthRoute isLogin={isLogin} connect={this.connect} />
+        <AuthRoute isLogin={isLogin} connect={() => AuthorizationStatusEmitter.emit(true)} />
         <PrivateRoute isAllowed={isLogin} path="/profile" component={Profile} />
         <PrivateRoute
           isAllowed={isLogin}
@@ -160,19 +160,15 @@ class App extends React.Component {
         <ArticleDraft />
         <ArticlesRoute isLogin={isLogin} role={role} />
         <AlbumsRoute isLogin={isLogin} role={role} />
-        {connect ? (
-          <ChatRoute
-            path={state === 'privateChat' ? '/private/:id' : '/'}
-            countMessages={countMessages}
-            isLogin={isLogin}
-            changeJoinChat={this.changeJoinChat}
-            stompClient={stompClient}
-            user={user}
-            component={state === 'privateChat' ? PrivateChat : ChatAuth}
-          />
-        ) : (
-          <Spin />
-        )}
+        <ChatRoute
+          path={state === 'privateChat' ? '/private/:id' : '/'}
+          countMessages={countMessages}
+          isLogin={isLogin}
+          changeJoinChat={this.changeJoinChat}
+          stompClient={stompClient}
+          user={user}
+          component={state === 'privateChat' ? PrivateChat : ChatAuth}
+        />
       </Context.Provider>
     );
   }

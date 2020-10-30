@@ -37,8 +37,9 @@ class Queries {
     return res;
   };
 
-  logOut = async () => {
+  logOut = async history => {
     const res = await axios.get('api/logout');
+    await history.push('/');
     return res;
   };
 
@@ -294,6 +295,7 @@ class Queries {
     return res.status;
   };
 
+  /* -- -- */
   addCommentToPhoto = async params => {
     return axios.post('/api/photo/comment/add', null, {
       params,

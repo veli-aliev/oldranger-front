@@ -34,7 +34,7 @@ const CommentForm = ({
   useEffect(() => {
     setFiles(fileList);
   }, []);
-
+  
   const handleAddFile = info => {
     setFiles(info.fileList);
     if (info.file.status !== 'removed') {
@@ -83,6 +83,13 @@ const CommentForm = ({
                 fileList={files}
                 canUpload
                 defaultFileList={fileList}
+              />
+            </Form.Item>
+            <Form.Item>
+              <TopicPhotoList
+                handleChangePicturesState={handleAddFile}
+                fileList={files}
+                canUpload
               />
             </Form.Item>
             <Form.Item>

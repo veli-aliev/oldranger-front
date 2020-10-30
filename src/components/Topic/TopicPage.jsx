@@ -123,21 +123,6 @@ class TopicPage extends React.Component {
   };
 
   handleSubmitComment = async (messageText, resetForm) => {
-    let errorMsg = null;
-    if (!messageText.length) {
-      errorMsg = 'Сообщение не может быть пустым';
-    }
-    if (messageText.length > 50000) {
-      errorMsg = 'Превышна максимальная длина сообщения';
-    }
-    if (errorMsg) {
-      notification.open({
-        message: errorMsg,
-        icon: <GoldIcon type="warning" />,
-      });
-      return;
-    }
-
     this.setState({ uploading: true });
     const { topic, answerId, files } = this.state;
     const { user } = this.context;
@@ -145,7 +130,7 @@ class TopicPage extends React.Component {
     const messageComentsEntity = {
       idTopic: topic.id,
       idUser: user.id,
-      text: messageText.trim(),
+      text: messageText.length ? messageText : '<br>',
     };
 
     if (answerId) {
@@ -286,8 +271,24 @@ class TopicPage extends React.Component {
     return albumProps;
   };
 
+  sortMessages = messages => {
+    const resolveArr = [];
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].replyText === null) {
+        resolveArr.push(messages[i]);
+      }
+      for (let j = 1; j < messages.length; j++) {
+        if (messages[i].commentText === messages[j].replyText) {
+          resolveArr.push(messages[j]);
+        }
+      }
+    }
+    return resolveArr;
+  };
+
   render() {
     const { messages, topic, page, reply, files, uploading, error } = this.state;
+    const messagesArray = this.sortMessages(messages);
     const { userProfile } = this.props;
     const { isLogin } = this.context;
     const avatar = userProfile.avatar ? (
@@ -331,7 +332,7 @@ class TopicPage extends React.Component {
             )}
             <TopicCommentsList
               changePageHandler={this.changePageHandler}
-              messages={messages}
+              messages={messagesArray}
               itemComponent={item => (
                 <TopicCommentItem
                   comment={item}

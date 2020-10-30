@@ -25,7 +25,7 @@ class ArticlePage extends React.Component {
       commentWithOpenEditor: null,
       eventType: 'reply',
       albumId: null,
-      photos: '',
+      photos: [],
       currentId: 0,
     };
   }
@@ -131,10 +131,10 @@ class ArticlePage extends React.Component {
         this.rebuildTree(); // перестраиваем дерево коментов
       }
     );
-    this.fetchArticle();
   };
 
   editComment = async (commentId, commentText, parentId) => {
+    const { photos } = this.state;
     const {
       article: { id: idArticle },
     } = this.state;
@@ -143,34 +143,44 @@ class ArticlePage extends React.Component {
       user: { id: idUser },
     } = this.context;
 
-    const data = { idArticle, idUser, commentID: commentId };
+    const data = {
+      idArticle,
+      idUser,
+      commentID: commentId,
+      commentText,
+      photoIdList: [],
+    };
+
     if (parentId !== -1) {
       data.answerId = parentId;
     }
 
-    // const updateComment = async commentId => {
-    //   console.log(commentId)
-    //   // TODO Перенести в компонент
-    //   const formData = new FormData();
-    //   formData.set('idArticle', editingComment.idTopic);
-    //   formData.set('idUser', editingComment.idUser);
-    //   formData.set('commentText', editingComment.text);
-    //   formData.set('photoIdList', JSON.stringify(editingComment.photoIdList));
-    //   if (editingComment.image1) {
-    //     formData.set('image1', editingComment.image1.originFileObj, editingComment.image1.name);
-    //   }
-    //   if (editingComment.image2) {
-    //     formData.set('image2', editingComment.image2.originFileObj, editingComment.image2.name);
-    //   }
-    //   console.log(formData);
-    //   /*---------!!!!!!!!!!!!!!!!!-------- */
-    //   // const res = await axios.put('/api/comment/update', formData, {
-    //   //   params: { commentID: commentId },
-    //   // });
-    //   // return res;
-    // };
+    photos.forEach((file, index) => {
+      if (file.originFileObj) {
+        data[`image${index + 1}`] = file;
+      } else {
+        data.photoIdList.push(file.uid * -1);
+      }
+    });
 
-    const updatedComment = await queries.updateArticleComment(commentText, data);
+    const updateArticleCommentFetch = editData => {
+      // TODO Перенести в компонент
+      const formData = new FormData();
+      formData.set('idArticle', editData.idArticle);
+      formData.set('idUser', editData.idUser);
+      formData.set('commentText', editData.commentText);
+      formData.set('photoIdList', JSON.stringify(editData.photoIdList));
+      formData.set('commentID', editData.commentID);
+      if (editData.image1) {
+        formData.set('image1', editData.image1.originFileObj, editData.image1.name);
+      }
+      if (editData.image2) {
+        formData.set('image2', editData.image2.originFileObj, editData.image2.name);
+      }
+      return formData;
+    };
+
+    const updatedComment = await queries.updateArticleComment(updateArticleCommentFetch(data));
 
     this.setState(
       ({ flatComments }) => {

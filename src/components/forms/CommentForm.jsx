@@ -49,6 +49,7 @@ const CommentForm = ({
         await onSubmit(data);
         setSubmitting(false);
         resetForm();
+        setFiles([]);
         if (onSubmitSuccess) {
           onSubmitSuccess();
         }

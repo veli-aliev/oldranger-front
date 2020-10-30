@@ -4,7 +4,7 @@ import ru from 'date-fns/locale/ru';
 import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import { Comment, Tooltip, Popover } from 'antd';
 import Context from '../Context';
-import roles, { SECURED_ALBUM_URL } from '../../constants';
+import roles, { SECURED_ALBUM_URL, DEFAULT_COMMENT_PICTURE } from '../../constants';
 import { CommentContentView } from '../commons/HTMLContentViews';
 import TopicUserInfo from '../Topic/TopicUserInfo';
 import UserAvatar from '../commons/UserAvatar';
@@ -31,10 +31,9 @@ const ArticleComment = props => {
     commentDateTime: date,
     author,
     nested,
-    photos,
   } = comment;
 
-  const { user } = useContext(Context);
+  const { user, isLogin } = useContext(Context);
 
   const actionsArr = [];
   actionsArr.push(
@@ -90,8 +89,10 @@ const ArticleComment = props => {
     />
   ));
 
-  const convertedImages = photos.map(photo => {
-    const url = `${SECURED_ALBUM_URL}${photo.id}?type=original`;
+  const convertedImages = comment.photos.map(photo => {
+    const url = isLogin
+      ? `${SECURED_ALBUM_URL}${photo.id}?type=original`
+      : `${DEFAULT_COMMENT_PICTURE}`;
     return {
       uid: `-${String(photo.id)}`,
       url,

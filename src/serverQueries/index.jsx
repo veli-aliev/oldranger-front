@@ -160,7 +160,9 @@ class Queries {
     return res;
   };
 
+  /* -----my------ */
   updateArticleComment = async data => {
+    console.log(data);
     const res = await axios.put('/api/article/comment/update', data);
     return res;
   };
@@ -264,6 +266,7 @@ class Queries {
 
   updateComment = async editingComment => {
     // TODO Перенести в компонент
+    console.log(editingComment.photoIdList);
     const { commentId } = editingComment;
     const formData = new FormData();
     formData.set('idTopic', editingComment.idTopic);

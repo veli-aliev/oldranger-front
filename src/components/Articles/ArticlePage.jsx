@@ -9,13 +9,13 @@ import CommentForm from '../forms/CommentForm';
 import queries from '../../serverQueries';
 import { createTreeBuildFunction } from '../../utils';
 import ArticlesPhotoAlbum from './ArticlesPhotoAlbum';
+import './Article.css';
 
 const buildCommentTreeFromFlat = createTreeBuildFunction('id', 'parentId');
 
 class ArticlePage extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       loading: true,
       error: null,
@@ -25,12 +25,20 @@ class ArticlePage extends React.Component {
       commentWithOpenEditor: null,
       eventType: 'reply',
       albumId: null,
+      photos: [],
+      currentId: 0,
     };
   }
 
   componentDidMount() {
     this.fetchArticle();
   }
+
+  updateData = files => {
+    this.setState({
+      photos: files,
+    });
+  };
 
   fetchArticle = async () => {
     // eslint-disable-next-line react/destructuring-assignment,react/prop-types
@@ -64,12 +72,15 @@ class ArticlePage extends React.Component {
       await fn(commentId, text, parentId);
       //  TODO
       // eslint-disable-next-line no-empty
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  postComment = async (answerId, text) => {
+  postComment = async (answerId, commentText) => {
     const {
       article: { id },
+      photos,
     } = this.state;
 
     const {
@@ -81,7 +92,36 @@ class ArticlePage extends React.Component {
     if (answerId) {
       params.answerId = answerId;
     }
-    const comment = await queries.createArticleComment(text, params);
+
+    const data = {
+      idArticle: id,
+      idUser,
+      commentText,
+      image1: photos[0],
+      image2: photos[1],
+    };
+    const transformComment = newComment => {
+      const formData = new FormData();
+      formData.set('idArticle', newComment.idArticle);
+      formData.set('idUser', newComment.idUser);
+      formData.set('commentText', newComment.commentText);
+
+      if (newComment.answerID) {
+        formData.set('answerID', newComment.answerID);
+      }
+
+      if (newComment.image1) {
+        formData.set('image1', newComment.image1.originFileObj, newComment.image1.name);
+      }
+
+      if (newComment.image2) {
+        formData.set('image2', newComment.image2.originFileObj, newComment.image2.name);
+      }
+      return formData;
+    };
+
+    const comment = await queries.createArticleComment(transformComment(data), params);
+
     this.setState(
       ({ flatComments }) => ({
         flatComments: [...flatComments, comment],
@@ -93,7 +133,8 @@ class ArticlePage extends React.Component {
     );
   };
 
-  editComment = async (commentId, text, parentId) => {
+  editComment = async (commentId, commentText, parentId) => {
+    const { photos } = this.state;
     const {
       article: { id: idArticle },
     } = this.state;
@@ -102,12 +143,45 @@ class ArticlePage extends React.Component {
       user: { id: idUser },
     } = this.context;
 
-    const data = { idArticle, idUser, commentID: commentId };
+    const data = {
+      idArticle,
+      idUser,
+      commentID: commentId,
+      commentText,
+      photoIdList: [],
+    };
+
     if (parentId !== -1) {
       data.answerId = parentId;
     }
 
-    const updatedComment = await queries.updateArticleComment(text, data);
+    photos.forEach((file, index) => {
+      if (file.originFileObj) {
+        data[`image${index + 1}`] = file;
+      } else {
+        data.photoIdList.push(file.uid * -1);
+      }
+    });
+
+    const updateArticleCommentFetch = editData => {
+      // TODO Перенести в компонент
+      const formData = new FormData();
+      formData.set('idArticle', editData.idArticle);
+      formData.set('idUser', editData.idUser);
+      formData.set('commentText', editData.commentText);
+      formData.set('photoIdList', JSON.stringify(editData.photoIdList));
+      formData.set('commentID', editData.commentID);
+      if (editData.image1) {
+        formData.set('image1', editData.image1.originFileObj, editData.image1.name);
+      }
+      if (editData.image2) {
+        formData.set('image2', editData.image2.originFileObj, editData.image2.name);
+      }
+      return formData;
+    };
+
+    const updatedComment = await queries.updateArticleComment(updateArticleCommentFetch(data));
+
     this.setState(
       ({ flatComments }) => {
         const comments = flatComments.reduce(
@@ -134,7 +208,11 @@ class ArticlePage extends React.Component {
   };
 
   handleOpenEditorClick = (id, eventType) => () => {
-    this.setState({ commentWithOpenEditor: id, eventType });
+    this.setState({
+      commentWithOpenEditor: id,
+      eventType,
+      currentId: id,
+    });
   };
 
   handleDeleteComment = (commentId, parentId) => async () => {
@@ -203,8 +281,13 @@ class ArticlePage extends React.Component {
 
   renderCommentForm() {
     const { isLogin } = this.context;
+    const { photos } = this.state;
     return isLogin ? (
-      <CommentForm onSubmit={this.handleCommentFormSubmit()} />
+      <CommentForm
+        onSubmit={this.handleCommentFormSubmit()}
+        updateData={this.updateData}
+        photos={photos}
+      />
     ) : (
       <div>Только авторизированные пользователи могут оставлять комментарии</div>
     );
@@ -219,7 +302,9 @@ class ArticlePage extends React.Component {
       flatComments,
       commentWithOpenEditor,
       albumId,
+      currentId,
     } = this.state;
+
     if (error || loading) {
       return (
         <StyledCenteredContainer>
@@ -235,17 +320,24 @@ class ArticlePage extends React.Component {
         <Article articleInfo={article} />
         {albumId ? <ArticlesPhotoAlbum photoAlbumId={albumId} /> : null}
         <div>Комментарии ({commentsCount})</div>
-        {commentsTree.map(comment => (
-          <ArticleComment
-            commentWithOpenEditor={commentWithOpenEditor}
-            key={comment.key}
-            comment={comment}
-            onOpenEditorClick={this.handleOpenEditorClick}
-            onSubmitCommentForm={this.handleCommentFormSubmit}
-            onDeleteComment={this.handleDeleteComment}
-            eventType={eventType}
-          />
-        ))}
+        {commentsTree.map(item => {
+          return (
+            <ArticleComment
+              className="ant-comment"
+              commentWithOpenEditor={commentWithOpenEditor}
+              key={item.key}
+              comment={item}
+              commentsTree={commentsTree}
+              onOpenEditorClick={this.handleOpenEditorClick}
+              onSubmitCommentForm={this.handleCommentFormSubmit}
+              onDeleteComment={this.handleDeleteComment}
+              eventType={eventType}
+              updateData={this.updateData}
+              currentId={currentId}
+              onClickComment={this.onClickComment}
+            />
+          );
+        })}
         {this.renderCommentForm()}
       </>
     );

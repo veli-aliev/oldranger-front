@@ -4,11 +4,13 @@ import ru from 'date-fns/locale/ru';
 import { parseISO, format, formatDistanceToNow } from 'date-fns';
 import { Comment, Tooltip, Popover } from 'antd';
 import Context from '../Context';
-import roles from '../../constants';
+import roles, { SECURED_ALBUM_URL, DEFAULT_COMMENT_PICTURE } from '../../constants';
 import { CommentContentView } from '../commons/HTMLContentViews';
 import TopicUserInfo from '../Topic/TopicUserInfo';
 import UserAvatar from '../commons/UserAvatar';
 import CommentForm from '../forms/CommentForm';
+import TopicPhotoList from '../Topic/TopicPhotoList';
+import './Article.css';
 
 const ArticleComment = props => {
   const {
@@ -18,6 +20,8 @@ const ArticleComment = props => {
     onSubmitCommentForm,
     onDeleteComment,
     eventType,
+    updateData,
+    currentId,
   } = props;
 
   const {
@@ -27,9 +31,9 @@ const ArticleComment = props => {
     commentDateTime: date,
     author,
     nested,
-    deleted,
   } = comment;
-  const { user } = useContext(Context);
+
+  const { user, isLogin } = useContext(Context);
 
   const actionsArr = [];
   actionsArr.push(
@@ -81,39 +85,94 @@ const ArticleComment = props => {
       onSubmitCommentForm={onSubmitCommentForm}
       onDeleteComment={onDeleteComment}
       eventType={eventType}
+      updateData={updateData}
     />
   ));
 
-  return (
-    <Comment
-      actions={deleted ? null : actionsArr}
-      author={author.nickName}
-      datetime={
-        <Tooltip
-          title={format(parseISO(date), "dd MMMM yyyy 'в' HH:mm", {
-            locale: ru,
-          })}
-        >
-          <span>
-            {formatDistanceToNow(parseISO(date), {
-              locale: ru,
-              addSuffix: true,
-            })}
-          </span>
-        </Tooltip>
-      }
-      avatar={
-        <Popover content={<TopicUserInfo user={author} />} placement="right">
-          <UserAvatar src={author.avatar.small} />
-        </Popover>
-      }
-      content={<CommentContentView dangerouslySetInnerHTML={{ __html: text }} />}
+  const convertedImages = comment.photos.map(photo => {
+    const url = isLogin
+      ? `${SECURED_ALBUM_URL}${photo.id}?type=original`
+      : `${DEFAULT_COMMENT_PICTURE}`;
+    return {
+      uid: `-${String(photo.id)}`,
+      url,
+      name: `Photo_name_${photo.description}`,
+      status: 'done',
+    };
+  });
+
+  const Avatar = (
+    <Popover content={<TopicUserInfo user={author} />} placement="right">
+      <UserAvatar src={author.avatar.small} />
+    </Popover>
+  );
+
+  const Datetime = (
+    <Tooltip
+      title={format(parseISO(date), "dd MMMM yyyy 'в' HH:mm", {
+        locale: ru,
+      })}
     >
+      <span>
+        {formatDistanceToNow(parseISO(date), {
+          locale: ru,
+          addSuffix: true,
+        })}
+      </span>
+    </Tooltip>
+  );
+
+  if (eventType === 'edit' && commentId === (currentId || commentWithOpenEditor)) {
+    return (
+      <Comment actions={actionsArr} author={author.nickName} datetime={Datetime} avatar={Avatar}>
+        <div className="displayNone">
+          <CommentContentView className="displayNone" dangerouslySetInnerHTML={{ __html: text }} />
+          {convertedImages.length > 0 && <TopicPhotoList fileList={convertedImages} />}
+        </div>
+        {commentId === commentWithOpenEditor && eventType === 'edit' && (
+          <CommentForm
+            updateData={updateData}
+            currentId={commentId}
+            fileList={convertedImages}
+            startText={text}
+            onSubmit={onSubmitCommentForm(commentId, parentId)}
+          />
+        )}
+        {commentId === commentWithOpenEditor && eventType === 'reply' && (
+          <CommentForm
+            updateData={updateData}
+            currentId={commentId}
+            startText=""
+            onSubmit={onSubmitCommentForm(commentId, parentId)}
+          />
+        )}
+        {nestedComments}
+      </Comment>
+    );
+  }
+  return (
+    <Comment actions={actionsArr} author={author.nickName} datetime={Datetime} avatar={Avatar}>
+      <>
+        <CommentContentView dangerouslySetInnerHTML={{ __html: text }} />
+        {convertedImages.length > 0 && <TopicPhotoList fileList={convertedImages} />}
+      </>
+
       {commentId === commentWithOpenEditor && eventType === 'edit' && (
-        <CommentForm startText={text} onSubmit={onSubmitCommentForm(commentId, parentId)} />
+        <CommentForm
+          updateData={updateData}
+          currentId={commentId}
+          fileList={convertedImages}
+          startText={text}
+          onSubmit={onSubmitCommentForm(commentId, parentId)}
+        />
       )}
       {commentId === commentWithOpenEditor && eventType === 'reply' && (
-        <CommentForm startText="" onSubmit={onSubmitCommentForm(commentId, parentId)} />
+        <CommentForm
+          updateData={updateData}
+          currentId={commentId}
+          startText=""
+          onSubmit={onSubmitCommentForm(commentId, parentId)}
+        />
       )}
       {nestedComments}
     </Comment>
@@ -133,6 +192,7 @@ ArticleComment.propTypes = {
     commentText: PropTypes.string,
     deleted: PropTypes.bool,
     parentId: PropTypes.number,
+    photos: PropTypes.array.isRequired,
   }).isRequired,
   // eslint-disable-next-line react/require-default-props
   commentWithOpenEditor: PropTypes.number,
@@ -140,6 +200,8 @@ ArticleComment.propTypes = {
   onSubmitCommentForm: PropTypes.func.isRequired,
   onDeleteComment: PropTypes.func.isRequired,
   eventType: PropTypes.string.isRequired,
+  updateData: PropTypes.func.isRequired,
+  currentId: PropTypes.number.isRequired,
 };
 
 export default ArticleComment;

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Button, Form, message } from 'antd';
@@ -20,15 +20,21 @@ const editorModules = {
 };
 
 const CommentForm = ({
+  updateData,
   initialValues,
   buttonText,
   onSubmit,
   onSubmitSuccess,
   onSubmitError,
   startText = '',
+  fileList = [],
 }) => {
   const [files, setFiles] = useState([]);
 
+  useEffect(() => {
+    setFiles(fileList);
+  }, []);
+  
   const handleAddFile = info => {
     setFiles(info.fileList);
     if (info.file.status !== 'removed') {
@@ -39,20 +45,23 @@ const CommentForm = ({
   const onSubmitWrapper = useCallback(
     () => async (data, { resetForm, setSubmitting }) => {
       try {
-        const res = await onSubmit(data);
+        updateData(files);
+        await onSubmit(data);
         setSubmitting(false);
         resetForm();
+        setFiles([]);
         if (onSubmitSuccess) {
-          onSubmitSuccess(res);
+          onSubmitSuccess();
         }
       } catch (error) {
+        console.log(error);
         setSubmitting(false);
         if (onSubmitError) {
           onSubmitError(error);
         }
       }
     },
-    [onSubmit, onSubmitSuccess, onSubmitError]
+    [files, onSubmit, onSubmitSuccess, onSubmitError]
   );
 
   return (
@@ -67,6 +76,15 @@ const CommentForm = ({
             <FormItemLabel wrapperCol={{ span: 24 }} name="text">
               <EditorField name="text" className="comment-editor" modules={editorModules} />
             </FormItemLabel>
+            <Form.Item name="photo">
+              <TopicPhotoList
+                name="photo"
+                handleChangePicturesState={handleAddFile}
+                fileList={files}
+                canUpload
+                defaultFileList={fileList}
+              />
+            </Form.Item>
             <Form.Item>
               <TopicPhotoList
                 handleChangePicturesState={handleAddFile}
@@ -108,6 +126,8 @@ CommentForm.propTypes = {
   onSubmitSuccess: PropTypes.func,
   onSubmitError: PropTypes.func,
   startText: PropTypes.string,
+  updateData: PropTypes.func.isRequired,
+  fileList: PropTypes.arrayOf.isRequired,
 };
 
 export default CommentForm;

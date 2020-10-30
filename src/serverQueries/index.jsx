@@ -133,16 +133,12 @@ class Queries {
     return res;
   };
 
-  getArticleById = async params => {
-    const res = await axios.get(`/api/article/comments`, { params });
-    return res;
-  };
-
   getArticleDraft = async () => {
     const res = await axios.get('/api/article/drafts');
     return res;
   };
 
+  /* -----my------ */
   createArticleComment = async (data, params) => {
     const res = await axios.post('/api/article/comment/add', data, {
       params,
@@ -153,13 +149,22 @@ class Queries {
     return res;
   };
 
-  updateArticleComment = async (data, params) => {
-    const res = await axios.put('/api/article/comment/update', data, {
-      params,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
+  getArticleById = async params => {
+    const res = await axios.get(`/api/article/comments`, { params });
+    return res;
+  };
+
+  getTopic = async (id, page, limit) => {
+    const res = await axios.get(`/api/topic/${id}`, {
+      params: { page, limit },
     });
+    return res;
+  };
+
+  /* -----my------ */
+  updateArticleComment = async data => {
+    console.log(data);
+    const res = await axios.put('/api/article/comment/update', data);
     return res;
   };
 
@@ -185,13 +190,6 @@ class Queries {
 
   getProfileComments = async page => {
     const res = await axios.get(`/api/comments/`, { params: { page } });
-    return res;
-  };
-
-  getTopic = async (id, page, limit) => {
-    const res = await axios.get(`/api/topic/${id}`, {
-      params: { page, limit },
-    });
     return res;
   };
 
@@ -261,12 +259,15 @@ class Queries {
     return res;
   };
 
+  /* -------- */
   addComment = async formData => {
-    return axios.post('/api/comment/add', formData);
+    const res = axios.post('/api/comment/add', formData);
+    return res;
   };
 
   updateComment = async editingComment => {
     // TODO Перенести в компонент
+    console.log(editingComment.photoIdList);
     const { commentId } = editingComment;
     const formData = new FormData();
     formData.set('idTopic', editingComment.idTopic);

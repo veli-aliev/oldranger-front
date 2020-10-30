@@ -69,6 +69,7 @@ export const ArticleContentView = styled.div`
 
 export const CommentContentView = styled.div`
   & p {
+    margin-top: -15px;
     margin-bottom: 1em;
   }
 `;
